@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.2/engine/Shopware/Components/Plugin/schema/plugin.xsd">
+    <label lang="de">Creditreform</label>
+    <label lang="en">Creditreform</label>
+
+    <version>1.1.4</version>
+    <copyright>Copyright (c) 2016 Verband der Vereine Creditreform.</copyright>
+    <!--<license></license>-->
+    <link>https://crefonet.creditreform.de/vertrieb/systeme-beratung/creditreform-plugins.html</link>
+    <author>Verband der Vereine Creditreform</author>
+    <!--<description lang="de"></description>-->
+    <!--<description lang="en"></description>-->
+    <!--<requiredPlugins></requiredPlugins>-->
+
+    <compatibility minVersion="5.2.0" />
+
+    <changelog version="1.0">
+        <changes lang="de">Erste Version incl. Firmen-Bonitätsprüfung und Inkassoaufträgen</changes>
+        <changes lang="en">First Version incl. Company Solvency Checks and Collection Orders</changes>
+    </changelog>
+    <changelog version="1.1">
+        <changes lang="de">Einführung der Bonitätsprüfung von Privatpersonen</changes>
+        <changes lang="en">Introduction of Private Person Solvency Checks</changes>
+    </changelog>
+</plugin>

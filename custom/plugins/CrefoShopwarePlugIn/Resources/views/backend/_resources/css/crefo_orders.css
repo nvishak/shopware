@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Hellersbergstrasse 12, 41460 Neuss, Germany.
+ *
+ * This file is part of the CrefoShopwarePlugIn.
+ * For licensing information, refer to the “license” file.
+ *
+ * Diese Datei ist Teil des CrefoShopwarePlugIn.
+ * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
+ */
+
+@media screen {
+    .fake-link {
+        color: #009cff;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .fake-link:hover {
+        color: #009cff;
+        text-decoration: none;
+        border-bottom: 1px #009cff dotted;
+        cursor: pointer;
+    }
+    .crefo-proposal{
+        color: #ff0000;
+    }
+    .crefo-remove-from-background{
+        background: transparent !important;
+    }
+    #printSection {
+        display: none;
+    }
+    .crefo-wrap-text{
+        word-break: break-word;
+        word-wrap: break-word;
+    }
+}
+@media print {
+
+    @page {
+        size: A4;
+    }
+    #printSection, #printSection * {
+        visibility:visible;
+    }
+    #printSection {
+        position:absolute;
+        left:0;
+        top:0;
+    }
+}

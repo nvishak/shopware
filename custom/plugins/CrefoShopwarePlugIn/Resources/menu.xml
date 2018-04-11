@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.2/engine/Shopware/Components/Plugin/schema/menu.xsd">
+    <entries>
+        <entry isRootMenu="true">
+            <name>Creditreform</name>
+            <label lang="en">Creditreform</label>
+            <label lang="de">Creditreform</label>
+            <controller>Creditreform</controller>
+            <!--<action></action>-->
+            <class>sprite-crefo-icon creditrefom--main</class>
+            <!--<parent></parent>-->
+            <active>true</active>
+            <position>1</position>
+            <!--<onclick></onclick>-->
+            <children>
+                <entry>
+                    <name>CrefoConfiguration</name>
+                    <label lang="en">Configuration</label>
+                    <label lang="de">Konfiguration</label>
+                    <controller>CrefoConfiguration</controller>
+                    <action>Index</action>
+                    <class>settings--basic-settings creditreform--config</class>
+                    <parent identifiedBy="controller">Creditreform</parent>
+                    <active>true</active>
+                    <position>1</position>
+                    <!--<onclick></onclick>-->
+                    <!--<children></children>-->
+                </entry>
+                <entry>
+                    <name>CrefoOrders</name>
+                    <label lang="en">Orders</label>
+                    <label lang="de">Bestellungen</label>
+                    <controller>CrefoOrders</controller>
+                    <action>Index</action>
+                    <class>sprite-sticky-notes-pin creditreform--orders</class>
+                    <parent identifiedBy="controller">Creditreform</parent>
+                    <active>true</active>
+                    <position>2</position>
+                    <!--<onclick></onclick>-->
+                    <!--<children></children>-->
+                </entry>
+                <entry>
+                    <name>CrefoLogs</name>
+                    <label lang="en">Logs</label>
+                    <label lang="de">Logs</label>
+                    <controller>CrefoLogs</controller>
+                    <action>Index</action>
+                    <class>settings--logfile creditreform--logs</class>
+                    <parent identifiedBy="controller">Creditreform</parent>
+                    <active>true</active>
+                    <position>3</position>
+                    <!--<onclick></onclick>-->
+                    <!--<children></children>-->
+                </entry>
+                <entry>
+                    <name>CrefoManagement</name>
+                    <label lang="en">Administration</label>
+                    <label lang="de">Verwaltung</label>
+                    <controller>CrefoManagement</controller>
+                    <action>Index</action>
+                    <class>sprite-arrow-circle-double-135 creditreform--manage</class>
+                    <parent identifiedBy="controller">Creditreform</parent>
+                    <active>true</active>
+                    <position>4</position>
+                    <!--<onclick></onclick>-->
+                    <!--<children></children>-->
+                </entry>
+            </children>
+        </entry>
+    </entries>
+</menu>

@@ -1,0 +1,97 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Custom Services -->
+
+        <service id="creditreform.soap_client" class="CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient"/>
+        <service id="creditreform.soap_parser" class="CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser">
+            <argument type="service" id="creditreform.mapper"/>
+        </service>
+        <service id="creditreform.report_companies_config_parser"
+                 class="CrefoShopwarePlugIn\Components\Soap\Parsers\ReportCompaniesParser">
+            <argument type="service" id="creditreform.mapper"/>
+        </service>
+        <service id="creditreform.report_private_person_parser"
+                 class="CrefoShopwarePlugIn\Components\Soap\Parsers\ReportPrivatePersonParser">
+            <argument type="service" id="creditreform.mapper"/>
+        </service>
+        <service id="creditreform.collection_config_parser"
+                 class="CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionParser">
+            <argument type="service" id="creditreform.mapper"/>
+        </service>
+        <service id="creditreform.identification_report_parser"
+                 class="CrefoShopwarePlugIn\Components\Soap\Parsers\IdentificationReportParser">
+            <argument type="service" id="creditreform.identification_report_mapper"/>
+        </service>
+        <service id="creditreform.bonima_report_parser"
+                 class="CrefoShopwarePlugIn\Components\Soap\Parsers\BonimaReportParser">
+            <argument type="service" id="creditreform.bonima_report_mapper"/>
+        </service>
+        <service id="creditreform.collection_order_parser"
+                 class="CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionOrderParser">
+            <argument type="service" id="creditreform.collection_order_mapper"/>
+        </service>
+        <service id="creditreform.mapper" class="CrefoShopwarePlugIn\Components\Soap\CrefoMapper"/>
+        <service id="creditreform.collection_order_mapper"
+                 class="CrefoShopwarePlugIn\Components\Soap\Mappers\CollectionOrderMapper"/>
+        <service id="creditreform.identification_report_mapper"
+                 class="CrefoShopwarePlugIn\Components\Soap\Mappers\IdentificationReportMapper"/>
+        <service id="creditreform.bonima_report_mapper"
+                 class="CrefoShopwarePlugIn\Components\Soap\Mappers\BonimaReportMapper"/>
+        <service id="creditreform.password_encoder" class="CrefoShopwarePlugIn\Components\Core\PasswordEncoder"/>
+        <service id="creditreform.logon_request" class="CrefoShopwarePlugIn\Components\API\Request\LogonRequest">
+            <argument type="service" id="creditreform.config_header_request"/>
+        </service>
+        <service id="creditreform.change_password_request"
+                 class="CrefoShopwarePlugIn\Components\API\Request\ChangePasswordRequest">
+            <argument type="service" id="creditreform.config_header_request"/>
+        </service>
+        <service id="creditreform.identification_report_request"
+                 class="CrefoShopwarePlugIn\Components\API\Request\IdentificationReportRequest">
+            <argument type="service" id="creditreform.config_header_request"/>
+        </service>
+        <service id="creditreform.bonima_report_request"
+                 class="CrefoShopwarePlugIn\Components\API\Request\BonimaReportRequest">
+            <argument type="service" id="creditreform.config_header_request"/>
+        </service>
+        <service id="creditreform.collection_order_request"
+                 class="CrefoShopwarePlugIn\Components\API\Request\CollectionOrderRequest">
+            <argument type="service" id="creditreform.config_header_request"/>
+        </service>
+        <service id="creditreform.identification_report_body"
+                 class="CrefoShopwarePlugIn\Components\API\Body\IdentificationReportBody"/>
+        <service id="creditreform.bonima_report_body" class="CrefoShopwarePlugIn\Components\API\Body\BonimaReportBody"/>
+        <service id="creditreform.collection_order_body"
+                 class="CrefoShopwarePlugIn\Components\API\Body\CollectionOrderBody"/>
+        <service id="creditreform.identification_report_results"
+                 class="CrefoShopwarePlugIn\Models\CrefoReports\CompanyReportResults"/>
+        <service id="creditreform.bonima_report_results"
+                 class="CrefoShopwarePlugIn\Models\CrefoReports\PrivatePersonReportResults"/>
+        <service id="creditreform.logger" class="CrefoShopwarePlugIn\Components\Logger\CrefoLogger"/>
+        <service id="creditreform.zip_manager" class="CrefoShopwarePlugIn\Components\Core\ZipManager"/>
+        <service id="creditreform.xml_manager" class="CrefoShopwarePlugIn\Components\Core\XmlManager"/>
+        <service id="creditreform.validator" class="CrefoShopwarePlugIn\Components\Core\CrefoValidator"/>
+        <service id="creditreform.config_header_request"
+                 class="CrefoShopwarePlugIn\Components\Swag\Middleware\ConfigHeaderRequest"/>
+
+        <!-- Event Subscribers -->
+        <service id="creditreform.subscriber.assets" class="CrefoShopwarePlugIn\Subscriber\Assets">
+            <argument type="service" id="service_container"/>
+            <tag name="shopware.event_subscriber"/>
+        </service>
+        <service id="creditreform.subscriber.frontend_checkout" class="CrefoShopwarePlugIn\Subscriber\FrontendCheckout">
+            <argument type="service" id="service_container"/>
+            <tag name="shopware.event_subscriber"/>
+        </service>
+        <service id="creditreform.subscriber.frontend_account" class="CrefoShopwarePlugIn\Subscriber\FrontendAccount">
+            <argument type="service" id="service_container"/>
+            <tag name="shopware.event_subscriber"/>
+        </service>
+
+        <!-- Decorations -->
+    </services>
+</container>
