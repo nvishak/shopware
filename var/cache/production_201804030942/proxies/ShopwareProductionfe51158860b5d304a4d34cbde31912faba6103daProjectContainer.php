@@ -3863,11 +3863,11 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
             'shopware.phpsettings' => array(
                 'error_reporting' => 16383,
                 'display_errors' => 1,
-                'date.timezone' => 'Europe/Berlin',
+                'date.timezone' => 'Asia/Kolkata',
             ),
             'shopware.phpsettings.error_reporting' => 16383,
             'shopware.phpsettings.display_errors' => 1,
-            'shopware.phpsettings.date.timezone' => 'Europe/Berlin',
+            'shopware.phpsettings.date.timezone' => 'Asia/Kolkata',
             'shopware.cache' => array(
                 'frontendOptions' => array(
                     'automatic_serialization' => true,
@@ -6025,8 +6025,8 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
                 'AvenSupplier' => '1.0.0',
                 'SwagDemoDataEN' => '5.4.0',
                 'AvenNotes' => '1.0.0',
-                'CrefoShopwarePlugIn' => '2.1.2',
                 'SwagBackendOrder' => '2.3.0',
+                'CrefoShopwarePlugIn' => '2.1.2',
             ),
             'aven_faxorder.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder',
             'aven_faxorder.plugin_name' => 'AvenFaxorder',
