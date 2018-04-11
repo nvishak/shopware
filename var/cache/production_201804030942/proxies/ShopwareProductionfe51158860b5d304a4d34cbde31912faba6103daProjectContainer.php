@@ -22,6 +22,11 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
             'acl' => 'getAclService',
             'application' => 'getApplicationService',
             'attributesubscriber' => 'getAttributesubscriberService',
+            'aven_faxorder.components.document' => 'getAvenFaxorder_Components_DocumentService',
+            'aven_faxorder.subscriber.templates' => 'getAvenFaxorder_Subscriber_TemplatesService',
+            'aven_notes.subscriber.templates' => 'getAvenNotes_Subscriber_TemplatesService',
+            'aven_supplier.components.document' => 'getAvenSupplier_Components_DocumentService',
+            'aven_supplier.subscriber.templates' => 'getAvenSupplier_Subscriber_TemplatesService',
             'basket_cleanup_cron_job_subscriber' => 'getBasketCleanupCronJobSubscriberService',
             'basket_persister' => 'getBasketPersisterService',
             'basket_signature_generator' => 'getBasketSignatureGeneratorService',
@@ -197,6 +202,7 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
             'shopware.form.extension.event' => 'getShopware_Form_Extension_EventService',
             'shopware.form.factory' => 'getShopware_Form_FactoryService',
             'shopware.form.string_renderer_service' => 'getShopware_Form_StringRendererServiceService',
+            'shopware.generic_controller_listener' => 'getShopware_GenericControllerListenerService',
             'shopware.holiday_table_updater' => 'getShopware_HolidayTableUpdaterService',
             'shopware.http_cache.route_installer' => 'getShopware_HttpCache_RouteInstallerService',
             'shopware.log.fileparser' => 'getShopware_Log_FileparserService',
@@ -652,6 +658,26 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
     {
         return $this->services['attributesubscriber'] = new \Shopware\Components\AttributeSubscriber($this);
     }
+    protected function getAvenFaxorder_Components_DocumentService()
+    {
+        return $this->services['aven_faxorder.components.document'] = new \AvenFaxorder\Components\AvenFaxorderDocument();
+    }
+    protected function getAvenFaxorder_Subscriber_TemplatesService()
+    {
+        return $this->services['aven_faxorder.subscriber.templates'] = new \AvenFaxorder\Subscriber\TemplateRegistration($this, 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder', $this->get('template'), $this->get('aven_faxorder.components.document'));
+    }
+    protected function getAvenNotes_Subscriber_TemplatesService()
+    {
+        return $this->services['aven_notes.subscriber.templates'] = new \AvenNotes\Subscriber\TemplateRegistration($this, 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenNotes', $this->get('template'));
+    }
+    protected function getAvenSupplier_Components_DocumentService()
+    {
+        return $this->services['aven_supplier.components.document'] = new \AvenSupplier\Components\AvenSupplierDocument();
+    }
+    protected function getAvenSupplier_Subscriber_TemplatesService()
+    {
+        return $this->services['aven_supplier.subscriber.templates'] = new \AvenSupplier\Subscriber\TemplateRegistration($this, 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenSupplier', $this->get('template'), $this->get('aven_supplier.components.document'));
+    }
     protected function getBasketCleanupCronJobSubscriberService()
     {
         return $this->services['basket_cleanup_cron_job_subscriber'] = new \Shopware\Components\BasketSignature\CleanupSignatureSubscriber($this->get('dbal_connection'));
@@ -941,6 +967,13 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
         $instance->addListenerService('Enlight_Controller_Front_RouteShutdown', array(0 => 'theme_backend_registration', 1 => 'registerBackendTheme'), 0);
         $instance->addListenerService('Enlight_Controller_Front_RouteStartup', array(0 => 'monolog.handler.chromephp', 1 => 'onRouteStartUp'), 0);
         $instance->addListenerService('Enlight_Controller_Front_RouteStartup', array(0 => 'monolog.handler.firephp', 1 => 'onRouteStartUp'), 0);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxcustomer', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxdetails', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxitems', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxorder', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Frontend_AvenOfferManagement', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenNotes', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenSupplier', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
         $instance->addSubscriberService('attributesubscriber', 'Shopware\\Components\\AttributeSubscriber');
         $instance->addSubscriberService('errorsubscriber', 'Shopware\\Components\\ErrorSubscriber');
         $instance->addSubscriberService('shopware.upload_max_size_validator', 'Shopware\\Components\\UploadMaxSizeValidator');
@@ -957,6 +990,9 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
         $instance->addSubscriberService('shopware_attribute.controller_subscriber', 'Shopware\\Bundle\\AttributeBundle\\DependencyInjection\\EventListener\\ControllerSubscriber');
         $instance->addSubscriberService('shopware_search_es.service_subscriber', 'Shopware\\Bundle\\SearchBundleES\\Subscriber\\ServiceSubscriber');
         $instance->addSubscriberService('customer_search.dbal.indexing.cron_job_subscriber', 'Shopware\\Bundle\\CustomerSearchBundleDBAL\\Indexing\\CronJobSubscriber');
+        $instance->addSubscriberService('aven_faxorder.subscriber.templates', 'AvenFaxorder\\Subscriber\\TemplateRegistration');
+        $instance->addSubscriberService('aven_notes.subscriber.templates', 'AvenNotes\\Subscriber\\TemplateRegistration');
+        $instance->addSubscriberService('aven_supplier.subscriber.templates', 'AvenSupplier\\Subscriber\\TemplateRegistration');
         return $instance;
     }
     protected function getFileSystemService()
@@ -1378,6 +1414,18 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
     protected function getShopware_Form_StringRendererServiceService()
     {
         return $this->services['shopware.form.string_renderer_service'] = new \Shopware\Bundle\FormBundle\StringRendererService();
+    }
+    protected function getShopware_GenericControllerListenerService()
+    {
+        $this->services['shopware.generic_controller_listener'] = $instance = new \Shopware\Bundle\ControllerBundle\Listener\ControllerPathListener();
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxcustomer', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder/Controllers\\Backend\\AvenFaxcustomer.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxdetails', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder/Controllers\\Backend\\AvenFaxdetails.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxitems', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder/Controllers\\Backend\\AvenFaxitems.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenFaxorder', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder/Controllers\\Backend\\AvenFaxorder.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Frontend_AvenOfferManagement', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder/Controllers\\Frontend\\AvenOfferManagement.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenNotes', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenNotes/Controllers\\Backend\\AvenNotes.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenSupplier', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenSupplier/Controllers\\Backend\\AvenSupplier.php');
+        return $instance;
     }
     protected function getShopware_HolidayTableUpdaterService()
     {
@@ -5654,8 +5702,17 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
                 'PaymentMethods' => '1.0.1',
                 'SwagUpdate' => '1.0.0',
                 'PluginManager' => '1.0.0',
+                'AvenFaxorder' => '1.0.0',
+                'AvenSupplier' => '1.0.0',
                 'SwagDemoDataEN' => '5.4.0',
+                'AvenNotes' => '1.0.0',
             ),
+            'aven_faxorder.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder',
+            'aven_faxorder.plugin_name' => 'AvenFaxorder',
+            'aven_notes.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenNotes',
+            'aven_notes.plugin_name' => 'AvenNotes',
+            'aven_supplier.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenSupplier',
+            'aven_supplier.plugin_name' => 'AvenSupplier',
             'shopware_attribute.table_entity_mapping' => array(
                 's_articles_translations' => array(
                     'readOnly' => true,

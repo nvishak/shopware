@@ -45,4 +45,7 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-var/*
+#folders
+var/**
+var/cache/*
+var/log/*
