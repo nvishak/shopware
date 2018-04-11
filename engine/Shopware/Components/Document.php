@@ -21,8 +21,10 @@
  * trademark license. Therefore any rights, title and interest in
  * our trademarks remain entirely with us.
  */
-
+//namespace Shopware\Components\Document;
 use Shopware\Components\NumberRangeIncrementerInterface;
+
+include_once Shopware()->DocPath() . 'engine/Library/Mpdf/mpdf.php';
 
 /**
  * Shopware document generator
@@ -158,15 +160,95 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
      */
     public static function initDocument($orderID, $documentID, array $config = [])
     {
+            $logger = Shopware()->Container()->get('pluginlogger');
+        if($documentID != 2) {
+            if (empty($orderID)) {
+                $config['_preview'] = true;
+            }
+            /** @var $document Shopware_Components_Document */
+            $document = Enlight_Class::Instance('Shopware_Components_Document'); //new Shopware_Components_Document();
+
+            //$d->setOrder(new Shopware_Models_Document_Order($orderID,$config));
+            $document->setOrder(Enlight_Class::Instance('Shopware_Models_Document_Order', [$orderID, $config]));
+
+            $document->setConfig($config);
+
+            $document->setDocumentId($documentID);
+
+            if (!empty($orderID)) {
+                try{
+                $document->_subshop = Shopware()->Db()->fetchRow("
+                SELECT
+                    s.id,
+                    m.document_template_id as doc_template_id,
+                    m.template_id as template_id,
+                    (SELECT CONCAT('templates/', template) FROM s_core_templates WHERE id = m.document_template_id) as doc_template,
+                    (SELECT CONCAT('templates/', template) FROM s_core_templates WHERE id = m.template_id) as template,
+                    s.id as isocode,
+                    s.locale_id as locale
+                FROM s_order, s_core_shops s
+                LEFT JOIN s_core_shops m
+                    ON m.id=s.main_id
+                    OR (s.main_id IS NULL AND m.id=s.id)
+                WHERE s_order.language = s.id
+                AND s_order.id = ?
+                ",
+                    [$orderID]
+                );}
+                catch (exception $e)
+                {
+                    return $e;
+                }
+
+
+                if (empty($document->_subshop['doc_template'])) {
+                    $document->setTemplate($document->_defaultPath);
+                }
+
+                if (empty($document->_subshop['id'])) {
+                    throw new Enlight_Exception("Could not load template path for order $orderID");
+                }
+            } else {
+                $document->_subshop = Shopware()->Db()->fetchRow("
+            SELECT
+                s.id,
+                s.document_template_id as doc_template_id,
+                s.template_id,
+                (SELECT CONCAT('templates/', template) FROM s_core_templates WHERE id = s.document_template_id) as doc_template,
+                (SELECT CONCAT('templates/', template) FROM s_core_templates WHERE id = s.template_id) as template,
+                s.id as isocode,
+                s.locale_id as locale
+            FROM s_core_shops s
+            WHERE s.default = 1
+            ");
+
+                if (empty($document->_subshop['doc_template'])) {
+                    $document->setTemplate($document->_defaultPath);
+                    $document->_subshop['doc_template'] = $document->_defaultPath;
+                }
+            }
+
+            $document->setTranslationComponent();
+            $document->initTemplateEngine();
+
+            return $document;
+        }
+        else{
+            Shopware_Components_Document::createDeliveryNotes($orderID, $documentID,$config);
+        }
+    }
+
+    public static function initDocumentDeliveryNote($orderID, $documentID, $supplier,array $config = [])
+    {
+
         if (empty($orderID)) {
             $config['_preview'] = true;
         }
-
         /** @var $document Shopware_Components_Document */
         $document = Enlight_Class::Instance('Shopware_Components_Document'); //new Shopware_Components_Document();
 
         //$d->setOrder(new Shopware_Models_Document_Order($orderID,$config));
-        $document->setOrder(Enlight_Class::Instance('Shopware_Models_Document_Order', [$orderID, $config]));
+        $document->setOrderDeliveryNote(Enlight_Class::Instance('Shopware_Models_Document_Order', [$orderID, $config]), $supplier);
 
         $document->setConfig($config);
 
@@ -225,12 +307,168 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
     }
 
     /**
+     * @param $orderID
+     * @param $documentID
+     * @param array $config
+     * @throws Enlight_Exception
+     * @throws Exception
+     * @throws Zend_Db_Adapter_Exception
+     */
+    public static function createDeliveryNotes($orderID, $documentID, array $config = []){
+
+        $articles = Shopware()->Db()->fetchAll("SELECT * FROM s_order_details WHERE orderID =?", [$orderID]);
+        $i = 0;
+        foreach ($articles as $article){
+            $i =+1;
+//            $checkOrderDetail = Shopware()->Db()->fetchAll("SELECT * from s_order_documents WHERE orderID =?", array($orderID));
+                $sql_attributes = "SELECT lieferant from s_articles_attributes WHERE articleID = ?";
+                $supplierUsed = [];
+                    $articleId = $article[articleID];
+            $articleOrdernumber = $article[articleordernumber];
+            $articleDetailsID = Shopware()->Db()->fetchOne("SELECT id FROM s_articles_details WHERE ordernumber =?",[$articleOrdernumber]);
+            $checkID = Shopware()->Db()->fetchOne("SELECT articleID FROM s_articles_attributes WHERE articledetailsID =?", [$articleDetailsID]);
+            if($checkID == null){
+                Shopware()->Db()->query("UPDATE s_articles_attributes SET articleID =? where articledetailsID =?", [$articleId, $articleDetailsID]);
+            }
+            $supplierId = (int)Shopware()->Db()->fetchOne($sql_attributes, array($articleId));
+            $sql_updateattributes = "UPDATE s_articles_attributes SET lieferant =? WHERE articleID =?";
+            $sql_updateattrs = Shopware()->Db()->executeQuery($sql_updateattributes, [$supplierId,$articleId]);
+            if(count($supplierUsed) == 0) {
+                $_supp_email = Shopware()->Db()->fetchAll("SELECT * FROM s_supplier WHERE id =?", [$supplierId]);
+                $_supp_email->index = $i;
+                Shopware_Components_Document::createDocument($orderID, 2, $_supp_email);
+                $supplierUsed[$i] = $supplierId;
+            }else{
+                $searchSupplier = array_search($supplierId,$supplierUsed);
+                if($searchSupplier === false) {
+                    $sql_supplier = "SELECT * FROM s_supplier WHERE id = ?";
+                    $_supp_email = Shopware()->Db()->fetchAll($sql_supplier, array($supplierId));
+                    $_supp_email->index = $i;
+                    Shopware_Components_Document::createDocument($orderID, 2, $_supp_email);
+                    $supplierUsed[$i] = $supplierId;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * @param $orderID
+     * @param $documentType
+     * @param $supplier
+     * @throws Enlight_Exception
+     */
+    public static function createDocument($orderID, $documentType, $supplier)
+        {
+            $logger = Shopware()->Container()->get('pluginlogger');
+            $currentDate = date("d.m.Y");
+            $orderIdentifier = (int)$orderID;
+                $document = \Shopware_Components_Document::initDocumentDeliveryNote($orderID,2,$supplier,
+                    array(
+                        //'netto'                   => false,
+                        //'bid'                     => null,
+                        //'voucher'                 => null,
+                        'date'                    => $currentDate,
+                        'delivery_date'           => $currentDate,
+                        'shippingCostsAsPosition' => (int) $documentType,
+                        '_renderer'               => "pdf",
+                        '_preview'                => false,
+                        //'_previewForcePagebreak'  => null,
+                        //'_previewSample'          => null,
+                        //'docComment'              => null,
+                        //'forceTaxCheck'           => false
+                    ));
+                $document->render('pdf');
+            $logger->debug('document',[$document]);
+            return Shopware_Components_Document::sendDelvieryNote($supplier, $document, $orderID);
+        }
+
+    public static function sendDelvieryNote($supplierMail, $attachment, $orderID){
+        if(!empty($orderID)){
+        $logger = Shopware()->Container()->get('pluginlogger');
+        $logger->debug('emailID', [$supplierMail]);
+        $context = $supplierMail;
+        $hashNumber = $attachment->_documentHash;
+        if($supplierMail[0][email]){
+            $mail = Shopware()->TemplateMail()->createMail('sSUPPLIEREMAIL');
+            $filePath = Shopware()->DocPath() . 'files/documents/' . $hashNumber . '.pdf';
+
+            $fileName = Shopware_Components_Document::getFileName($orderID, '2');
+
+            $attachments = Shopware_Components_Document::createAttachment($filePath, $fileName);
+            $mail->addAttachment($attachments);
+            $mail->addTo($supplierMail[0][email]);
+            $mail->From = Shopware()->Config()->Mail;
+            $mail->FromName = Shopware()->Config()->Mail;
+            $mail->Body = $supplierMail[0][note];
+            $mail->Subject = 'Lieferschein';
+            $mail->send();
+
+            $sql_orderDocuments = "Select a.ordernumber, b.docID, b.hash, a.id from s_order_documents as b
+inner join s_order as a on a.id=b.orderID 
+where b.orderID = ?";
+            $documents = Shopware()->Db()->fetchAll($sql_orderDocuments, [$orderID]);
+
+            foreach ($documents as $doc){
+                $sql_insert = "INSERT INTO s_deliverynotes (orderID, documentID, hash, orderNumber) VALUES (".$doc[id].",".$doc[docID].",'".$doc[hash]."',".$doc[ordernumber].")";
+                $logger->info("sql string", [$sql_insert]);
+                Shopware()->Db()->query($sql_insert);
+            };
+        }
+        }
+    }
+
+    /**
+     * @param int|string $orderId
+     * @param int|string $typeId
+     * @param string     $fileExtension
+     *
+     * @return string
+     */
+    private static function getFileName($orderId, $typeId, $fileExtension = '.pdf')
+    {
+
+        return Shopware_Components_Document::getDefaultName($typeId) . $fileExtension;
+
+    }
+
+    /**
+     * Gets the default name from the document template
+     *
+     * @param int|string $typeId
+     *
+     * @return bool|string
+     */
+    private static function getDefaultName($typeId)
+    {
+        $sql_name = "SELECT name from s_core_documents where id = ?";
+        $name = Shopware()->Db()->fetchAll($sql_name, array($typeId));
+        return $name[0][name];
+    }
+    /**
+     * Creates a attachment by a file path.
+     *
+     * @param string $filePath
+     * @param string $fileName
+     *
+     * @return Zend_Mime_Part
+     */
+    private static function createAttachment($filePath, $fileName)
+    {
+        $content = file_get_contents($filePath);
+        $zendAttachment = new Zend_Mime_Part($content);
+        $zendAttachment->type = 'application/pdf';
+        $zendAttachment->disposition = Zend_Mime::DISPOSITION_ATTACHMENT;
+        $zendAttachment->encoding = Zend_Mime::ENCODING_BASE64;
+        $zendAttachment->filename = $fileName;
+        return $zendAttachment;
+    }
+
+
+    /**
      * Start renderer / pdf-generation
      *
      * @param string optional define renderer (pdf,html,return)
-     *
-     * @throws \Enlight_Event_Exception
-     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
     public function render($_renderer = '')
     {
@@ -243,25 +481,23 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
         /* @var $template \Shopware\Models\Shop\Template */
         if (!empty($this->_subshop['doc_template_id'])) {
-            $template = Shopware()->Container()->get('models')->find(\Shopware\Models\Shop\Template::class, $this->_subshop['doc_template_id']);
+            $template = Shopware()->Container()->get('models')->find('Shopware\Models\Shop\Template', $this->_subshop['doc_template_id']);
 
             $inheritance = Shopware()->Container()->get('theme_inheritance')->getTemplateDirectories($template);
             $this->_template->setTemplateDir($inheritance);
         }
 
         $data = $this->_template->fetch('documents/' . $this->_document['template'], $this->_view);
-
-        if ($this->_renderer === 'html' || !$this->_renderer) {
+        if ($this->_renderer == 'html' || !$this->_renderer) {
             echo $data;
-        } elseif ($this->_renderer === 'pdf') {
+        } elseif ($this->_renderer == 'pdf') {
             if ($this->_preview == true || !$this->_documentHash) {
                 $mpdf = new mPDF('utf-8', 'A4', '', '', $this->_document['left'], $this->_document['right'], $this->_document['top'], $this->_document['bottom']);
                 $mpdf->WriteHTML($data);
                 $mpdf->Output();
                 exit;
             }
-            $documentsPath = rtrim(Shopware()->Container()->getParameter('shopware.app.documentsdir'), '/');
-            $path = $documentsPath . '/' . $this->_documentHash . '.pdf';
+            $path = sprintf('%s%s.pdf', Shopware()->DocPath('files_documents'), $this->_documentHash);
             $mpdf = new mPDF('utf-8', 'A4', '', '', $this->_document['left'], $this->_document['right'], $this->_document['top'], $this->_document['bottom']);
             $mpdf->WriteHTML($data);
             $mpdf->Output($path, 'F');
@@ -284,8 +520,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Set template path
-     *
-     * @param string $path
      */
     public function setTemplate($path)
     {
@@ -296,8 +530,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Set renderer
-     *
-     * @param string $renderer
      */
     public function setRenderer($renderer)
     {
@@ -306,8 +538,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Set type of document (0,1,2,3) > s_core_documents
-     *
-     * @param int $id
      */
     public function setDocumentId($id)
     {
@@ -316,10 +546,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Get voucher (s_vouchers.id)
-     *
-     * @param $id
-     *
-     * @return bool|mixed
      */
     public function getVoucher($id)
     {
@@ -425,6 +651,7 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
         $positions = $order->positions->getArrayCopy();
 
+
         $articleModule = Shopware()->Modules()->Articles();
         foreach ($positions as &$position) {
             if ($position['modus'] == 0) {
@@ -453,8 +680,8 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
     /**
      * Loads translations including fallbacks
      *
-     * @param string $languageId
-     * @param string $type
+     * @param $languageId
+     * @param $type
      *
      * @return array
      */
@@ -512,8 +739,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Initiate smarty template engine
-     *
-     * @throws \Exception
      */
     protected function initTemplateEngine()
     {
@@ -533,8 +758,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Sets the translation component
-     *
-     * @throws \Exception
      */
     protected function setTranslationComponent()
     {
@@ -542,19 +765,44 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
     }
 
     /**
-     * @param Shopware_Models_Document_Order $order
-     *
-     * @throws \Exception
+     * Set order
      */
     protected function setOrder(Shopware_Models_Document_Order $order)
     {
         $this->_order = $order;
 
-        $repository = Shopware()->Models()->getRepository(\Shopware\Models\Shop\Shop::class);
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
         // "language" actually refers to a language-shop and not to a locale
         $shop = $repository->getById($this->_order->order->language);
         if (!empty($this->_order->order->currencyID)) {
-            $repository = Shopware()->Models()->getRepository(\Shopware\Models\Shop\Currency::class);
+            $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Currency');
+            $shop->setCurrency($repository->find($this->_order->order->currencyID));
+        }
+        $shop->registerResources();
+    }
+
+    /**
+     * Set order for delivery note
+     */
+    protected function setOrderDeliveryNote(Shopware_Models_Document_Order $order, $supplier)
+    {
+        $tempPosition = $order->positions->getArraycopy();
+        $positionCount = count($tempPosition);
+        for($i = 0;$i<$positionCount;$i++){
+            $sql_supplier = "SELECT lieferant from s_articles_attributes WHERE articleID = ?";
+            $supplierId = (int)Shopware()->Db()->fetchOne($sql_supplier, array($tempPosition[$i][articleID]));
+            if($supplierId != $supplier->id){
+                array_splice($tempPosition,$i, 1);
+            }
+        }
+        $order->setPositions((int)$supplier[0][id]);
+        $this->_order = $order;
+
+        $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
+        // "language" actually refers to a language-shop and not to a locale
+        $shop = $repository->getById($this->_order->order->language);
+        if (!empty($this->_order->order->currencyID)) {
+            $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Currency');
             $shop->setCurrency($repository->find($this->_order->order->currencyID));
         }
         $shop->registerResources();
@@ -562,8 +810,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Set object configuration from array
-     *
-     * @param array $config
      */
     protected function setConfig(array $config)
     {
@@ -577,11 +823,6 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
     /**
      * Save document in database / generate number
-     *
-     * @throws \Exception
-     * @throws \RuntimeException
-     * @throws \Zend_Db_Adapter_Exception
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     protected function saveDocument()
     {
@@ -603,7 +844,7 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
         $checkForExistingDocument = Shopware()->Db()->fetchRow('
         SELECT ID,docID,hash FROM s_order_documents WHERE userID = ? AND orderID = ? AND type = ?
         ', [$this->_order->userID, $this->_order->id, $typID]);
-
+        if($typID !== 2){
         if (!empty($checkForExistingDocument['ID'])) {
             // Document already exist. Update date and amount!
             $update = '
@@ -623,7 +864,7 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
 
             if (!empty($this->_config['attributes'])) {
                 // Get the updated document
-                $updatedDocument = Shopware()->Models()->getRepository(\Shopware\Models\Order\Document\Document::class)->findOneBy([
+                $updatedDocument = Shopware()->Models()->getRepository("\Shopware\Models\Order\Document\Document")->findOneBy([
                     'type' => $typID,
                     'customerId' => $this->_order->userID,
                     'orderId' => $this->_order->id,
@@ -646,8 +887,68 @@ class Shopware_Components_Document extends Enlight_Class implements Enlight_Hook
             $bid = $checkForExistingDocument['docID'];
             $hash = $checkForExistingDocument['hash'];
         } else {
-            // Create new document
+//             Create new document
 
+            $hash = md5(uniqid(rand()));
+
+            $amount = ($this->_order->order->taxfree ? true : $this->_config['netto']) ? round($this->_order->amountNetto, 2) : round($this->_order->amount, 2);
+            if ($typID == 4) {
+                $amount *= -1;
+            }
+            $sql = '
+            INSERT INTO s_order_documents (`date`, `type`, `userID`, `orderID`, `amount`, `docID`,`hash`)
+            VALUES ( NOW() , ? , ? , ?, ?, ?,?)
+            ';
+            Shopware()->Db()->query($sql, [
+                $typID,
+                $this->_order->userID,
+                $this->_order->id,
+                $amount,
+                $bid,
+                $hash,
+            ]);
+            $rowID = Shopware()->Db()->lastInsertId();
+
+            // Add an entry in s_order_documents_attributes for the created document
+            // containing all values found in the 'attributes' element of '_config'
+            $createdDocument = Shopware()->Models()->getRepository('\Shopware\Models\Order\Document\Document')->findOneById($rowID);
+            // Create a new attributes entity for the document
+            $documentAttributes = new \Shopware\Models\Attribute\Document();
+            $createdDocument->setAttribute($documentAttributes);
+            if (!empty($this->_config['attributes'])) {
+                // Save all given attributes
+                $createdDocument->getAttribute()->fromArray($this->_config['attributes']);
+            }
+            // Persist the document
+            Shopware()->Models()->flush($createdDocument);
+
+            // Update numberrange, except for cancellations
+            if ($typID != 5) {
+                if (!empty($this->_document['numbers'])) {
+                    $numberrange = $this->_document['numbers'];
+                } else {
+                    // The typID is indexed with base 0, so we need increase the typID
+                    if (!in_array($typID, ['1', '2', '3'])) {
+                        $typID = $typID + 1;
+                    }
+                    $numberrange = 'doc_' . $typID;
+                }
+
+                /** @var NumberRangeIncrementerInterface $incrementer */
+                $incrementer = Shopware()->Container()->get('shopware.number_range_incrementer');
+
+                // Get the next number and save it in the document
+                $nextNumber = $incrementer->increment($numberrange);
+
+                Shopware()->Db()->query('
+                    UPDATE `s_order_documents` SET `docID` = ? WHERE `ID` = ? LIMIT 1 ;
+                ', [$nextNumber, $rowID]);
+
+                $bid = $nextNumber;
+            }
+        }
+        }else{
+            //             Create new document
             $hash = md5(uniqid(rand()));
 
             $amount = ($this->_order->order->taxfree ? true : $this->_config['netto']) ? round($this->_order->amountNetto, 2) : round($this->_order->amount, 2);

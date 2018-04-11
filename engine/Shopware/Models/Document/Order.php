@@ -371,6 +371,47 @@ class Shopware_Models_Document_Order extends Enlight_Class implements Enlight_Ho
     }
 
     /**
+     * Get all order positions dependent on supplier
+     */
+    public function setPositions($supplierId)
+    {
+        $this->_positions = new ArrayObject(Shopware()->Db()->fetchAll('
+        SELECT
+            od.*, a.taxID as articleTaxID,
+            at.attr1, at.attr2, at.attr3, at.attr4, at.attr5, at.attr6, at.attr7, at.attr8, at.attr9, at.attr10,
+            at.attr11, at.attr12, at.attr13, at.attr14, at.attr15, at.attr16, at.attr17, at.attr18, at.attr19, at.attr20, at.lieferant
+        FROM  s_order_details od
+
+        LEFT JOIN s_articles_details d
+        ON  d.ordernumber=od.articleordernumber
+        AND d.articleID=od.articleID
+        AND od.modus=0
+
+        LEFT JOIN s_articles_attributes at
+        ON at.articledetailsID=d.id
+
+        LEFT JOIN s_articles a
+        ON d.articleID = a.id
+
+        WHERE od.orderID=? AND at.lieferant =?
+        ORDER BY od.id ASC
+        ', [$this->_id,$supplierId]), ArrayObject::ARRAY_AS_PROPS);
+
+        foreach ($this->_positions as $key => $dummy) {
+            $position = $this->_positions->offsetGet($key);
+
+            $position['attributes'] = Shopware()->Db()->fetchRow('
+            SELECT * FROM s_order_details_attributes WHERE detailID = ?
+            ', [$position['id']]);
+
+            $this->_positions->offsetSet($key, $position);
+        }
+
+        $this->processPositions();
+    }
+
+
+    /**
      * Get maximum used tax-rate in this order
      *
      * @return int|string
