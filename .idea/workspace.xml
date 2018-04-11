@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ca67f5c-435c-4a9f-8e39-4e3b2cac6a83" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/config.php" afterPath="$PROJECT_DIR$/config.php" />
-      <change beforePath="$PROJECT_DIR$/engine/Shopware/Configs/Default.php" afterPath="$PROJECT_DIR$/engine/Shopware/Configs/Default.php" />
+      <change beforePath="$PROJECT_DIR$/engine/Shopware/Core/sOrder.php" afterPath="$PROJECT_DIR$/engine/Shopware/Core/sOrder.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,32 +16,43 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+      <file leaf-file-name="sOrder.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/engine/Shopware/Core/sOrder.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="833">
-              <caret line="50" column="9" lean-forward="false" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/config.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="20" column="30" lean-forward="false" selection-start-line="20" selection-start-column="30" selection-end-line="20" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Default.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/engine/Shopware/Configs/Default.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="198" column="40" lean-forward="false" selection-start-line="198" selection-start-column="40" selection-end-line="198" selection-end-column="40" />
-              <folding />
+            <state relative-caret-position="366">
+              <caret line="776" column="83" lean-forward="false" selection-start-line="776" selection-start-column="83" selection-end-line="776" selection-end-column="83" />
+              <folding>
+                <marker date="1523434259537" expanded="true" signature="8940:8991" ph="SELECT * FRO... s_order" />
+                <marker date="1523434259537" expanded="true" signature="9157:9189" ph="DELETE FROM s_order... " />
+                <marker date="1523434259537" expanded="true" signature="9280:9335" ph="DELETE FROM s_order_details... " />
+                <marker date="1523434259537" expanded="true" signature="21804:22348" ph="INSERT INTO s_order_details... " />
+                <marker date="1523434259537" expanded="true" signature="28424:28468" ph="DELETE FROM s_order_basket... " />
+                <marker date="1523434259537" expanded="true" signature="31021:31114" ph="SELECT * FRO... $" />
+                <marker date="1523434259537" expanded="true" signature="33801:34740" ph="INSERT INTO s_order_billingaddress... " />
+                <marker date="1523434259537" expanded="true" signature="37072:37916" ph="INSERT INTO s_order_shippingaddress... " />
+                <marker date="1523434259537" expanded="true" signature="40247:40319" ph="SELECT * FRO... s_emarketing_tellafriend" />
+                <marker date="1523434259537" expanded="true" signature="40487:40552" ph="UPDATE s_emarketing_tellafriend... " />
+                <marker date="1523434259537" expanded="true" signature="40644:40719" ph="SELECT email... s_user" />
+                <marker date="1523434259537" expanded="true" signature="42799:42874" ph="SELECT name,... s_premium_dispatch" />
+                <marker date="1523434259537" expanded="true" signature="46265:46328" ph="UPDATE s_order... " />
+                <marker date="1523434259537" expanded="true" signature="46492:46806" ph="INSERT INTO s_order_history... " />
+                <marker date="1523434259537" expanded="true" signature="46692:46806" ph="SELECT id, N... s_order" />
+                <marker date="1523434259537" expanded="true" signature="47767:47822" ph="UPDATE s_order... " />
+                <marker date="1523434259537" expanded="true" signature="47932:48248" ph="INSERT INTO s_order_history... " />
+                <marker date="1523434259537" expanded="true" signature="48132:48248" ph="SELECT id, N... s_order" />
+                <marker date="1523434259537" expanded="true" signature="49292:50845" ph="SELECT `o`.`... s_order" />
+                <marker date="1523434259537" expanded="true" signature="51243:51884" ph="SELECT `d`.`... s_order_details" />
+                <marker date="1523434259537" expanded="true" signature="52237:55246" ph="SELECT `b`.`... s_order_billingaddress" />
+                <marker date="1523434259537" expanded="true" signature="56275:56563" ph="SELECT s_art... s_articles_esd" />
+                <marker date="1523434259537" expanded="true" signature="56896:57229" ph="SELECT s_art... s_articles_esd_serials" />
+                <marker date="1523434259537" expanded="true" signature="57665:57728" ph="SELECT id FR... s_order" />
+                <marker date="1523434259537" expanded="true" signature="58771:58823" ph="SELECT idcod... s_emarketing_partner" />
+                <marker date="1523434259537" expanded="true" signature="59206:59268" ph="SELECT modus... s_emarketing_vouchers" />
+                <marker date="1523434259537" expanded="true" signature="59404:59476" ph="UPDATE s_emarketing_voucher_codes... " />
+                <marker date="1523434259537" expanded="true" signature="59969:60123" ph="UPDATE s_articles_details... " />
+                <marker date="1523434259537" expanded="true" signature="65401:65447" ph="SELECT clear... s_order" />
+                <marker date="1523434259537" expanded="true" signature="65775:65820" ph="SELECT statu... s_order" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -63,6 +73,7 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/config.php" />
         <option value="$PROJECT_DIR$/engine/Shopware/Configs/Default.php" />
+        <option value="$PROJECT_DIR$/engine/Shopware/Core/sOrder.php" />
       </list>
     </option>
   </component>
@@ -185,7 +196,7 @@
               <item name="shopware4" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="engine" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="Shopware" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Configs" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Core" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
           </expand>
           <select />
@@ -225,12 +236,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1523423222407</updated>
-      <workItem from="1523423223736" duration="2986000" />
+      <workItem from="1523423223736" duration="3064000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2986000" />
+    <option name="totallyTimeSpent" value="3064000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -267,10 +278,10 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Configs/Default.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="833">
-          <caret line="50" column="9" lean-forward="false" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
+        <state relative-caret-position="247">
+          <caret line="196" column="56" lean-forward="true" selection-start-line="196" selection-start-column="56" selection-end-line="196" selection-end-column="56" />
           <folding />
         </state>
       </provider>
@@ -283,11 +294,50 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/engine/Shopware/Configs/Default.php">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="198" column="40" lean-forward="false" selection-start-line="198" selection-start-column="40" selection-end-line="198" selection-end-column="40" />
+        <state relative-caret-position="833">
+          <caret line="50" column="9" lean-forward="false" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Core/sOrder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="366">
+          <caret line="776" column="83" lean-forward="false" selection-start-line="776" selection-start-column="83" selection-end-line="776" selection-end-column="83" />
+          <folding>
+            <marker date="1523434259537" expanded="true" signature="8940:8991" ph="SELECT * FRO... s_order" />
+            <marker date="1523434259537" expanded="true" signature="9157:9189" ph="DELETE FROM s_order... " />
+            <marker date="1523434259537" expanded="true" signature="9280:9335" ph="DELETE FROM s_order_details... " />
+            <marker date="1523434259537" expanded="true" signature="21804:22348" ph="INSERT INTO s_order_details... " />
+            <marker date="1523434259537" expanded="true" signature="28424:28468" ph="DELETE FROM s_order_basket... " />
+            <marker date="1523434259537" expanded="true" signature="31021:31114" ph="SELECT * FRO... $" />
+            <marker date="1523434259537" expanded="true" signature="33801:34740" ph="INSERT INTO s_order_billingaddress... " />
+            <marker date="1523434259537" expanded="true" signature="37072:37916" ph="INSERT INTO s_order_shippingaddress... " />
+            <marker date="1523434259537" expanded="true" signature="40247:40319" ph="SELECT * FRO... s_emarketing_tellafriend" />
+            <marker date="1523434259537" expanded="true" signature="40487:40552" ph="UPDATE s_emarketing_tellafriend... " />
+            <marker date="1523434259537" expanded="true" signature="40644:40719" ph="SELECT email... s_user" />
+            <marker date="1523434259537" expanded="true" signature="42799:42874" ph="SELECT name,... s_premium_dispatch" />
+            <marker date="1523434259537" expanded="true" signature="46265:46328" ph="UPDATE s_order... " />
+            <marker date="1523434259537" expanded="true" signature="46492:46806" ph="INSERT INTO s_order_history... " />
+            <marker date="1523434259537" expanded="true" signature="46692:46806" ph="SELECT id, N... s_order" />
+            <marker date="1523434259537" expanded="true" signature="47767:47822" ph="UPDATE s_order... " />
+            <marker date="1523434259537" expanded="true" signature="47932:48248" ph="INSERT INTO s_order_history... " />
+            <marker date="1523434259537" expanded="true" signature="48132:48248" ph="SELECT id, N... s_order" />
+            <marker date="1523434259537" expanded="true" signature="49292:50845" ph="SELECT `o`.`... s_order" />
+            <marker date="1523434259537" expanded="true" signature="51243:51884" ph="SELECT `d`.`... s_order_details" />
+            <marker date="1523434259537" expanded="true" signature="52237:55246" ph="SELECT `b`.`... s_order_billingaddress" />
+            <marker date="1523434259537" expanded="true" signature="56275:56563" ph="SELECT s_art... s_articles_esd" />
+            <marker date="1523434259537" expanded="true" signature="56896:57229" ph="SELECT s_art... s_articles_esd_serials" />
+            <marker date="1523434259537" expanded="true" signature="57665:57728" ph="SELECT id FR... s_order" />
+            <marker date="1523434259537" expanded="true" signature="58771:58823" ph="SELECT idcod... s_emarketing_partner" />
+            <marker date="1523434259537" expanded="true" signature="59206:59268" ph="SELECT modus... s_emarketing_vouchers" />
+            <marker date="1523434259537" expanded="true" signature="59404:59476" ph="UPDATE s_emarketing_voucher_codes... " />
+            <marker date="1523434259537" expanded="true" signature="59969:60123" ph="UPDATE s_articles_details... " />
+            <marker date="1523434259537" expanded="true" signature="65401:65447" ph="SELECT clear... s_order" />
+            <marker date="1523434259537" expanded="true" signature="65775:65820" ph="SELECT statu... s_order" />
+          </folding>
         </state>
       </provider>
     </entry>

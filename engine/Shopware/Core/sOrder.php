@@ -772,15 +772,16 @@ class sOrder
             }
         } // For every article in basket
 
+        // Save Billing and Shipping-Address to retrace in future
+        $this->sSaveBillingAddress($this->sUserData['billingaddress'], $orderID);
+        $this->sSaveShippingAddress($this->sUserData['shippingaddress'], $orderID);
+
         $this->eventManager->notify('Shopware_Modules_Order_SaveOrder_ProcessDetails', [
             'subject' => $this,
             'details' => $this->sBasketData['content'],
             'orderId' => $orderID,
         ]);
 
-        // Save Billing and Shipping-Address to retrace in future
-        $this->sSaveBillingAddress($this->sUserData['billingaddress'], $orderID);
-        $this->sSaveShippingAddress($this->sUserData['shippingaddress'], $orderID);
 
         $this->sUserData = $this->getUserDataForMail($this->sUserData);
 
