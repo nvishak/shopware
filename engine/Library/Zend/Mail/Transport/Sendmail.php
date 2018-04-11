@@ -116,7 +116,7 @@ class Zend_Mail_Transport_Sendmail extends Zend_Mail_Transport_Abstract
                     'Parameters were set but are not a string'
                 );
             }
-
+            ini_set();
             set_error_handler(array($this, '_handleMailErrors'));
             $result = mail(
                 $this->recipients,

@@ -255,13 +255,25 @@ abstract class Zend_Mail_Protocol_Abstract
      * @throws Zend_Mail_Protocol_Exception
      * @return boolean
      */
+    /**
+     * Connect to the server using the supplied transport and target
+     *
+     * An example $remote string may be 'tcp://mail.example.com:25' or 'ssh://hostname.com:2222'
+     *
+     * @param  string $remote Remote
+     * @throws Zend_Mail_Protocol_Exception
+     * @return boolean
+     */
     protected function _connect($remote)
     {
         $errorNum = 0;
         $errorStr = '';
-
+        $context = stream_context_create(['ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false
+        ]]);
         // open connection
-        $this->_socket = @stream_socket_client($remote, $errorNum, $errorStr, self::TIMEOUT_CONNECTION);
+        $this->_socket = @stream_socket_client($remote, $errorNum, $errorStr, self::TIMEOUT_CONNECTION, STREAM_CLIENT_CONNECT, $context);
 
         if ($this->_socket === false) {
             if ($errorNum == 0) {
