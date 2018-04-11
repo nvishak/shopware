@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -8,7 +8,7 @@
  * Diese Datei ist Teil des CrefoShopwarePlugIn.
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
-Ext.define( 'Shopware.apps.CrefoOrders.model.CrefoProposalOrder', {
+Ext.define('Shopware.apps.CrefoOrders.model.CrefoProposalOrder', {
     extend: 'Shopware.data.Model',
 
     fields: [
@@ -27,13 +27,15 @@ Ext.define( 'Shopware.apps.CrefoOrders.model.CrefoProposalOrder', {
         { name: 'invoiceAmount', type: 'float', useNull: true },
         { name: 'currencyFactor', type: 'float', useNull: true },
         {
-            name: 'amount', type: 'float', useNull: true,
-            convert: function( value, record ){
-                var factor = record.get( 'currencyFactor' );
-                if( !Ext.isNumeric( factor ) ) {
+            name: 'amount',
+            type: 'float',
+            useNull: true,
+            convert: function(value, record) {
+                var factor = record.get('currencyFactor');
+                if (!Ext.isNumeric(factor)) {
                     factor = 1;
                 }
-                return Ext.util.Format.round( record.get( 'invoiceAmount' ) / factor, 2 );
+                return Ext.util.Format.round(record.get('invoiceAmount') / factor, 2);
             }
         },
         { name: 'currency', type: 'string', useNull: true }
@@ -55,4 +57,4 @@ Ext.define( 'Shopware.apps.CrefoOrders.model.CrefoProposalOrder', {
             model: 'Shopware.apps.CrefoOrders.model.CrefoProposal'
         }
     ]
-} );
+});

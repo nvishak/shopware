@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/controller/batch"}
-Ext.define( 'Shopware.apps.CrefoOrders.controller.Batch', {
+Ext.define('Shopware.apps.CrefoOrders.controller.Batch', {
     extend: 'Ext.app.Controller',
 
     refs: [
@@ -24,71 +24,68 @@ Ext.define( 'Shopware.apps.CrefoOrders.controller.Batch', {
         error: '{s name="crefo/validation/batchError"}Es sind ein oder mehrere Fehler aufgetreten.{/s}'
     },
 
-    init: function(){
+    init: function() {
         var me = this;
-        me.mainController = me.getController( 'Main' );
-        me.control( {
+        me.mainController = me.getController('Main');
+        me.control({
             'crefo-orders-batch-window crefo-batch-settings-panel': {
                 processChanges: me.onProcessChanges
             }
-        } );
+        });
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    onProcessChanges: function( form ){
+    onProcessChanges: function(form) {
         var me = this,
             orders = form.records,
             grid = me.getBatchList(),
-            windowGrid = grid.up( 'window' ),
+            windowGrid = grid.up('window'),
             values = form.getValues(),
             orderListGrid = me.getOrderListGrid(),
             gridStore = orderListGrid.getStore(),
             //create the batch store which is used to sent the batch request
-            store = Ext.create( 'Shopware.apps.CrefoOrders.store.Batch' ),
+            store = Ext.create('Shopware.apps.CrefoOrders.store.Batch'),
             operation,
             resultSet;
 
-        if( values.inkassoSettings === Ext.undefined ) {
+        if (values.inkassoSettings === Ext.undefined) {
             return null;
         }
 
-        Ext.each( orders, function( order ){
+        Ext.each(orders, function(order) {
             order.setDirty();
-        } );
+        });
 
         //add the extra parameters for Collection action.
         store.getProxy().extraParams = {
             actionCollection: values.inkassoSettings
         };
 
-        windowGrid.setLoading( true );
-        store.add( orders );
-        store.sync( {
-            callback: function( batch ){
+        windowGrid.setLoading(true);
+        store.add(orders);
+        store.sync({
+            callback: function(batch) {
                 operation = batch.operations[ 0 ];
                 resultSet = operation.resultSet ? operation.resultSet.records : operation.records;
                 grid.getStore().removeAll();
-                grid.getStore().add( resultSet );
-                if( !Ext.isEmpty(operation.response) && me.mainController.isJson( operation.response.responseText ) ) {
-                    result = Ext.JSON.decode( operation.response.responseText );
-                    if( !Ext.isEmpty( result.errors ) ) {
-                        if( !Ext.isEmpty( console ) ) {
-                            console.error( result.errors );
-                        }
-                        me.mainController.showStickyMessage( '', me.snippets.error );
+                grid.getStore().add(resultSet);
+                if (!Ext.isEmpty(operation.response) && CrefoUtil.isJson(operation.response.responseText)) {
+                    var result = Ext.JSON.decode(operation.response.responseText);
+                    if (!Ext.isEmpty(result.errors)) {
+                        CrefoUtil.showStickyMessage('', me.snippets.error);
                     }
                 }
                 //grid.reconfigure(store);
                 orderListGrid.crefoProposalStore.reload();
                 orderListGrid.crefoOrdersStore.reload();
                 orderListGrid.orderListingStore.reload();
-                gridStore.reload( {
-                    callback: function(){
-                        windowGrid.setLoading( false );
+                gridStore.reload({
+                    callback: function() {
+                        windowGrid.setLoading(false);
                     }
-                } );
+                });
             }
-        } );
+        });
     }
-} );
+});
 //{/block}

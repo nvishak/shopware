@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -11,14 +11,14 @@
 //{block name="backend/crefo_configuration/store/inkasso/inkasso_creditors"}
 Ext.define('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoCreditors', {
     extend: 'Ext.data.Store',
-    autoLoad: true,
-    autoSync : true,
+    autoLoad: false,
+    autoSync: true,
     groupField: 'useraccount',
     sorters: [{
         property: 'useraccount',
         direction: 'ASC'
     }],
     sortOnLoad: true,
-    model : 'Shopware.apps.CrefoConfiguration.model.inkasso.InkassoCreditors'
+    model: 'Shopware.apps.CrefoConfiguration.model.inkasso.InkassoCreditors'
 });
 //{/block}

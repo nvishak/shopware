@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,97 +12,86 @@
 
 namespace CrefoShopwarePlugIn\Components\Versions;
 
-use \CrefoShopwarePlugIn\Components\Core\FileManager;
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 
 /**
  * Class AbstractPluginVersion
  * @package CrefoShopwarePlugIn\Components\Versions
+ * @codeCoverageIgnore
  */
 abstract class AbstractPluginVersion implements PluginVersion
 {
+    const MULTIPLE_QUERY = 'same-command';
+
+    /**
+     * @var QueryAdapter
+     */
+    private $adapter;
 
     /**
      * @inheritdoc
      */
-    public function modifyDB()
+    public final function modifyDB()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Modify DB.', []);
         /**
-         * @var array $sqls
+         * @var array $sqlCommands
          */
-        $sqls = $this->createSQLArray();
-        $result = 1;
-        if (!empty($sqls)) {
-            foreach ($sqls as $sqlQuery => $valuesArray) {
-                CrefoCrossCuttingComponent::runQuery($sqlQuery, $valuesArray);
+        $sqlCommands = $this->createSQLArray();
+        foreach ($sqlCommands as $sqlQuery => $valuesArray) {
+            if($sqlQuery === self::MULTIPLE_QUERY){
+                foreach ($valuesArray as $value){
+                    $cmdArray = array_keys($value);
+                    $args = array_shift($value);
+                    $this->adapter->execQuery($cmdArray[0], $args);
+                }
+            }else {
+                $this->adapter->execQuery($sqlQuery, $valuesArray);
             }
-        }
-        return $result;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function removeOldFiles()
-    {
-        $files = $this->createFilesArray();
-        $result = 1;
-        if (!empty($files)) {
-            $result &= $this->removeFiles($files);
-        }
-        $dirs = $this->createDirArray();
-        if (!empty($dirs)) {
-            foreach ($dirs as $dir) {
-                $result &= $this->deleteRecursiveFilesAndDir($dir);
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * @method getSQLScripts
-     * @param array $sqlArray
-     * @return array the SQL scripts written in current version appended to the previous list
-     */
-    protected function getSQLScripts(array $sqlArray)
-    {
-        return array_merge($sqlArray, $this->createSQLArray());
-    }
-
-    /**
-     * removes the files given in the array
-     * @method removeFiles
-     * @param array $filesArray
-     * @return int $result 1 - successful, 0 - couldn't remove all files
-     */
-    protected function removeFiles(array $filesArray)
-    {
-        if (is_array($filesArray) && !empty($filesArray)) {
-            /**
-             * @var FileManager $crefoFileController
-             */
-            $crefoFileController = new FileManager();
-            $result = $crefoFileController->_deleteFiles($filesArray);
-            return $result;
         }
         return 1;
     }
 
     /**
-     * deletes all the files in a directory and the directory itself
-     * !!TO BE USED VERY CAREFUL ONLY ON OWN CREATED DIRECTORIES/FOLDERS!!
-     * !!it can delete folders that are not intended to be deleted!!
-     * @method deleteRecursiveFilesAndDir
-     * @param string $dir
-     * @return int $result 1 - successful, 0 - couldn't delete all files
+     * @inheritdoc
      */
-    protected function deleteRecursiveFilesAndDir($dir)
+    public function saveMigrationData()
     {
-        /**
-         * @var FileManager $crefoFileController
-         */
-        $crefoFileController = new FileManager();
-        $result = $crefoFileController->_deleteDir($dir);
-        return $result;
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Save data from DB to reuse when migrating.', []);
+        return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function migrate(array $oldData)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Do migration.', []);
+        return 1;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function createSQLArray()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Perform SQL commands.', []);
+        return [];
+    }
+
+    /**
+     * @param QueryAdapter $adapter
+     */
+    public final function setQueryAdapter(QueryAdapter $adapter){
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Set query adapter.', [$adapter]);
+        $this->adapter = $adapter;
+    }
+
+    /**
+     * @return QueryAdapter
+     */
+    public final function getQueryAdapter(){
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Get query adapter', []);
+        return $this->adapter;
     }
 }

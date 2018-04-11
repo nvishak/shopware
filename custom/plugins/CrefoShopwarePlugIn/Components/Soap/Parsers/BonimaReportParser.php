@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -26,7 +26,7 @@ class BonimaReportParser extends CrefoSoapParser
     public function getAddressCheckResultKey()
     {
         $addressCheckData = $this->getBody("addresscheckdata");
-        return !is_null($addressCheckData) ? $this->getFieldFromContainer($addressCheckData->addressvalidationresult,
+        return null !== $addressCheckData ? $this->getFieldFromContainer($addressCheckData->addressvalidationresult,
             "key") : null;
     }
 
@@ -36,7 +36,7 @@ class BonimaReportParser extends CrefoSoapParser
     public function getIdentificationResultKey()
     {
         $identificationData = $this->getBody("identificationdata");
-        return !is_null($identificationData) ? $this->getFieldFromContainer($identificationData->identificationresult,
+        return null !== $identificationData ? $this->getFieldFromContainer($identificationData->identificationresult,
             "key") : null;
     }
 
@@ -46,7 +46,7 @@ class BonimaReportParser extends CrefoSoapParser
     public function extractScoreTypeResult()
     {
         $scoreData = $this->getBody("scoredata");
-        return !is_null($scoreData) ? $this->getFieldFromContainer($scoreData->scoreentry, "scoretype") : null;
+        return null !== $scoreData ? $this->getFieldFromContainer($scoreData->scoreentry, "scoretype") : null;
     }
 
     /**
@@ -63,6 +63,6 @@ class BonimaReportParser extends CrefoSoapParser
     public function extractScoreValueResult()
     {
         $scoreData = $this->getBody("scoredata");
-        return !is_null($scoreData) ? $this->getFieldFromContainer($scoreData->scoreentry, "scorevalue") : null;
+        return null !== $scoreData ? $this->getFieldFromContainer($scoreData->scoreentry, "scorevalue") : null;
     }
 }

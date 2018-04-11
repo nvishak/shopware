@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,6 +12,7 @@
 
 namespace CrefoShopwarePlugIn\Components\Core;
 
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 use \ZipArchive;
 
 /**
@@ -23,6 +24,7 @@ class ZipManager implements Manager
 
     /**
      * ZipManager constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -42,6 +44,8 @@ class ZipManager implements Manager
      */
     public function create_zip($files = [], $destination = '', $overwrite = false)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==ZipManager::create_zip==',
+            [$destination, $overwrite]);
         //if the zip file already exists and overwrite is false, return false
         if (file_exists($destination) && !$overwrite) {
             return false;
@@ -68,10 +72,11 @@ class ZipManager implements Manager
             //create the archive
             $zip = new ZipArchive();
             $overwriteType = file_exists($destination) && $overwrite ? ZipArchive::OVERWRITE : ZipArchive::CREATE;
-            if ($zip->open($destination, $overwriteType) !== true
-            ) {
+            // @codeCoverageIgnoreStart
+            if ($zip->open($destination, $overwriteType) !== true) {
                 return false;
             }
+            // @codeCoverageIgnoreEnd
             //add the files
             foreach ($valid_files as $file) {
                 $afile = explode(DIRECTORY_SEPARATOR, $file);
@@ -84,8 +89,10 @@ class ZipManager implements Manager
 
             //check to make sure the file exists
             return file_exists($destination);
-        } else {
+        } // @codeCoverageIgnoreStart
+        else {
             return false;
         }
+        // @codeCoverageIgnoreEnd
     }
 }

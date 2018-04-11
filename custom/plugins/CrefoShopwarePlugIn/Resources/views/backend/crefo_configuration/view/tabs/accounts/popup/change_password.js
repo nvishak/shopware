@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/accounts/popup/change_password"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePassword', {
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePassword', {
     extend: 'Enlight.app.Window',
     alias: 'widget.crefoconfig-tabs-accounts-popup-change-password',
     layout: 'fit',
@@ -41,16 +41,16 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
      *
      * @return void
      */
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
 
         me.title = me.snippets.titleNoEdit;
 
         me.items = me.getAccountPanel();
 
-        var acc = me.record.get( "useraccount" );
-        me.formPanel.down( "[name=useraccount]" ).setValue( acc );
-        me.addEvents( 'changePassword' );
+        var acc = me.record.get('useraccount');
+        me.formPanel.down('[name=useraccount]').setValue(acc);
+        me.addEvents('changePassword');
 
         me.dockedItems = [ {
             xtype: 'toolbar',
@@ -62,35 +62,35 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
                 cls: 'secondary',
                 scope: me,
                 handler: me.close
-            }
-                , {
-                    text: me.snippets.btnSave,
-                    action: 'save',
-                    cls: 'primary',
-                    handler: function( btn ){
-                        me.fireEvent( 'changePassword', me.record, me.formPanel, me.view, me.inUseAccounts );
-                    }
+            },
+            {
+                text: me.snippets.btnSave,
+                action: 'save',
+                cls: 'primary',
+                handler: function(btn) {
+                    me.fireEvent('changePassword', me.record, me.formPanel, me.view, me.inUseAccounts);
                 }
+            }
             ]
         } ];
 
-        // Add own vtypes to validate password fields
-        Ext.apply( Ext.form.field.VTypes, {
-            crefoPassword: function( val, field ){
+        //Add own vtypes to validate password fields
+        Ext.apply(Ext.form.field.VTypes, {
+            crefoPassword: function(val, field) {
                 var success = true;
                 var patt = /(\w)+/gi;
-                if( val.length < 6 || !patt.test( val ) ) {
+                if (val.length < 6 || !patt.test(val)) {
                     success = false;
                 }
                 return success;
             },
             crefoPasswordText: this.snippets.validation.invalidValue
-        } );
+        });
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    getAccountPanel: function(){
-        this.formPanel = Ext.create( 'Ext.form.Panel', {
+    getAccountPanel: function() {
+        this.formPanel = Ext.create('Ext.form.Panel', {
             border: false,
             layout: 'anchor',
             autoScroll: true,
@@ -102,12 +102,12 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
             items: [
                 this.getLoginFieldset()
             ]
-        } );
+        });
         return this.formPanel;
     },
-    getLoginFieldset: function(){
+    getLoginFieldset: function() {
         var me = this;
-        return Ext.create( 'Ext.form.FieldSet',
+        return Ext.create('Ext.form.FieldSet',
             {
                 defaults: {
                     labelWidth: '155px',
@@ -115,13 +115,13 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
                     height: '100%'
                 },
                 items: [ {
-                    // Implementiert das Column Layout
+                    //Implementiert das Column Layout
                     xtype: 'container',
                     unstyled: true,
                     layout: 'column',
                     items: [
                         {
-                            // Linke Spalte im Column Layout
+                            //Linke Spalte im Column Layout
                             xtype: 'container',
                             unstyled: true,
                             columnWidth: 0.5,
@@ -129,12 +129,12 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
                                 {
                                     xtype: 'textfield',
                                     labelWidth: '100%',
-                                    // fieldWidth: '40%',
+                                    //fieldWidth: '40%',
                                     fieldLabel: me.snippets.lblUserAcc,
                                     margin: '0 10 20 0',
                                     anchor: '100%',
                                     readOnly: true,
-                                    fieldBodyCls: "x-item-disabled",
+                                    fieldBodyCls: 'x-item-disabled',
                                     name: 'useraccount',
                                     allowBlank: true,
                                     submitValue: true
@@ -142,7 +142,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
                             ]
                         },
                         {
-                            // Rechte Spalte im Column Layout
+                            //Rechte Spalte im Column Layout
                             xtype: 'container',
                             unstyled: true,
                             columnWidth: 0.5,
@@ -151,7 +151,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
                                     xtype: 'textfield',
                                     fieldLabel: me.snippets.lblIndPass,
                                     labelWidth: '100%',
-                                    // fieldWidth: '40%',
+                                    //fieldWidth: '40%',
                                     name: 'individualpassword',
                                     anchor: '100%',
                                     margin: '0 0 20 10',
@@ -165,14 +165,13 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.ChangePas
                         }
                     ]
                 },
-                    {
-                        xtype: 'crefoconfig-tabs-accounts-popup-password-extension',
-                        addon: false
-                    }
+                {
+                    xtype: 'crefoconfig-tabs-accounts-popup-password-extension',
+                    addon: false
+                }
                 ]
             }
         );
-
     }
-} );
+});
 //{/block}

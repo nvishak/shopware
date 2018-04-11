@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/controller/settings"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.controller.Settings', {
+Ext.define('Shopware.apps.CrefoConfiguration.controller.Settings', {
     extend: 'Ext.app.Controller',
     refs: [
         { ref: 'mainWindow', selector: 'crefoconfig-main-window' }
@@ -21,84 +21,90 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.controller.Settings', {
         },
         success: '{s name="crefo/messages/success"}Aktion wurde erfolgreich durchgeführt{/s}'
     },
-    init: function(){
+    init: function() {
         var me = this;
-        me.mainController = me.getController( 'Main' );
-        me.control( {
+        me.control({
+            'crefoconfig-main-window': {
+                changeTab: me.onChangeTab
+            },
             'crefoconfig-tabs-general-panel': {
-                resetSettings: me.onResetSettings,
                 saveSettings: me.onSaveSettings
             },
             'crefoconfig-tabs-general-container': {
                 showErrorNotificationStatus: me.onShowErrorNotificationStatus
             }
-        } );
-        me.callParent( arguments );
+        });
+        me.callParent(arguments);
     },
-    onResetSettings: function( store, formPnl, event ){
-        var me = this;
-        event.up( 'window' ).setLoading( true );
-        Ext.Ajax.request( {
-            url: '{url module=backend controller=CrefoConfiguration action=resetGeneralSettings}',
-            method: 'POST',
-            success: function(){
-                store.load( {
-                    callback: function(){
-                        formPnl.loadRecord( store.findRecord( 'id', 1 ) );
-                        event.up( 'window' ).setLoading( false );
+    onChangeTab: function(tabsPanel, newTab, oldTab, formPanel) {
+        var newTabPanel = newTab.items.items[ 0 ];
+
+        if (/settingsPanel/ig.test(newTabPanel.id)) {
+            newTabPanel.up('window').setLoading(true);
+            var container = newTabPanel.down('container'),
+                foundLastRestField = false;
+            newTabPanel.getForm().getFields().each(function(f) {
+                if (!foundLastRestField) {
+                    f.reset();
+                    if (f.id === 'general_error_notification') {
+                        foundLastRestField = true;
                     }
-                } );
-            },
-            failure: function(){
-                me.mainController.handleFailure( event.up( 'window' ), true );
-            }
-        } );
+                }
+            });
+            newTabPanel.generalStore.load({
+                callback: function () {
+                    container.loadSettings(true);
+                    newTabPanel.up('window').setLoading(false);
+                }
+            });
+        }
     },
-    onSaveSettings: function( record, formPnl ){
+    onSaveSettings: function(panel) {
         var me = this;
 
-        if( !me.mainController.isFormValid( formPnl ) ) {
+        if (!CrefoUtil.isFormValid(panel)) {
             return;
         }
-
-        var values = formPnl.getForm().getValues();
-        formPnl.getForm().updateRecord( record );
-
-        formPnl.up( 'window' ).setLoading( true );
-        Ext.Ajax.request( {
+        var values = panel.getForm().getValues();
+        panel.up('window').setLoading(true);
+        Ext.Ajax.request({
             url: '{url module=backend controller=CrefoConfiguration action=updateGeneralSettings}',
             method: 'POST',
             params: values,
-            success: function(){
-                formPnl.up( 'window' ).setLoading( false );
-                me.mainController.showStickyMessage( '', me.snippets.success );
+            success: function() {
+                panel.generalStore.load({
+                    callback: function () {
+                        panel.up('window').setLoading(false);
+                        CrefoUtil.showStickyMessage('', me.snippets.success);
+                    }
+                });
             },
-            failure: function(){
-                me.mainController.handleFailure( formPnl.up( 'window' ), true );
+            failure: function() {
+                CrefoUtil.handleFailure(panel.up('window'), true);
             }
-        } );
+        });
     },
-    onShowErrorNotificationStatus: function( event ){
+    onShowErrorNotificationStatus: function(event) {
         var me = this;
-        event.up( 'window' ).setLoading( true );
-        Ext.Ajax.request( {
+        event.up('window').setLoading(true);
+        Ext.Ajax.request({
             url: '{url module=backend controller=CrefoConfiguration action=getErrorNotificationStatus}',
             method: 'POST',
-            success: function( response ){
+            success: function(response) {
                 try {
-                    var result = Ext.JSON.decode( response.responseText );
-                    event.up( 'window' ).setLoading( false );
-                    me.getView( 'tabs.general.popup.ErrorCounter' ).create( {
+                    var result = Ext.JSON.decode(response.responseText);
+                    event.up('window').setLoading(false);
+                    me.getView('tabs.general.popup.ErrorCounter').create({
                         record: result.data
-                    } );
+                    });
                 } finally {
-                    event.up( 'window' ).setLoading( false );
+                    event.up('window').setLoading(false);
                 }
             },
-            failure: function(){
-                me.mainController.handleFailure( event.up( 'window' ), true );
+            failure: function() {
+                CrefoUtil.handleFailure(event.up('window'), true);
             }
-        } );
+        });
     }
-} );
+});
 //{/block}

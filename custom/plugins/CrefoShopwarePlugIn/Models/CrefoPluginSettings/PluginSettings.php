@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,16 +12,11 @@
 
 namespace CrefoShopwarePlugIn\Models\CrefoPluginSettings;
 
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\ConfigHeaderRequest;
 use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\ORM\Mapping as ORM;
-use \CrefoShopwarePlugIn\Components\Core\CrefoValidator;
-use \Symfony\Component\Validator\Constraints as Assert;
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
-use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="SettingsRepository")
+ * @ORM\Entity
  * @ORM\Table(name="crefo_plugin_settings")
  */
 class PluginSettings extends ModelEntity
@@ -86,33 +81,16 @@ class PluginSettings extends ModelEntity
     /**
      * @var string $requestCheckAtValue
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $requestCheckAtValue;
 
     /**
      * @var string $errorTolerance
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $errorTolerance;
-
-
-    /**
-     * @var null|\CrefoShopwarePlugIn\Components\Logger\CrefoLogger $crefoLogger
-     */
-    private $crefoLogger = null;
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Components\Logger\CrefoLogger
-     */
-    private function getCrefoLogger()
-    {
-        if ($this->crefoLogger === null) {
-            $this->crefoLogger = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.logger');
-        }
-        return $this->crefoLogger;
-    }
 
     /**
      * @return int
@@ -262,7 +240,7 @@ class PluginSettings extends ModelEntity
 
     /**
      * @method getEmailAddress
-     * @return string
+     * @return string|null
      */
     public function getEmailAddress()
     {
@@ -271,7 +249,7 @@ class PluginSettings extends ModelEntity
 
     /**
      * @method getRequestCheckAtValue
-     * @return int
+     * @return int|null
      */
     public function getRequestCheckAtValue()
     {
@@ -280,101 +258,10 @@ class PluginSettings extends ModelEntity
 
     /**
      * @method getErrorTolerance
-     * @return int
+     * @return int|null
      */
     public function getErrorTolerance()
     {
         return $this->errorTolerance;
-    }
-
-    /**
-     * @param integer $numberOfRequests
-     * @param float $percent
-     * @return bool - true if the Errors are overcoming the thresholds (send mail), otherwise false
-     */
-    public function verifyErrorsOnRequest($numberOfRequests, $percent)
-    {
-        $intValPercent = intval($percent);
-        $ceilPercent = ceil($percent);
-        if ($ceilPercent == $intValPercent) {
-            $hasGreaterTolerance = $intValPercent >= $this->getErrorToleranceIntVal();
-        } else {
-            $hasGreaterTolerance = $ceilPercent > $this->getErrorToleranceIntVal();
-        }
-        $hasPassedNumberOfRequests = $numberOfRequests >= $this->getRequestCheckAtValueIntValue();
-        return $hasPassedNumberOfRequests && $hasGreaterTolerance;
-    }
-
-    /**
-     * @param integer $numberOfRequests
-     * @return bool
-     */
-    public function hasReachedNumberOfRequestAllowed($numberOfRequests)
-    {
-        return intval($numberOfRequests) === $this->getRequestCheckAtValueIntValue();
-    }
-
-    /**
-     * @param integer $numberOfRequests
-     * @param integer $numberOfFailedRequests
-     * @param float $errorQuote
-     * @throws \Enlight_Exception
-     */
-    public function sendEmail($numberOfRequests, $numberOfFailedRequests, $errorQuote)
-    {
-        /**
-         * @var CrefoValidator $validator
-         */
-        $validator = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.validator');
-        /**
-         * @var ConfigHeaderRequest $configHeaderRequest
-         */
-        $configHeaderRequest = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.config_header_request');
-        if (strcmp(strtolower($this->getCommunicationLanguage()), 'de') == 0) {
-            $mailTemplate = 'sCREFOERRORREQUESTNOTIFICATIONDE';
-        } else {
-            $mailTemplate = 'sCREFOERRORREQUESTNOTIFICATIONEN';
-        }
-        $configOverride = [
-            "fromMail" => $this->getEmailAddress(),
-            'fromName' => ''
-        ]; //fromMail => '' , fromName => ''
-        $mail = CrefoCrossCuttingComponent::getShopwareInstance()->TemplateMail()->createMail($mailTemplate, [
-            'errorNotification' => [
-                'softwareVersion' => $configHeaderRequest->getPluginVersion(),
-                'webshopVersion' => $configHeaderRequest->getShopVersion(),
-                'numberOfRequests' => $numberOfRequests,
-                'numberOfFailedRequests' => $numberOfFailedRequests,
-                'errorQuote' => $validator->formatCurrency($errorQuote, $this->getCommunicationLanguage()),
-                'errorNotification' => 'TRUE',
-                'emailAddress' => $this->getEmailAddress(),
-                'numberOfRequestCheck' => $this->getRequestCheckAtValueIntValue(),
-                'errorTolerance' => $this->getErrorToleranceIntVal()
-            ]
-        ], null, $configOverride);
-        $mail->addTo($this->getEmailAddress());
-        try {
-            $mail->send();
-        } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==sendEmail==", ["Couldn't send email."]);
-        }
-    }
-
-    /**
-     * @return int
-     */
-    public function getErrorToleranceIntVal()
-    {
-        $values = [25, 50, 75];
-        return intval($values[$this->getErrorTolerance()]);
-    }
-
-    /**
-     * @return int
-     */
-    public function getRequestCheckAtValueIntValue()
-    {
-        $values = [10, 50, 100, 500, 1000];
-        return intval($values[$this->getRequestCheckAtValue()]);
     }
 }

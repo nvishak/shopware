@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -31,12 +31,13 @@ class ReportPrivatePersonParser extends CrefoSoapParser
      */
     public function extractProducts()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==extractProducts==", ['start extracting products']);
         $products = [];
         try {
             $service = $this->getService(self::BONIMA_REPORT);
             $products = $this->getProductsKeys($service);
         } catch (\Exception $ex) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
                 "==extractProducts>>Exception " . date("Y-m-d H:i:s") . "==", (array)$ex);
         }
         return $products;
@@ -48,6 +49,7 @@ class ReportPrivatePersonParser extends CrefoSoapParser
      */
     private function getProductsKeys($service)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==getProductsKeys::check-service==", [$service]);
         $products = [];
         if (is_object($service->countryconstraint) && $service->countryconstraint instanceof \stdClass) {
             $countryKey = $service->countryconstraint->country->key;
@@ -84,8 +86,10 @@ class ReportPrivatePersonParser extends CrefoSoapParser
      */
     private function getProductsFromCountry($allowedKey, $countryKey)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==getProductsFromCountry::allowedKey==", [$allowedKey]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==getProductsFromCountry::countryKey==", [$countryKey]);
         $countryProducts = [];
-        if (is_null($allowedKey)) {
+        if (null === $allowedKey) {
             return [];
         }
         $i = 0;
@@ -112,6 +116,7 @@ class ReportPrivatePersonParser extends CrefoSoapParser
      */
     private function filterUnallowedProducts(array $products)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==filterUnallowedProducts::UnfilteredProducts==", $products);
         $allowedProductsKeys = PrivatePersonProductsType::AllowedProducts();
         $filteredProducts = [];
         if (empty($products) || empty($allowedProductsKeys)) {
@@ -122,6 +127,8 @@ class ReportPrivatePersonParser extends CrefoSoapParser
                 $filteredProducts[] = $product;
             }
         }
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==filterUnallowedProducts::FilteredProducts==",
+            $filteredProducts);
         return $filteredProducts;
     }
 

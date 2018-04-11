@@ -6,21 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-docblock/src'),
-    'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
-    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
-    'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
-    'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),
-    'Symfony\\Component\\Finder\\' => array($vendorDir . '/symfony/finder'),
-    'Symfony\\Component\\Filesystem\\' => array($vendorDir . '/symfony/filesystem'),
-    'Symfony\\Component\\DependencyInjection\\' => array($vendorDir . '/symfony/dependency-injection'),
-    'Symfony\\Component\\Debug\\' => array($vendorDir . '/symfony/debug'),
-    'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
-    'Symfony\\Component\\Config\\' => array($vendorDir . '/symfony/config'),
-    'Stagehand\\TestRunner\\' => array($vendorDir . '/piece/stagehand-testrunner/src'),
-    'Shopware\\CrefoShopwarePlugIn\\Tests\\UnitTests\\' => array($baseDir . '/tests/UnitTests'),
-    'Shopware\\CrefoShopwarePlugIn\\Tests\\Selenium\\' => array($baseDir . '/tests/Selenium'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
-    'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
+    'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'Defuse\\Crypto\\' => array($vendorDir . '/defuse/php-encryption/src'),
     'Composer\\Installers\\' => array($vendorDir . '/composer/installers/src/Composer/Installers'),
 );

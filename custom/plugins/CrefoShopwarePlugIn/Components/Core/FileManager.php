@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -14,6 +14,7 @@ namespace CrefoShopwarePlugIn\Components\Core;
 
 /**
  * Class FileManager
+ * @codeCoverageIgnore
  * @package CrefoShopwarePlugIn\Components\Core
  */
 class FileManager implements Manager
@@ -50,7 +51,7 @@ class FileManager implements Manager
             $copyFiles = [];
             foreach ($files as $file) {
                 if (is_dir("$dir$file")) {
-                    if (is_null($this->ignoredFiles) || empty($this->ignoredFiles['folders']) || !in_array("$dir$file",
+                    if (null === $this->ignoredFiles || empty($this->ignoredFiles['folders']) || !in_array("$dir$file",
                             $this->ignoredFiles['folders'])
                     ) {
                         !is_dir("$dest$file") ? ($success &= mkdir("$dest/$file", 0777, false)) : null;
@@ -58,7 +59,7 @@ class FileManager implements Manager
                             "$dest$file" . DIRECTORY_SEPARATOR);
                     }
                 } else {
-                    if (is_null($this->ignoredFiles) || empty($this->ignoredFiles['files']) || !in_array("$dir$file",
+                    if (null === $this->ignoredFiles || empty($this->ignoredFiles['files']) || !in_array("$dir$file",
                             $this->ignoredFiles['files'])
                     ) {
                         $copyFiles[] = ["old" => "$dir$file", "new" => "$dest$file"];

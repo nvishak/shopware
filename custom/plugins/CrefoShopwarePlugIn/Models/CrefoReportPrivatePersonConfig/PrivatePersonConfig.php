@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -15,12 +15,12 @@ namespace CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig;
 use \CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount;
 use \Doctrine\Common\Collections\ArrayCollection;
 use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM;
 use \Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="crefo_report_private_person_config")
- * @ORM\Entity(repositoryClass="Repository")
+ * @ORM\Entity(repositoryClass="ProductsRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class PrivatePersonConfig extends ModelEntity
@@ -51,32 +51,11 @@ class PrivatePersonConfig extends ModelEntity
     private $products;
 
     /**
-     * @var integer $selectedProductKey
-     *
-     * @ORM\Column(name="selectedProductKey", type="integer", nullable=true)
-     */
-    private $selectedProductKey;
-
-    /**
      * @var string $legitimateKey
      *
      * @ORM\Column(name="legitimateKey", nullable=true)
      */
     private $legitimateKey;
-
-    /**
-     * @var float $thresholdMin
-     *
-     * @ORM\Column(name="thresholdMin", type="decimal", precision=7, scale=2, nullable=true)
-     */
-    private $thresholdMin;
-
-    /**
-     * @var float $thresholdMax
-     *
-     * @ORM\Column(name="thresholdMax", type="decimal", precision=7, scale=2, nullable=true)
-     */
-    private $thresholdMax;
 
     /**
      * PrivatePersonConfig constructor.
@@ -112,35 +91,11 @@ class PrivatePersonConfig extends ModelEntity
     }
 
     /**
-     * @return int
-     */
-    public function getSelectedProductKey()
-    {
-        return $this->selectedProductKey;
-    }
-
-    /**
      * @return string
      */
     public function getLegitimateKey()
     {
         return $this->legitimateKey;
-    }
-
-    /**
-     * @return float
-     */
-    public function getThresholdMin()
-    {
-        return floatval($this->thresholdMin);
-    }
-
-    /**
-     * @return float|null
-     */
-    public function getThresholdMax()
-    {
-        return $this->thresholdMax;
     }
 
     /**
@@ -160,35 +115,10 @@ class PrivatePersonConfig extends ModelEntity
     }
 
     /**
-     * @param int $selectedProductKey
-     */
-    public function setSelectedProductKey($selectedProductKey)
-    {
-        $this->selectedProductKey = $selectedProductKey;
-    }
-
-    /**
      * @param string $key
      */
     public function setLegitimateKey($key)
     {
         $this->legitimateKey = $key;
-    }
-
-
-    /**
-     * @param float $thresholdMin
-     */
-    public function setThresholdMin($thresholdMin)
-    {
-        $this->thresholdMin = $thresholdMin;
-    }
-
-    /**
-     * @param float $thresholdMax
-     */
-    public function setThresholdMax($thresholdMax)
-    {
-        $this->thresholdMax = $thresholdMax;
     }
 }

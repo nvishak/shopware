@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -9,11 +9,11 @@
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
 //{block name="backend/crefo_configuration/store/report_private_person/allowed_bonima_products"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.store.reportprivateperson.AllowedBonimaProducts', {
+Ext.define('Shopware.apps.CrefoConfiguration.store.reportprivateperson.AllowedBonimaProducts', {
     extend: 'Ext.data.Store',
-    autoLoad: true,
+    autoLoad: false,
     autoSync: true,
     groupField: 'id',
     model: 'Shopware.apps.CrefoConfiguration.model.reportprivateperson.AllowedBonimaProducts'
-} );
+});
 //{/block}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_logs/view/tabs/list"}
-Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
+Ext.define('Shopware.apps.CrefoLogs.view.tabs.List', {
     extend: 'Ext.grid.Panel',
     alias: 'widget.crefo-logs-interface-list',
     cls: Ext.baseCSSPrefix + 'crefo-logs-interface-list',
@@ -49,15 +49,15 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
         enableTextSelection: true
     },
     listeners: {
-        "cellclick": function( iView, iCellEl, iColIdx, iStore, iRowEl, iRowIdx, iEvent ){
+        'cellclick': function(iView, iCellEl, iColIdx, iStore, iRowEl, iRowIdx, iEvent) {
             var me = this;
-            if( iEvent.target.tagName.toLowerCase() === 'span' && iColIdx > 1 && iColIdx < 4 ) {
-                me.fireEvent( 'showData', iStore.get( 'id' ), iColIdx );
+            if (iEvent.target.tagName.toLowerCase() === 'span' && iColIdx > 1 && iColIdx < 4) {
+                me.fireEvent('showData', iStore.get('id'), iColIdx);
             }
         }
     },
 
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
         me.registerEvents();
         me.store = me.crefoListStore;
@@ -66,13 +66,13 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
         me.toolbar = me.getToolbar();
         me.pagingbar = me.getPagingBar();
         me.dockedItems = [ me.toolbar, me.pagingbar ];
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
 
     /**
      * Adds the specified events to the list of events which this Observable may fire.
      */
-    registerEvents: function(){
+    registerEvents: function() {
         this.addEvents(
             /**
              * Event will be fired when the user clicks the log specific entry
@@ -97,10 +97,10 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
      *
      * @return Ext.toolbar.Paging The paging toolbar for the customer grid
      */
-    getPagingBar: function(){
+    getPagingBar: function() {
         var me = this;
 
-        var pageSize = Ext.create( 'Ext.form.field.ComboBox', {
+        var pageSize = Ext.create('Ext.form.field.ComboBox', {
             fieldLabel: me.snippets.paging.pageSize,
             labelWidth: 120,
             cls: Ext.baseCSSPrefix + 'page-size',
@@ -110,7 +110,7 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
                 scope: me,
                 select: me.onPageSizeChange
             },
-            store: Ext.create( 'Ext.data.Store', {
+            store: Ext.create('Ext.data.Store', {
                 fields: [ 'value' ],
                 data: [
                     { value: '20' },
@@ -119,22 +119,21 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
                     { value: '80' },
                     { value: '100' }
                 ]
-            } ),
+            }),
             displayField: 'value',
             valueField: 'value'
-        } );
-        pageSize.setValue( me.crefoListStore.pageSize );
+        });
+        pageSize.setValue(me.crefoListStore.pageSize);
 
-        var pagingBar = Ext.create( 'Ext.toolbar.Paging', {
+        var pagingBar = Ext.create('Ext.toolbar.Paging', {
             store: me.crefoListStore,
             dock: 'bottom',
             displayInfo: true
-        } );
+        });
 
-        pagingBar.insert( pagingBar.items.length - 2, [ { xtype: 'tbspacer', width: 6 }, pageSize ] );
+        pagingBar.insert(pagingBar.items.length - 2, [ { xtype: 'tbspacer', width: 6 }, pageSize ]);
 
         return pagingBar;
-
     },
 
     /**
@@ -146,12 +145,12 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
      * @param [array] records - Array of selected entries
      * @return void
      */
-    onPageSizeChange: function( combo, records ){
+    onPageSizeChange: function(combo, records) {
         var record = records[ 0 ],
             me = this;
 
-        me.crefoListStore.pageSize = record.get( 'value' );
-        me.crefoListStore.loadPage( 1 );
+        me.crefoListStore.pageSize = record.get('value');
+        me.crefoListStore.loadPage(1);
     },
 
     /**
@@ -159,7 +158,7 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
      *
      * @return [array] grid columns
      */
-    getColumns: function(){
+    getColumns: function() {
         var me = this;
 
         return [
@@ -190,22 +189,22 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
                 header: me.snippets.columns.tsResponse,
                 dataIndex: me.snippets.columns.dataindex.tsResponse,
                 flex: 1.5,
-                renderer: function( value, metaData, record ){
-                    if( value === Ext.undefined ) {
+                renderer: function(value, metaData, record) {
+                    if (value === Ext.undefined) {
                         return value;
                     }
-                    return Ext.util.Format.date( value, 'Y-m-d H:i:s' );
+                    return Ext.util.Format.date(value, 'Y-m-d H:i:s');
                 }
             },
             {
                 header: me.snippets.columns.tsProcessEnd,
                 dataIndex: me.snippets.columns.dataindex.tsProcessEnd,
                 flex: 1.5,
-                renderer: function( value, metaData, record ){
-                    if( value === Ext.undefined ) {
+                renderer: function(value, metaData, record) {
+                    if (value === Ext.undefined) {
                         return value;
                     }
-                    return Ext.util.Format.date( value, 'Y-m-d H:i:s' );
+                    return Ext.util.Format.date(value, 'Y-m-d H:i:s');
                 }
             }
         ];
@@ -215,20 +214,20 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
      *
      * @return [Ext.selection.CheckboxModel] grid selection model
      */
-    getGridSelModel: function(){
+    getGridSelModel: function() {
         var me = this;
 
-        return Ext.create( 'Ext.selection.CheckboxModel', {
+        return Ext.create('Ext.selection.CheckboxModel', {
             checkOnly: true,
             listeners: {
-                // Unlocks the save button if the user has checked at least one checkbox
-                selectionchange: function( sm, selections ){
-                    if( me.downloadZipButton !== null ) {
-                        me.downloadZipButton.setDisabled( selections.length !== 1 );
+                //Unlocks the save button if the user has checked at least one checkbox
+                selectionchange: function(sm, selections) {
+                    if (me.downloadZipButton !== null) {
+                        me.downloadZipButton.setDisabled(selections.length !== 1);
                     }
                 }
             }
-        } );
+        });
     },
 
     /**
@@ -236,78 +235,76 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.tabs.List', {
      *
      * @return [Ext.toolbar.Toolbar] grid toolbar
      */
-    getToolbar: function(){
+    getToolbar: function() {
         var me = this;
 
-        me.downloadZipButton = Ext.create( 'Ext.button.Button', {
+        me.downloadZipButton = Ext.create('Ext.button.Button', {
             iconCls: 'sprite-inbox-download',
             text: me.snippets.toolbar.zipDownload,
             action: 'zipDownloading',
             disabled: true,
-            handler: function(){
-                me.fireEvent( 'downloadZip', me );
+            handler: function() {
+                me.fireEvent('downloadZip', me);
             }
-        } );
+        });
 
-
-        return Ext.create( 'Ext.toolbar.Toolbar', {
+        return Ext.create('Ext.toolbar.Toolbar', {
             dock: 'top',
             ui: 'shopware-ui',
             items: [
                 me.downloadZipButton
             ]
-        } );
+        });
     },
-    requestXMLRender: function( value, metaData, record ){
+    requestXMLRender: function(value, metaData, record) {
         var me = this;
 
-        if( Ext.isDefined( value ) === false ) {
+        if (Ext.isDefined(value) === false) {
             return value;
         }
 
-        if( record instanceof Ext.data.Model ) {
-            var showText = record.get( 'requestXMLDescription' );
-            if( showText.toLowerCase() === me.snippets.fault ) {
+        if (record instanceof Ext.data.Model) {
+            var showText = record.get('requestXMLDescription');
+            if (showText.toLowerCase() === me.snippets.fault) {
                 showText = me.snippets.errorText;
             }
-            Ext.isDefined( showText ) ? value = Ext.String.format( "<span class='fake-link'>[0]</span>", showText ) : null;
+            Ext.isDefined(showText) ? value = Ext.String.format("<span class='fake-link'>[0]</span>", showText) : null;
         }
 
         return value;
     },
-    responseXMLRender: function( value, metaData, record ){
+    responseXMLRender: function(value, metaData, record) {
         var me = this;
 
-        if( Ext.isDefined( value ) === false ) {
+        if (Ext.isDefined(value) === false) {
             return value;
         }
 
-        if( record instanceof Ext.data.Model ) {
-            var showText = record.get( 'responseXMLDescription' );
-            if( showText.toLowerCase() === me.snippets.fault ) {
+        if (record instanceof Ext.data.Model) {
+            var showText = record.get('responseXMLDescription');
+            if (showText.toLowerCase() === me.snippets.fault) {
                 showText = me.snippets.errorText;
             }
-            Ext.isDefined( showText ) ? value = Ext.String.format( "<span class='fake-link'>[0]</span>", showText ) : null;
+            Ext.isDefined(showText) ? value = Ext.String.format("<span class='fake-link'>[0]</span>", showText) : null;
         }
 
         return value;
     },
-    reportResultRender: function( value, metaData, record ){
+    reportResultRender: function(value, metaData, record) {
         var me = this;
 
-        if( Ext.isDefined( value ) === false ) {
+        if (Ext.isDefined(value) === false) {
             return value;
         }
-        if( record instanceof Ext.data.Model && Ext.isDefined( record.raw.crefoReportResult ) ) {
-            var reportResultId = parseInt( record.raw.crefoReportResult.id );
-            value = record.raw.crefoReportResult.riskJudgement !== me.snippets.fault ?
-                Ext.String.format( "<a href='{url module=backend controller=CrefoLogs action=openSolvencyPdf}?id=[1]' target='_blank'>[0]</a>",
-                    me.snippets.values.textReport, reportResultId ) : null;
+        if (record instanceof Ext.data.Model && Ext.isDefined(record.raw.crefoReportResult)) {
+            var reportResultId = parseInt(record.raw.crefoReportResult.id);
+            value = record.raw.crefoReportResult.riskJudgement !== me.snippets.fault
+                ? Ext.String.format("<a href='{url module=backend controller=CrefoLogs action=openSolvencyPdf}?id=[1]' target='_blank'>[0]</a>",
+                    me.snippets.values.textReport, reportResultId) : null;
         } else {
             value = null;
         }
         return value;
     }
-} );
+});
 //{/block}
-

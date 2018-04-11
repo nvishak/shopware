@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,23 +12,34 @@
 
 namespace CrefoShopwarePlugIn\Components\Updater;
 
-use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
-use \CrefoShopwarePlugIn\Components\Versions\PluginVersionFactory;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use CrefoShopwarePlugIn\Components\Versions\PluginVersionFactory;
+use CrefoShopwarePlugIn\Components\Versions\QueryAdapter;
 
 /**
- * Class PluginUpdater
- * @package CrefoShopwarePlugIn\Components\Updater
+ * Class PluginUpdater.
  */
 class PluginUpdater
 {
+    /**
+     * @var string
+     */
     private $olderVersion;
 
+    /**
+     * @var string
+     */
     private $newerVersion;
 
     /**
-     * @var CrefoLogger $logger
+     * @var array
      */
-    private $logger;
+    private $oldData = [];
+
+    /**
+     * @var array
+     */
+    private $versionsClasses = [];
 
     /**
      * @param string $oldVersion - the installed version of the plugin
@@ -37,8 +48,7 @@ class PluginUpdater
      */
     public function __construct($oldVersion, $newVersion, $crefoLogger)
     {
-        $this->logger = $crefoLogger;
-        $this->logger->log(CrefoLogger::DEBUG, "PluginUpdater", ["Create"]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'PluginUpdater', ['Create']);
         $this->olderVersion = $oldVersion;
         $this->newerVersion = $newVersion;
     }
@@ -49,17 +59,19 @@ class PluginUpdater
      */
     protected function getVersionFilesTree()
     {
-        $this->logger->log(CrefoLogger::DEBUG, "getVersionFilesTree", ["get tree of the version files"]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'getVersionFilesTree', ['get tree of the version files']);
         $pathToVersionsFolders = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Versions' . DIRECTORY_SEPARATOR;
-        $newVersionSplit = explode(".", $this->newerVersion);
-        $oldVersionSplit = explode(".", $this->olderVersion);
+        $newVersionSplit = explode('.', $this->newerVersion);
+        $oldVersionSplit = explode('.', $this->olderVersion);
         $phpVersionFiles = [];
         $majorFolderVersions = $this->computeMajorVersionsFolders(intval($newVersionSplit[0]),
             intval($oldVersionSplit[0]));
         foreach ($majorFolderVersions as $folderVersion) {
+            // @codeCoverageIgnoreStart
             if (!file_exists($pathToVersionsFolders . $folderVersion)) {
                 continue;
             }
+            // @codeCoverageIgnoreEnd
             $phpVersionFilesInFolder = array_diff(scandir($pathToVersionsFolders . $folderVersion), ['..', '.']);
             foreach ($phpVersionFilesInFolder as $file) {
                 if (strpos($file, '.php') !== false) {
@@ -67,59 +79,99 @@ class PluginUpdater
                 }
             }
         }
+
         return $phpVersionFiles;
     }
 
     /**
-     * @param integer $newerMajorVersion
-     * @param integer $olderMajorVersion
+     * @param int $newerMajorVersion
+     * @param int $olderMajorVersion
+     *
      * @return array
      */
     private function computeMajorVersionsFolders($newerMajorVersion, $olderMajorVersion)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Compute major version from folders.', ['computeMajorVersionsFolders']);
         $folderMajorVersions = [];
         if ($newerMajorVersion == $olderMajorVersion) {
             $folderMajorVersions[] = 'v' . $newerMajorVersion;
         } elseif ($newerMajorVersion > $olderMajorVersion) {
             while ($newerMajorVersion >= $olderMajorVersion) {
                 $folderMajorVersions[] = 'v' . $newerMajorVersion;
-                $newerMajorVersion--;
+                --$newerMajorVersion;
             }
         }
+
         return $folderMajorVersions;
     }
 
     /**
-     *
-     * @method performUpdate
-     * @return int $result 1 - successful, 0 - error
+     * prepares the data for update
+     * @codeCoverageIgnore
+     * @param QueryAdapter $adapter
      */
-    public function performUpdate()
+    public function prepareUpdate(QueryAdapter $adapter)
     {
-        $this->logger->log(CrefoLogger::DEBUG, "performUpdate", ["Start to update."]);
-        $result = 1;
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'prepareUpdate', ['Start preparing the update.']);
         $newerVersionsArray = $this->getVersionFilesTree();
         if (empty($newerVersionsArray)) {
-            $this->logger->log(CrefoLogger::ERROR, "performUpdate", ["Didn't find any Version file."]);
-            return 0;
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, 'prepareUpdate', ["Didn't find any Version file."]);
+            return;
+        }
+        if(null === $adapter || empty($adapter)){
+            new \Exception("Query Adapter not found");
         }
         ksort($newerVersionsArray);
         foreach ($newerVersionsArray as $fileVersion => $pathToFile) {
             /**
-             * @var \CrefoShopwarePlugIn\Components\Versions\AbstractPluginVersion $pluginAtVersion
+             * @var \CrefoShopwarePlugIn\Components\Versions\AbstractPluginVersion
              */
             $pluginAtVersion = PluginVersionFactory::createFromFile($pathToFile, $this->olderVersion,
                 $this->newerVersion);
-            if (is_null($pluginAtVersion)) {
-                $this->logger->log(CrefoLogger::DEBUG, "performUpdate",
-                    ["no need to update from this file:" . $fileVersion]);
+            if (null === $pluginAtVersion) {
+                CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'prepareUpdate',
+                    ['no need to update from this file:' . $fileVersion]);
                 continue;
             }
-            $this->logger->log(CrefoLogger::DEBUG, "performUpdate",
-                ["update from:" . $fileVersion]);
-            $result &= $pluginAtVersion->modifyDB();
-            $result &= $pluginAtVersion->removeOldFiles();
+            $pluginAtVersion->setQueryAdapter($adapter);
+            $this->versionsClasses[$fileVersion] = $pluginAtVersion;
+        }
+        $this->saveOldData();
+    }
+
+
+    /**
+     * @codeCoverageIgnore
+     */
+    private function saveOldData()
+    {
+        /**
+         * @var \CrefoShopwarePlugIn\Components\Versions\AbstractPluginVersion $versionObject
+         */
+        foreach ($this->versionsClasses as $versionFileName => $versionObject) {
+            $this->oldData[$versionFileName] = $versionObject->saveMigrationData();
+        }
+    }
+
+    /**
+     * @return int $result 1 - successful, 0 - error
+     */
+    public function performUpdate()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'performUpdate', ['Start to update.']);
+        $result = 1;
+        /**
+         * @var \CrefoShopwarePlugIn\Components\Versions\AbstractPluginVersion $versionObject
+         */
+        foreach ($this->versionsClasses as $versionFileName => $versionObject) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'performUpdate',
+                ['update from:' . $versionFileName]);
+            $result &= $versionObject->modifyDB();
+            if(isset($this->oldData[$versionFileName])) {
+                $result &= $versionObject->migrate($this->oldData[$versionFileName]);
+            }
         }
         return $result;
     }
+
 }

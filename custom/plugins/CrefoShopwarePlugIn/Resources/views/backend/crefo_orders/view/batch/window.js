@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/view/batch/window"}
-Ext.define( 'Shopware.apps.CrefoOrders.view.batch.Window', {
+Ext.define('Shopware.apps.CrefoOrders.view.batch.Window', {
     extend: 'Enlight.app.Window',
     cls: Ext.baseCSSPrefix + 'crefo-orders-batch-window',
     alias: 'widget.crefo-orders-batch-window',
@@ -34,17 +34,17 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.batch.Window', {
         title: '{s name="crefoorders/view/batch/window/title"}Creditreform Bestellungen{/s}'
     },
 
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
         me.title = me.snippets.title;
-        me.items = Ext.create( 'Shopware.apps.CrefoOrders.view.batch.Form', {
+        me.items = Ext.create('Shopware.apps.CrefoOrders.view.batch.Form', {
             flex: 1,
             records: me.records,
             list: me.list
-        } );
+        });
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     }
 
-} );
+});
 //{/block}

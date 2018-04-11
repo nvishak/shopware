@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,16 +12,17 @@
 
 namespace CrefoShopwarePlugIn\Components\API\Body;
 
-use \CrefoShopwarePlugIn\Components\Core\CrefoSanitization;
-use \CrefoShopwarePlugIn\Components\Core\CrefoSanitizer;
-use \CrefoShopwarePlugIn\Components\Core\CrefoValidator;
-use \CrefoShopwarePlugIn\Components\API\Parts\IdentificationReportBodyTrait;
+use CrefoShopwarePlugIn\Components\API\Parts\IdentificationReportBodyTrait;
+use CrefoShopwarePlugIn\Components\Core\CrefoSanitization;
+use CrefoShopwarePlugIn\Components\Core\CrefoSanitizer;
+use CrefoShopwarePlugIn\Components\Core\CrefoValidator;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 
 /**
+ * @codeCoverageIgnore
  * Class IdentificationReportBody
- * @package CrefoShopwarePlugIn\Components\API\Body
  */
-class IdentificationReportBody implements CrefoSanitization
+class IdentificationReportBody implements RequestBody, CrefoSanitization
 {
     use IdentificationReportBodyTrait;
 
@@ -32,6 +33,8 @@ class IdentificationReportBody implements CrefoSanitization
      */
     public function __construct()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequestBody::construct==',
+            ['create identification report body']);
         date_default_timezone_set('Europe/Berlin');
         $this->crefoValidator = new CrefoValidator();
     }
@@ -41,6 +44,8 @@ class IdentificationReportBody implements CrefoSanitization
      */
     public function setPostcode($value)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequestBody::setPostcode==',
+            ['set postcode', 'value' => $value]);
         $this->postcode = $this->crefoValidator->checkPostalCode($value, strtolower(substr($this->getCountry(), 0, 2)));
     }
 
@@ -49,42 +54,54 @@ class IdentificationReportBody implements CrefoSanitization
      */
     public function setVatid($value)
     {
-        $this->vatid = preg_replace('/([^\d|^\w]+)/i', '', trim($value));
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequestBody::setVatid==',
+            ['set vat id', 'value' => $value]);
+        $this->vatid = preg_replace('/([^\d|\w]+)/i', '', trim($value));
     }
 
     /**
      * @param string $address
+     *
      * @return array
      */
     public function validateAddress($address)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequestBody::validateAddress==',
+            ['validate address', 'address' => $address]);
+
         return $this->crefoValidator->computeRawAddress($address);
     }
 
     public function performSanitization()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequestBody::performSanitization==',
+            ['perform sanitization']);
+
         $sanitizeObj = new CrefoSanitizer();
         $sourceArray = [
-            "legit_int" => $this->getLegitimateInterest(),
-            "rep_lang" => $this->getReportLanguage(),
-            "prod_type" => $this->getProductType(),
-            "threshIndex" => $this->getSolvencyIndexThreshold(),
-            "cust_ref" => $this->getCustomerReference(),
-            "company_name" => $this->getCompanyName(),
-            "street" => $this->getStreet(),
-            "housenr" => $this->getHouseNumber(),
-            "houseafx" => $this->getHouseNumberAffix(),
-            "postcode" => $this->getPostCode(),
-            "city" => $this->getCity(),
-            "country" => $this->getCountry(),
-            "legalform" => $this->getLegalForm(),
-            "website" => $this->getWebsite(),
-            "register_type" => $this->getRegisterType(),
-            "register_id" => $this->getRegisterId(),
-            "vatid" => $this->getVatId(),
-            "phone_nr" => $this->getPhonenumber(),
-            "phone_dc" => $this->getDiallingcode()
+            'legit_int' => $this->getLegitimateInterest(),
+            'rep_lang' => $this->getReportLanguage(),
+            'prod_type' => $this->getProductType(),
+            'threshIndex' => $this->getSolvencyIndexThreshold(),
+            'cust_ref' => $this->getCustomerReference(),
+            'company_name' => $this->getCompanyName(),
+            'street' => $this->getStreet(),
+            'housenr' => $this->getHouseNumber(),
+            'houseafx' => $this->getHouseNumberAffix(),
+            'postcode' => $this->getPostCode(),
+            'city' => $this->getCity(),
+            'country' => $this->getCountry(),
+            'legalform' => $this->getLegalForm(),
+            'website' => $this->getWebsite(),
+            'register_type' => $this->getRegisterType(),
+            'register_id' => $this->getRegisterId(),
+            'vatid' => $this->getVatId()
         ];
+
+        if($this->getPhone() !== null){
+            $sourceArray['phone_nr'] = $this->getPhone()->getPhonenumber();
+            $sourceArray['phone_dc'] = $this->getPhone()->getDiallingcode();
+        }
 
         $sanitizeObj->addSource($sourceArray);
         $sanitizeObj->addRule('threshIndex', 'numeric', 3, true);
@@ -104,8 +121,10 @@ class IdentificationReportBody implements CrefoSanitization
         $sanitizeObj->addRule('register_type', 'string', 20, true);
         $sanitizeObj->addRule('register_id', 'string', 18, true);
         $sanitizeObj->addRule('vatid', 'string', 11, true);
-        $sanitizeObj->addRule('phone_nr', 'string', 16, true);
-        $sanitizeObj->addRule('phone_dc', 'string', 7, true);
+        if($this->getPhone() !== null) {
+            $sanitizeObj->addRule('phone_nr', 'string', 16, true);
+            $sanitizeObj->addRule('phone_dc', 'string', 7, true);
+        }
         $sanitizeObj->run();
         $this->setSolvencyIndexThreshold($sanitizeObj->sanitized['threshIndex']);
         $this->setLegitimateInterest($sanitizeObj->sanitized['legit_int']);
@@ -124,7 +143,9 @@ class IdentificationReportBody implements CrefoSanitization
         $this->setRegisterType($sanitizeObj->sanitized['register_type']);
         $this->setRegisterId($sanitizeObj->sanitized['register_id']);
         $this->setVatid($sanitizeObj->sanitized['vatid']);
-        $this->setPhonenumber($sanitizeObj->sanitized['phone_nr']);
-        $this->setDiallingcode($sanitizeObj->sanitized['phone_dc']);
+        if($this->getPhone() !== null) {
+            $this->getPhone()->setPhonenumber($sanitizeObj->sanitized['phone_nr']);
+            $this->getPhone()->setDiallingcode($sanitizeObj->sanitized['phone_dc']);
+        }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,9 +12,8 @@
 
 namespace CrefoShopwarePlugIn\Models\CrefoInkassoConfig;
 
-use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\ORM\Mapping as ORM;
-use \Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
+use Shopware\Components\Model\ModelEntity;
 
 /**
  * @ORM\Table(name="crefo_inkasso_ws_values")
@@ -24,7 +23,7 @@ use \Symfony\Component\Validator\Constraints as Assert;
 class InkassoWSValues extends ModelEntity
 {
     /**
-     * @var integer $id
+     * @var int $id
      *
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -45,6 +44,13 @@ class InkassoWSValues extends ModelEntity
      * @ORM\Column(name="textWS", nullable=false)
      */
     private $textWS;
+
+    /**
+     * @var int $typeValue
+     *
+     * @ORM\Column(name="typeValue", nullable=false)
+     */
+    private $typeValue;
 
     /**
      * @return int
@@ -71,6 +77,22 @@ class InkassoWSValues extends ModelEntity
     }
 
     /**
+     * @return int
+     */
+    public function getTypeValue()
+    {
+        return $this->typeValue;
+    }
+
+    /**
+     * @param int $typeValue
+     */
+    public function setTypeValue($typeValue)
+    {
+        $this->typeValue = $typeValue;
+    }
+
+    /**
      * @param string $key
      */
     public function setKeyWS($key)
@@ -85,5 +107,4 @@ class InkassoWSValues extends ModelEntity
     {
         $this->textWS = $text;
     }
-
 }

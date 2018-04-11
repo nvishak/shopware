@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,15 +10,16 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/report_private_person/container"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Container',
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Container',
     {
         extend: 'Ext.container.Container',
-        autoShow: true,
         alias: 'widget.crefoconfig-tabs-report-private-person-container',
-        region: 'center',
-        autoScroll: true,
         name: 'reportPrivatePersonContainer',
         id: 'reportPrivatePersonContainer',
+        itemId: 'reportPrivatePersonContainer',
+        region: 'center',
+        autoScroll: false,
+        autoShow: true,
         border: 0,
         layout: 'anchor',
         ui: 'shopware-ui',
@@ -29,10 +30,27 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Cont
         },
         hidden: false,
         minWidth: 155,
+        minBasketAreas: 1,
+        maxBasketAreas: 5,
         snippets: {
             labels: {
                 legitimateInterest: '{s name="crefoconfig/view/tabs/reportprivateperson/panel/labels/legitimate_interest"}Berechtigtes Interesse{/s}',
                 productTitle: '{s name="crefoconfig/view/tabs/reportprivateperson/container/labels/title_products_area"}Produktarten{/s}',
+                basket: {
+                    maxValue: '{s name="crefoconfig/view/tabs/report_private_person/products/maxValue"}Warenkorb-Obergrenze{/s}',
+                    currency: '{s name="crefoconfig/view/tabs/report_private_person/products/currency"}EUR{/s}'
+                },
+                basketAreaTitle: {
+                    thresholdBasket: '{s name="crefoconfig/view/tabs/report_private_person/basket_area/threshold"}Warenkorb-Schwellwert{/s}',
+                    productType: '{s name="crefoconfig/view/tabs/report_private_person/basket_area/product_type"}Produktart{/s}',
+                    identificationResult: '{s name="crefoconfig/view/tabs/report_private_person/products/col/titles/identResult"}Identifizierungsergebnis{/s}',
+                    bonimaScoreTitle: '{s name="crefoconfig/view/tabs/report_private_person/basket_area/bonima_score"}Bonima Score{/s}',
+                    bonimaScoreFrom: '{s name="crefo/part/lowercase/from"}ab{/s}',
+                    bonimaScoreTo: '{s name="crefo/part/lowercase/to"}bis{/s}'
+                },
+                countries: {
+                    germany: '{s name="crefo/config/view/tabs/reports/countries/germany"}Deutschland{/s}'
+                }
             },
             tooltips: {
                 infoProducts: '{s name="crefoconfig/view/tabs/reportprivateperson/container/infoProducts"}Diese Software-Version kann die folgenden Produktarten für Privatpersonen verarbeiten:' +
@@ -40,83 +58,44 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Cont
                 'Bei beiden Produktarten ist die Eingabe von Scorebereichen notwendig,innerhalb derer die Bonitätsprüfung bestanden ist (Wertebereich 0-99999).{/s}'
             },
             errors: {
-                noProducts: '{s name="crefoconfig/reports/noRedProducts"}ACHTUNG! Die Mitgliedskennung ist für keine Produktart berechtigt,'
-                + 'die die Software verarbeiten kann.<br/>Dies ist eine Voraussetzung für die Bonitätsprüfung im WebShop.{/s}',
-                hasRedProducts: '{s name="crefoconfig/reports/hasRedProducts"}ACHTUNG! Die Mitgliedskennung '
-                + 'ist für die rot markierten Produktarten nicht berechtigt.<br/>Voraussetzung für die Bonitätsprüfung im WebShop ist, dass die Mietgliedskennung '
-                + 'für eine Produktart berechtigt ist, die die Software verarbeiten kann, und dass eine berechtigte Produktart ausgewählt ist.{/s}'
+                noProducts: '{s name="crefoconfig/reports/noRedProducts"}ACHTUNG! Die Mitgliedskennung ist für keine Produktart berechtigt,' +
+                'die die Software verarbeiten kann.<br/>Dies ist eine Voraussetzung für die Bonitätsprüfung im WebShop.{/s}',
+                hasRedProducts: '{s name="crefoconfig/reports/hasRedProducts"}ACHTUNG! Die Mitgliedskennung ' +
+                'ist für die rot markierten Produktarten nicht berechtigt.<br/>Voraussetzung für die Bonitätsprüfung im WebShop ist, dass die Mietgliedskennung ' +
+                'für eine Produktart berechtigt ist, die die Software verarbeiten kann, und dass eine berechtigte Produktart ausgewählt ist.{/s}'
             },
             validation: {
                 invalidValue: '{s name="crefo/validation/invalidValue"}Ungültiger Wert{/s}'
+            },
+            text: {
+                basketAreaIntroText: '{s name="crefoconfig/view/tabs/report_private_person/products/productExplanation"}Die Bonitätsprüfung ist bestanden, wenn die Auskunftsinhalte den folgenden Einstellungen entsprechen:{/s}',
+                basketAreaAddressText: '{s name="crefoconfig/view/tabs/report_private_person/products/col/values/addressOk"}Adresse in Ordnung{/s}' + ' ' + '{s name="crefo/part/uppercase/and"}UND{/s}'
             }
         },
-        initComponent: function(){
+        initComponent: function() {
             var me = this;
-
-            me.items = me.getItems();
-
-            Ext.apply( Ext.form.field.VTypes, {
-                legitimateVType: function( val, field ){
-                    var account = Ext.getCmp( 'privatePersonUserAccountId' );
-                    if( account === null || !Ext.isDefined( account ) || account === '' ) {
-                        return true;
-                    }
-                    if( val !== null || Ext.isDefined( val ) ) {
-                        return true;
-                    }
-                    return false;
+            Ext.applyIf(me, {
+                items: me.getItems()
+            });
+            Ext.apply(Ext.form.field.VTypes, {
+                legitimateVType: function(val) {
+                    return Ext.isEmpty(Ext.getCmp('privatePersonUserAccountId').getValue()) || !Ext.isEmpty(val);
                 },
                 legitimateVTypeText: me.snippets.validation.invalidValue,
-                basketMinVType: function( val, field ){
-                    var arrayId = field.id.split( "_" ),
-                        basketMaxId = arrayId[ 0 ] + "_" + arrayId[ 1 ] + "_maxVal",
-                        basketMaxCmp = Ext.getCmp( basketMaxId );
-                    if( Ext.isEmpty( basketMaxCmp.getValue() ) ) {
+                basketMaxVType: function(val, field) {
+                    var basketAreaContainer = Ext.getCmp('reportPrivatePersonBasketAreaContainer');
+                    if (Ext.isEmpty(val) || Ext.isEmpty(basketAreaContainer) || basketAreaContainer.items.length === 0) {
                         return true;
                     }
-                    return field.getValue() < basketMaxCmp.getValue();
+                    var lastBasketRow = basketAreaContainer.items.get(basketAreaContainer.items.length - 1),
+                        basketThresholdValue = lastBasketRow.query('numberfield[name=basketThresholdMin]')[0];
+                    return field.getValue() > basketThresholdValue.getValue();
                 },
-                basketMinVTypeText: me.snippets.validation.invalidValue,
-                basketMaxVType: function( val, field ){
-                    var arrayId = field.id.split( "_" ),
-                        basketMinId = arrayId[ 0 ] + "_" + arrayId[ 1 ] + "_minVal",
-                        basketMinCmp = Ext.getCmp( basketMinId );
-                    return basketMinCmp.getValue() < field.getValue();
-                },
-                basketMaxVTypeText: me.snippets.validation.invalidValue,
-                bonimaScoreFromVType: function( val, field ){
-                    var arrayId = field.id.split( "_" ),
-                        toCmpId = '';
-                    for( var i = 0; i < arrayId.length - 1; i++ ) {
-                        toCmpId += arrayId[ i ] + "_";
-                    }
-                    toCmpId += "to";
-                    var toCmp = Ext.getCmp( toCmpId );
-                    if( Ext.isEmpty( toCmp.getValue() ) ) {
-                        return true;
-                    }
-                    return parseInt( field.getValue() ) <= parseInt( toCmp.getValue() );
-                },
-                bonimaScoreFromVTypeText: me.snippets.validation.invalidValue,
-                bonimaScoreToVType: function( val, field ){
-                    var arrayId = field.id.split( "_" ),
-                        fromCmpId = '';
-                    for( var i = 0; i < arrayId.length - 1; i++ ) {
-                        fromCmpId += arrayId[ i ] + "_";
-                    }
-                    fromCmpId += "from";
-                    var fromCmp = Ext.getCmp( fromCmpId );
-                    if( Ext.isEmpty( fromCmp.getValue() ) ) {
-                        return true;
-                    }
-                    return parseInt( fromCmp.getValue() ) <= parseInt( field.getValue() );
-                },
-                bonimaScoreToVTypeText: me.snippets.validation.invalidValue
-            } );
-
-            me.callParent( arguments );
+                basketMaxVTypeText: me.snippets.validation.invalidValue
+            });
+            me.callParent(arguments);
         },
-        getItems: function(){
+        getItems: function() {
             var me = this;
 
             return [
@@ -129,7 +108,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Cont
                     border: 0,
                     items: [
                         {
-                            xtype: me.createTextContainer( '' )
+                            xtype: me.createTextContainer('')
                         },
                         {
                             fieldLabel: me.snippets.labels.legitimateInterest,
@@ -148,97 +127,328 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Cont
                             editable: false,
                             displayField: 'textWS',
                             valueField: 'keyWS',
+                            allowBlank: false,
                             validateOnBlur: false,
                             validateOnChange: false,
-                            vtype: 'legitimateVType'
+                            vtype: 'legitimateVType',
+                            listeners: {
+                                'afterrender': function () {
+                                    if (me.useDefaults) {
+                                        this.setValue(me.parentPanel.config.legitimateKeyPrivatePerson);
+                                    } else if (!Ext.isEmpty(me.parentPanel.legitimateInterestStore.first()) &&
+                                      !Ext.isEmpty(me.parentPanel.reportPrivatePersonStore.first()) &&
+                                        !Ext.isEmpty(me.parentPanel.reportPrivatePersonStore.first().get('legitimateKey')) &&
+                                        !Ext.isEmpty(me.parentPanel.legitimateInterestStore.findRecord('keyWS', me.parentPanel.reportPrivatePersonStore.first().get('legitimateKey')))
+                                    ) {
+                                        this.setValue(me.parentPanel.reportPrivatePersonStore.first().get('legitimateKey'));
+                                    }
+                                }
+                            }
                         }
                     ]
-                }, {
-                    xtype: 'fieldset',
-                    id: 'private_person_products_area',
-                    name: 'private_person_products_area',
+                },
+                {
+                    xtype: 'tabpanel',
+                    autoShow: true,
+                    activeTab: 0,
+                    layout: 'fit',
+                    plain: true,
+                    region: 'center',
+                    border: 0.1,
+                    minTabWidth: 80,
+                    frame: false,
+                    frameHeader: false,
                     width: '100%',
-                    margin: '5 5 10 5',
-                    title: '<div class="x-tool" style="border: none !important;" width="24" valign="top"><span id="report_private_person_products_icon" class="x-form-help-icon" style="margin: 0;" data-qtip="' + me.snippets.tooltips.infoProducts + '" role="presentation"></span></div><div class="x-component x-fieldset-header-text x-component-default">' + me.snippets.labels.productTitle + '</div><div class="x-clear" role="presentation"></div>',
-                    items: me.createBonimaProductsView(),
-                    defaults: {
-                        labelWidth: 90,
-                        anchor: '100%',
-                        layout: {
-                            type: 'vbox',
-                            defaultMargins: { top: 0, right: 5, bottom: 0, left: 0 }
+                    bodyBorder: true,
+                    bodyPadding: '1 1 5 5',
+                    items: [
+                        {
+                            xtype: 'container',
+                            id: 'reportPrivatePersonBasketArea',
+                            name: 'reportPrivatePersonBasketArea',
+                            autoShow: true,
+                            autoRender: true,
+                            title: me.snippets.labels.countries.germany,
+                            items: me.createBasketAreaView(),
+                            defaults: {
+                                labelWidth: 90,
+                                anchor: '100%',
+                                layout: {
+                                    type: 'vbox',
+                                    defaultMargins: { top: 0, right: 5, bottom: 0, left: 0 }
+                                }
+                            }
                         }
-                    }
+                    ]
                 }
             ];
         },
-        createBonimaProductsView: function(){
+        createBasketAreaView: function () {
             var me = this,
-                productsView = [],
-                radioGroupItems = [],
-                account = Ext.getCmp( 'privatePersonUserAccountId' );
-
-            if( account.getValue() === null || !Ext.isDefined( account.getValue() ) || account.getValue().length === 0 ) {
-                return productsView;
+                privatePersonConfigStore = me.parentPanel.reportPrivatePersonStore.first();
+            if (Ext.isEmpty(privatePersonConfigStore)) {
+                return [];
             }
-            if( !Ext.isDefined( me.parentPanel.productsDbStore.first() ) && !Ext.isDefined( me.parentPanel.productCwsStore.first() ) ) {
-                productsView.push( { xtype: me.createTextContainer( me.snippets.errors.noProducts ) } );
+            var introText = me.createTextContainer(me.snippets.text.basketAreaIntroText),
+                addressText = me.createTextContainer(me.snippets.text.basketAreaAddressText, 'margin: 0 0 15px 0; text-align: center;'),
+                basketMaxThresholdArea = me.createMaxThresholdArea(),
+                basketHeaderColumn = me.createHeaders(),
+                basketAreaContainer = me.createBasketAreaContainer();
+            if (!me.useDefaults && !Ext.isEmpty(privatePersonConfigStore) && privatePersonConfigStore.getProducts().getCount() > 0) {
+                var productsStore = privatePersonConfigStore.getProducts();
+                productsStore.each(function (record) {
+                    basketAreaContainer.addNewBasketAreaRow(record.get('visualSequence'), false, record, me.useDefaults);
+                });
             } else {
-                if( me.hasBonimaPoolIdentProduct() && !Ext.isDefined( Ext.getCmp( 'bonimaPoolIdentContainer' ) ) ) {
-                    radioGroupItems.push( Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.products.BonimaPoolIdentContainer', {
-                        parentPanel: me.parentPanel
-                    } ) );
-                }
-                if( me.hasBonimaPoolIdentPremiumProduct() && !Ext.isDefined( Ext.getCmp( 'bonimaPoolIdentPremiumContainer' ) ) ) {
-                    radioGroupItems.push( Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.products.BonimaPoolIdentPremiumContainer', {
-                        parentPanel: me.parentPanel
-                    } ) );
-                }
-                if( radioGroupItems.length > 0 && !Ext.isDefined( Ext.getCmp( 'radio-group-bonima-products' ) ) ) {
-                    var radioGroup = {
-                        xtype: 'radiogroup',
-                        id: 'radio-group-bonima-products',
-                        columns: 1,
-                        width: '100%',
-                        vertical: true,
-                        items: radioGroupItems,
-                        allowBlank: false,
-                        blankText: me.snippets.validation.invalidValue
-                    };
-                    productsView.push( radioGroup );
-                } else if( radioGroupItems.length > 0 ) {
-                    var radioGroup = Ext.getCmp( 'radio-group-bonima-products' );
-                    Ext.Array.each( radioGroupItems, function( cmp, index, radioGroupItSelf ){
-                        radioGroup.add( cmp );
-                    } );
-                    productsView.push( radioGroup );
-                }
+                basketAreaContainer.addNewBasketAreaRow(0, false, undefined, me.useDefaults);
             }
-            return productsView;
+            return [{
+                xtype: me.createTextContainer('<div class="x-tool" style="float: right;border: none !important;" width="24" valign="top"><span id="report_private_person_products_icon" class="x-form-help-icon" style="margin: 0;" data-qtip="' + me.snippets.tooltips.infoProducts + '" role="presentation"></span></div>', 'margin: 0 0 0 0; padding: 0 0 0 0;')
+            }, introText, addressText, basketHeaderColumn, basketAreaContainer, basketMaxThresholdArea ];
         },
-        hasBonimaPoolIdentProduct: function(){
-            var me = this,
-                key = me.parentPanel.allowedBonimaProducts.findRecord( 'id', me.parentPanel.productKeysIds.bonimaPoolIdent ).get( 'keyWS' );
-            recordDB = me.parentPanel.productsDbStore.findRecord( 'productKeyWS', me.parentPanel.productKeysIds.bonimaPoolIdent );
-            recordCWS = me.parentPanel.productCwsStore.findRecord( 'keyWS', key );
-            return !Ext.isEmpty( recordDB ) || !Ext.isEmpty( recordCWS );
-        },
-        hasBonimaPoolIdentPremiumProduct: function(){
-            var me = this,
-                key = me.parentPanel.allowedBonimaProducts.findRecord( 'id', me.parentPanel.productKeysIds.bonimaPoolIdentPremium ).get( 'keyWS' );
-            recordDB = me.parentPanel.productsDbStore.findRecord( 'productKeyWS', me.parentPanel.productKeysIds.bonimaPoolIdentPremium );
-            recordCWS = me.parentPanel.productCwsStore.findRecord( 'keyWS', key );
-            return !Ext.isEmpty( recordDB ) || !Ext.isEmpty( recordCWS );
-        },
-        validateReportPrivatePersonPanel: function(){
+        createHeaders: function () {
             var me = this;
-            formPnl = Ext.getCmp( 'ReportPrivatePersonPanel' );
-            formPnl.getForm().getFields().each( function( f ){
-                f.validate();
-            } );
+            return Ext.create('Ext.container.Container', {
+                layout: 'column',
+                alias: 'widget.crefo-config-tabs-report-private-person-basket-area-headers',
+                padding: '0 0 30 0',
+                defaults: {
+                    columnWidth: me.parentPanel.columnWidthLayout.default,
+                    style: {
+                        height: '20px',
+                        textAlign: 'left',
+                        paddingTop: '7px',
+                        paddingBottom: '2px'
+                    }
+                },
+                width: '100%',
+                items: [
+                    {
+                        xtype: 'container',
+                        columnWidth: me.parentPanel.columnWidthLayout.threshold,
+                        html: me.snippets.labels.basketAreaTitle.thresholdBasket,
+                        style: {
+                            height: '20px',
+                            textAlign: 'left',
+                            paddingTop: '7px',
+                            paddingBottom: '2px'
+                        }
+                    },
+                    {
+                        xtype: 'container',
+                        html: '&nbsp;',
+                        columnWidth: me.parentPanel.columnWidthLayout.gap
+                    },
+                    {
+                        xtype: 'container',
+                        columnWidth: me.parentPanel.columnWidthLayout.productType,
+                        html: me.snippets.labels.basketAreaTitle.productType,
+                        style: {
+                            height: '20px',
+                            textAlign: 'left',
+                            paddingTop: '7px',
+                            paddingBottom: '2px'
+                        }
+                    },
+                    {
+                        xtype: 'container',
+                        html: '&nbsp;',
+                        columnWidth: me.parentPanel.columnWidthLayout.gap
+                    },
+                    {
+                        xtype: 'container',
+                        columnWidth: me.parentPanel.columnWidthLayout.bonimaScoreArea,
+                        layout: 'column',
+                        html: '&nbsp;',
+                        defaults: {
+                            columnWidth: me.parentPanel.columnWidthLayout.default,
+                            style: {
+                                height: '20px',
+                                textAlign: 'left'
+                            }
+                        },
+                        items: [
+                            {
+                                xtype: 'container',
+                                columnWidth: me.parentPanel.columnWidthLayout.identificationResult,
+                                html: me.snippets.labels.basketAreaTitle.identificationResult,
+                                style: {
+                                    height: '20px',
+                                    textAlign: 'left'
+                                }
+                            },
+                            {
+                                xtype: 'container',
+                                html: '&nbsp;',
+                                columnWidth: me.parentPanel.columnWidthLayout.gap
+                            },
+                            {
+                                xtype: 'container',
+                                html: '&nbsp;',
+                                layout: 'column',
+                                columnWidth: me.parentPanel.columnWidthLayout.gap + me.parentPanel.columnWidthLayout.bonimaScoreFrom + me.parentPanel.columnWidthLayout.bonimaScoreTo,
+                                defaults: {
+                                    columnWidth: me.parentPanel.columnWidthLayout.default,
+                                    style: {
+                                        height: '20px',
+                                        textAlign: 'left'
+                                    }
+                                },
+                                items: [
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: 1,
+                                        html: me.snippets.labels.basketAreaTitle.bonimaScoreTitle,
+                                        style: {
+                                            height: '20px',
+                                            textAlign: 'left'
+                                        }
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: me.parentPanel.columnWidthLayout.bonimaScoreFromTitle,
+                                        html: me.snippets.labels.basketAreaTitle.bonimaScoreFrom,
+                                        style: {
+                                            height: '20px',
+                                            textAlign: 'left'
+                                        }
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        html: '&nbsp;',
+                                        columnWidth: me.parentPanel.columnWidthLayout.default
+                                    },
+                                    {
+                                        xtype: 'container',
+                                        columnWidth: me.parentPanel.columnWidthLayout.bonimaScoreToTitle,
+                                        html: me.snippets.labels.basketAreaTitle.bonimaScoreTo,
+                                        style: {
+                                            height: '20px',
+                                            textAlign: 'left'
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        xtype: 'container',
+                        html: '&nbsp;',
+                        columnWidth: me.parentPanel.columnWidthLayout.gap
+                    },
+                    {
+                        xtype: 'container',
+                        columnWidth: me.parentPanel.columnWidthLayout.actions,
+                        html: '&nbsp;',
+                        style: {
+                            height: '20px',
+                            textAlign: 'left'
+                        }
+                    }
+                ]
+            });
         },
-        createTextContainer: function( html, style ){
-            if( !Ext.isDefined( style ) ) {
+        createBasketAreaContainer: function () {
+            var me = this;
+            return Ext.create('Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.BasketAreaContainer', {
+                parentPanel: me.parentPanel
+            });
+        },
+        createMaxThresholdArea: function() {
+            var me = this;
+            return Ext.create('Ext.container.Container', {
+                layout: 'column',
+                width: '100%',
+                defaults: {
+                    columnWidth: 0.10
+                },
+                items: [
+                    {
+                        xtype: 'text',
+                        columnWidth: 0.22,
+                        html: me.snippets.labels.basket.maxValue,
+                        style: {
+                            height: '24px',
+                            textAlign: 'left',
+                            paddingTop: '7px',
+                            paddingBottom: '2px'
+                        }
+                    },
+                    {
+                        xtype: 'numberfield',
+                        name: 'thresholdMax',
+                        itemId: 'thresholdMax',
+                        id: 'bonimaBasketThresholdMaxValue',
+                        hideLabel: true,
+                        allowBlank: true,
+                        invalidText: me.snippets.validation.invalidValue,
+                        nanText: me.snippets.validation.invalidValue,
+                        maxText: me.snippets.validation.invalidValue,
+                        width: 50,
+                        decimalPrecision: 2,
+                        disableKeyFilter: true,
+                        submitLocaleSeparator: false,
+                        minValue: 0,
+                        maxValue: 99999.99,
+                        //Remove spinner buttons, and arrow key and mouse wheel listeners
+                        hideTrigger: true,
+                        keyNavEnabled: false,
+                        mouseWheelEnabled: false,
+                        enforceMaxLength: true,
+                        maxLength: 8,
+                        maskRe: /[\d,.]/,
+                        validateOnBlur: false,
+                        validateOnChange: false,
+                        vtype: 'basketMaxVType',
+                        listeners: {
+                            'afterrender': function() {
+                                var privatePersonConfigStore = me.parentPanel.reportPrivatePersonStore.first();
+                                if (!me.useDefaults && !Ext.isEmpty(privatePersonConfigStore) && privatePersonConfigStore.getProducts().getCount() > 0) {
+                                    var lastProduct = privatePersonConfigStore.getProducts().last();
+                                    if (lastProduct.get('isLastThresholdMax') && !Ext.isEmpty(lastProduct.get('thresholdMax'))) {
+                                        this.setValue(lastProduct.get('thresholdMax'));
+                                    }
+                                }
+                            },
+                            'paste': {
+                                element: 'inputEl',
+                                fn: function(event, inputEl) {
+                                    if (event.type === 'paste') {
+                                        event.preventDefault();
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        xtype: 'label',
+                        forId: 'thresholdMax',
+                        html: me.snippets.labels.basket.currency,
+                        style: {
+                            height: '20px',
+                            textAlign: 'left',
+                            paddingTop: '7px',
+                            paddingBottom: '2px',
+                            paddingLeft: '2px'
+                        }
+                    },
+                    {
+                        xtype: 'text',
+                        text: ' ',
+                        style: {
+                            height: '20px',
+                            textAlign: 'left',
+                            paddingTop: '7px',
+                            paddingBottom: '2px'
+                        },
+                        columnWidth: 0.58
+                    }
+                ]
+            });
+        },
+        createTextContainer: function(html, style) {
+            if (!Ext.isDefined(style)) {
                 style = 'color: #999; font-style: italic; margin: 0 0 15px 0;';
             }
             return Ext.create(
@@ -249,8 +459,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Cont
                     padding: '10 5 0 5',
                     style: style,
                     html: html
-                } );
+                });
         }
-    } );
-// {/block}
-
+    });
+//{/block}

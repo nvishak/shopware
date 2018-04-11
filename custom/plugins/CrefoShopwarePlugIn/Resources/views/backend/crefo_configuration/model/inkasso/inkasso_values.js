@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,16 +13,13 @@ Ext.define('Shopware.apps.CrefoConfiguration.model.inkasso.InkassoValues', {
     extend: 'Shopware.data.Model',
     alias: 'model.inkasso.inkasso-values',
     fields: [
-        { name: 'id', type: 'int', useNull: true },
+        { name: 'id', type: 'int', useNull: false },
         { name: 'textWS', type: 'string', useNull: true },
-        { name: 'keyWS', type: 'string', useNull: true }
+        { name: 'keyWS', type: 'string', useNull: true },
+        { name: 'typeValue', type: 'int', useNull: false }
     ],
     proxy: {
-        type: 'ajax',
-        api: {
-            read: '{url controller="CrefoConfiguration" action="getInkassoValues"}',
-            destroy: '{url controller="CrefoConfiguration" action="destroyInkassoValues"}'
-        },
+        type: 'memory',
         reader: {
             type: 'json',
             root: 'data'

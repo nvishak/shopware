@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,10 +12,7 @@
 
 namespace CrefoShopwarePlugIn\Models\CrefoReports;
 
-use CrefoShopwarePlugIn\Components\Core\Enums\AddressValidationResultType;
-use CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
-use \Doctrine\ORM\Mapping as ORM;
-use \Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Repository")
@@ -23,7 +20,6 @@ use \Symfony\Component\Validator\Constraints as Assert;
  */
 class PrivatePersonReportResults extends CrefoReportResults
 {
-    const BONIMA_SCORE_TYPE_KEY = "CGSYTY-1";
 
     /**
      * @var string $addressValidationResult
@@ -117,36 +113,4 @@ class PrivatePersonReportResults extends CrefoReportResults
         $this->scoreValue = $scoreValue;
     }
 
-    /**
-     * checks if the Bonima Product conditions are satisfied
-     * @return boolean
-     */
-    public function areBonimaConditionsSatisfied()
-    {
-        $satisfied = true;
-        $satisfied = $satisfied && $this->isAddressConditionSatisfied($this->getAddressValidationResult());
-        $satisfied = $satisfied && $this->compareKeys($this->getScoreType(), self::BONIMA_SCORE_TYPE_KEY);
-        $satisfied = $satisfied && CrefoCrossCuttingComponent::areScoreAndIdentificationResultSatisfied($this);
-        return $satisfied;
-    }
-
-    /**
-     * @param string $addressKey
-     * @return bool
-     */
-    private function isAddressConditionSatisfied($addressKey)
-    {
-        $addressAllowedKeys = AddressValidationResultType::getPositiveValidationAddresses();
-        return in_array(strtoupper($addressKey), $addressAllowedKeys);
-    }
-
-    /**
-     * @param string $keyA
-     * @param string $keyB
-     * @return bool
-     */
-    private function compareKeys($keyA, $keyB)
-    {
-        return strcmp(strtolower($keyA), strtolower($keyB)) == 0;
-    }
 }

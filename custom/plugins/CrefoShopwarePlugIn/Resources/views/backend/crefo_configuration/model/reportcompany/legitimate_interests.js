@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -9,7 +9,7 @@
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
 //{block name="backend/crefo_configuration/model/reportcompany/legitimate_interests"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.model.reportcompany.LegitimateInterests', {
+Ext.define('Shopware.apps.CrefoConfiguration.model.reportcompany.LegitimateInterests', {
     extend: 'Shopware.data.Model',
     alias: 'model.legitimate-interests',
     fields: [
@@ -24,5 +24,5 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.model.reportcompany.LegitimateInte
             root: 'legitimateInterests'
         }
     }
-} );
+});
 //{/block}

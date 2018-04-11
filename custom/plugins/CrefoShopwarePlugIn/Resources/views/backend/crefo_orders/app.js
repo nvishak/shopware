@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -55,10 +55,9 @@ Ext.define('Shopware.apps.CrefoOrders', {
     ],
     onBeforeLaunch: function() {
         var me = this;
-
+        Ext.require('CrefoUtil');
         me._destroyOtherModuleInstances(function() {
         });
-
         me.callParent(arguments);
     },
     launch: function () {
@@ -68,17 +67,16 @@ Ext.define('Shopware.apps.CrefoOrders', {
     },
     _destroyOtherModuleInstances: function (cb, cbArgs) {
         var me = this, activeWindows = [], subAppId = me.$subAppId;
-        me.windowClass= 'Shopware.apps.CrefoOrders.view.main.Window';
+        me.windowClass = 'Shopware.apps.CrefoOrders.view.main.Window';
         cbArgs = cbArgs || [];
 
         Ext.each(Shopware.app.Application.subApplications.items, function (subApp) {
-
             if (!subApp || !subApp.windowManager || subApp.$subAppId === subAppId || !subApp.windowManager.hasOwnProperty('zIndexStack')) {
                 return;
             }
 
             Ext.each(subApp.windowManager.zIndexStack, function (item) {
-                if (typeof(item) !== 'undefined' && me.windowClass===item.$className) {
+                if (typeof (item) !== 'undefined' && me.windowClass === item.$className) {
                     activeWindows.push(item);
                 }
             });

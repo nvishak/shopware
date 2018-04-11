@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_management/view/content/panel"}
-Ext.define( 'Shopware.apps.CrefoManagement.view.content.Panel', {
+Ext.define('Shopware.apps.CrefoManagement.view.content.Panel', {
     extend: 'Ext.form.Panel',
     alias: 'widget.crefo-management-content-panel',
     bodyPadding: 10,
@@ -21,12 +21,12 @@ Ext.define( 'Shopware.apps.CrefoManagement.view.content.Panel', {
         description: '{s name=crefomanagement/view/content/panel/description}Beim Export werden gespeicherte Ergebnisse von Bonitätsprüfungen und gespeicherte Inkasso-Informationen als lokale Sichtkopien exportiert.<br />Es ist nicht möglich, diese Sichtkopien künftig wieder zu importieren!{/s}',
         button: '{s name=crefomanagement/view/content/panel/download}Export starten{/s}'
     },
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
         me.title = me.snippets.title;
         me.registerEvents();
         me.items = [
-            me.createDescriptionContainer( me.snippets.description ),
+            me.createDescriptionContainer(me.snippets.description),
             {
                 xtype: 'hiddenfield',
                 name: 'format',
@@ -42,10 +42,10 @@ Ext.define( 'Shopware.apps.CrefoManagement.view.content.Panel', {
             items: me.getBottomButtons()
         } ];
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
 
-    registerEvents: function(){
+    registerEvents: function() {
         this.addEvents(
             /**
              * Event will be fired when the user clicks the button to Export the Zip
@@ -56,24 +56,24 @@ Ext.define( 'Shopware.apps.CrefoManagement.view.content.Panel', {
             'exportZip'
         );
     },
-    getBottomButtons: function(){
+    getBottomButtons: function() {
         var me = this;
         return [ '->', {
             xtype: 'button',
             cls: 'primary',
             text: me.snippets.button,
             formBind: true,
-            handler: function(){
-                me.fireEvent( 'exportZip', me );
+            handler: function() {
+                me.fireEvent('exportZip', me);
             }
         } ];
     },
-    createDescriptionContainer: function( html ){
-        return Ext.create( 'Ext.container.Container', {
+    createDescriptionContainer: function(html) {
+        return Ext.create('Ext.container.Container', {
             style: 'color: #999; font-style: italic; margin: 0 0 15px 0;',
             html: html
-        } );
+        });
     }
 
-} );
-// {/block}
+});
+//{/block}

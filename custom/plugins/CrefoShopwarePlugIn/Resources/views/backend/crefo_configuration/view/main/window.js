@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/main/window" }
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.main.Window', {
+Ext.define('Shopware.apps.CrefoConfiguration.view.main.Window', {
     extend: 'Enlight.app.Window',
     alias: 'widget.crefoconfig-main-window',
     title: '{s name=crefoconfig/view/main/window}Crefo Configuration{/s}',
@@ -36,7 +36,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.main.Window', {
      *
      * @return void
      */
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
         me.registerEvents();
         me.tabPanel = me.createTabPanel();
@@ -48,9 +48,9 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.main.Window', {
             items: [ me.tabPanel ]
         } ];
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    registerEvents: function(){
+    registerEvents: function() {
         this.addEvents(
             /**
              * This event is fired, when the user changes the active tab
@@ -62,31 +62,30 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.main.Window', {
             'changeTab'
         );
     },
-    createTabPanel: function(){
+    createTabPanel: function() {
         var me = this;
 
-        me.general = Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.general.Panel', {
+        me.general = Ext.create('Shopware.apps.CrefoConfiguration.view.tabs.general.Panel', {
             generalStore: me.generalStore
-        } );
+        });
 
-        me.accounts = Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.Panel', {
+        me.accounts = Ext.create('Shopware.apps.CrefoConfiguration.view.tabs.accounts.Panel', {
             accountStore: me.accountStore
-        } );
+        });
 
-        me.reportCompany = Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.reportcompany.Panel', {
+        me.reportCompany = Ext.create('Shopware.apps.CrefoConfiguration.view.tabs.reportcompany.Panel', {
             accountStore: me.accountStore
-        } );
+        });
 
-        me.reportPrivatePerson = Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Panel', {
+        me.reportPrivatePerson = Ext.create('Shopware.apps.CrefoConfiguration.view.tabs.reportprivateperson.Panel', {
             accountStore: me.accountStore
-        } );
+        });
 
-        me.inkasso = Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Panel', {
+        me.inkasso = Ext.create('Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Panel', {
             accountStore: me.accountStore
-        } );
+        });
 
-
-        return Ext.create( 'Ext.tab.Panel', {
+        return Ext.create('Ext.tab.Panel', {
             autoShow: true,
             layout: 'fit',
             region: 'center',
@@ -139,37 +138,36 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.main.Window', {
                 items: [ me.inkasso ]
             } ],
             listeners: {
-                tabchange: function( tabPanel, newTab, oldTab ){
+                tabchange: function(tabPanel, newTab, oldTab) {
                     var newTabPanel = newTab.items.items[ 0 ];
-                    if( /crefoconfig-tabs-general-panel/ig.test( newTabPanel.id ) ) {
-                        me.fireEvent( 'changeTab', tabPanel, newTab, oldTab, me.general );
+                    if (/settingsPanel/ig.test(newTabPanel.id)) {
+                        me.fireEvent('changeTab', tabPanel, newTab, oldTab, me.general);
                     }
-                    if( /crefoconfig-tabs-accounts-panel/ig.test( newTabPanel.id ) ) {
-                        me.fireEvent( 'changeTab', tabPanel, newTab, oldTab, me.accounts );
+                    if (/crefoconfig-tabs-accounts-panel/ig.test(newTabPanel.id)) {
+                        me.fireEvent('changeTab', tabPanel, newTab, oldTab, me.accounts);
                     }
-                    if( /reportCompanyPanel/ig.test( newTabPanel.id ) ) {
-                        me.fireEvent( 'changeTab', tabPanel, newTab, oldTab, me.reportCompany );
+                    if (/reportCompanyPanel/ig.test(newTabPanel.id)) {
+                        me.fireEvent('changeTab', tabPanel, newTab, oldTab, me.reportCompany);
                     }
-                    if( /ReportPrivatePersonPanel/ig.test( newTabPanel.id ) ) {
-                        me.fireEvent( 'changeTab', tabPanel, newTab, oldTab, me.reportPrivatePerson );
+                    if (/ReportPrivatePersonPanel/ig.test(newTabPanel.id)) {
+                        me.fireEvent('changeTab', tabPanel, newTab, oldTab, me.reportPrivatePerson);
                     }
-                    if( /crefoconfig-tabs-inkasso-panel/ig.test( newTabPanel.id ) ) {
-                        me.fireEvent( 'changeTab', tabPanel, newTab, oldTab, me.inkasso );
+                    if (/collectionConfigPanel/ig.test(newTabPanel.id)) {
+                        me.fireEvent('changeTab', tabPanel, newTab, oldTab, me.inkasso);
                     }
                 },
-                'afterrender': function( editor, eOpts ){
-                    if( me.accountStore.first() !== undefined ) {
-                        me.disableTabs( false );
+                'afterrender': function() {
+                    if (Ext.isDefined(me.accountStore.first())) {
+                        me.disableTabs(false);
                     }
                 }
             }
-        } );
+        });
     },
-    disableTabs: function( disabled ){
-        var me = this;
-        Ext.getCmp( 'crefoconfig-main-tabpanel-collections' ).setDisabled( disabled );
-        Ext.getCmp( 'crefoconfig-main-tabpanel-reportcompany' ).setDisabled( disabled );
-        Ext.getCmp( 'crefoconfig-main-tabpanel-private-person' ).setDisabled( disabled );
+    disableTabs: function(disabled) {
+        Ext.getCmp('crefoconfig-main-tabpanel-collections').setDisabled(disabled);
+        Ext.getCmp('crefoconfig-main-tabpanel-reportcompany').setDisabled(disabled);
+        Ext.getCmp('crefoconfig-main-tabpanel-private-person').setDisabled(disabled);
     }
-} );
+});
 //{/block}

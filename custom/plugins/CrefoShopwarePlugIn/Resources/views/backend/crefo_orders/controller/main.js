@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/controller/main"}
-Ext.define( 'Shopware.apps.CrefoOrders.controller.Main', {
+Ext.define('Shopware.apps.CrefoOrders.controller.Main', {
     extend: 'Enlight.app.Controller',
     mainWindow: null,
     snippets: {
@@ -26,58 +26,56 @@ Ext.define( 'Shopware.apps.CrefoOrders.controller.Main', {
             }
         }
     },
-    init: function(){
+    init: function() {
         var me = this;
-        /**
-         * imports models and classes from Crefo Configuration
-         */
-        Ext.require( 'Shopware.apps.CrefoConfiguration', function(){
-            var listBatchStore = Ext.create( 'Shopware.apps.CrefoOrders.store.ListBatch' ),
-                inkConfig = Ext.create( 'Shopware.apps.CrefoConfiguration.store.Inkasso' ),
-                reportResultStore = me.subApplication.getStore( 'CrefoReportResults' ).load(),
-                crefoProposalStore = Ext.create( 'Shopware.apps.CrefoOrders.store.CrefoProposal' ).load(),
-                crefoOrdersStore = Ext.create( 'Shopware.apps.CrefoOrders.store.CrefoOrders' ).load(),
-                listStore = me.subApplication.getStore( 'Order' ).load();
-            inkConfig.load( {
-                    callback: function( records ){
-                        listBatchStore.load( {
-                            callback: function( records ){
-                                var record = records[ 0 ],
-                                    stores = me.getAssociationStores( record );
-                                //open the order listing window
-                                var task = new Ext.util.DelayedTask( function(){
-                                    me.mainWindow = me.getView( 'main.Window' ).create( {
-                                        orderStatusStore: stores[ 'orderStatusStore' ],
-                                        paymentStatusStore: stores[ 'paymentStatusStore' ],
-                                        statusStore: stores[ 'statusStore' ],
-                                        orderListingStore: stores[ 'orderListingStore' ],
-                                        reportResultStore: reportResultStore,
-                                        crefoProposalStore: crefoProposalStore,
-                                        crefoOrdersStore: crefoOrdersStore,
-                                        listStore: listStore,
-                                        inkassoConfig: inkConfig
-                                    } );
-                                } );
-                                task.delay( 200 );
-                            }
-                        } )
-                    }
+        CrefoUtil.loadSnippets(me.snippets);
+        Ext.require('Shopware.apps.CrefoConfiguration', function () {
+            var listBatchStore = Ext.create('Shopware.apps.CrefoOrders.store.ListBatch'),
+                inkConfig = Ext.create('Shopware.apps.CrefoConfiguration.store.Inkasso'),
+                reportResultStore = me.subApplication.getStore('CrefoReportResults').load(),
+                crefoProposalStore = Ext.create('Shopware.apps.CrefoOrders.store.CrefoProposal').load(),
+                crefoOrdersStore = Ext.create('Shopware.apps.CrefoOrders.store.CrefoOrders').load(),
+                listStore = me.subApplication.getStore('Order').load();
+            inkConfig.load({
+                callback: function(records) {
+                    listBatchStore.load({
+                        callback: function(records) {
+                            var record = records[ 0 ],
+                                stores = me.getAssociationStores(record);
+                            //open the order listing window
+                            var task = new Ext.util.DelayedTask(function() {
+                                me.mainWindow = me.getView('main.Window').create({
+                                    orderStatusStore: stores[ 'orderStatusStore' ],
+                                    paymentStatusStore: stores[ 'paymentStatusStore' ],
+                                    statusStore: stores[ 'statusStore' ],
+                                    orderListingStore: stores[ 'orderListingStore' ],
+                                    reportResultStore: reportResultStore,
+                                    crefoProposalStore: crefoProposalStore,
+                                    crefoOrdersStore: crefoOrdersStore,
+                                    listStore: listStore,
+                                    inkassoConfig: inkConfig
+                                });
+                            });
+                            task.delay(200);
+                        }
+                    });
                 }
+            }
             );
-        } );
-        me.callParent( arguments );
+        });
+        me.callParent(arguments);
     },
-    getAssociationStores: function( record ){
+    getAssociationStores: function(record) {
         var me = this,
-            orderStatusStore = Ext.create( 'Shopware.apps.Base.store.OrderStatus' ),
-            paymentStatusStore = Ext.create( 'Shopware.apps.Base.store.PaymentStatus' ),
-            statusStore = Ext.create( 'Shopware.apps.Base.store.PositionStatus' ),
-            orderListingStore = me.subApplication.getStore( 'OrderListing' );
+            orderStatusStore = Ext.create('Shopware.apps.Base.store.OrderStatus'),
+            paymentStatusStore = Ext.create('Shopware.apps.Base.store.PaymentStatus'),
+            statusStore = Ext.create('Shopware.apps.Base.store.PositionStatus'),
+            orderListingStore = me.subApplication.getStore('OrderListing');
 
-        orderStatusStore.add( record.raw.orderStatus );
-        paymentStatusStore.add( record.raw.paymentStatus );
-        statusStore.add( record.raw.positionStatus );
-        orderListingStore.add( record.raw.crefoOrderListing );
+        orderStatusStore.add(record.raw.orderStatus);
+        paymentStatusStore.add(record.raw.paymentStatus);
+        statusStore.add(record.raw.positionStatus);
+        orderListingStore.add(record.raw.crefoOrderListing);
 
         var stores = [];
         stores[ 'orderStatusStore' ] = orderStatusStore;
@@ -87,92 +85,58 @@ Ext.define( 'Shopware.apps.CrefoOrders.controller.Main', {
 
         return stores;
     },
-    isFormValid: function( formPnl ){
-        if( !formPnl.getForm().isValid() ) {
-            formPnl.getForm().getFields().each( function( f ){
-                f.validate();
-            } );
-            return false;
-        }
-        return true;
-    },
-    showStickyMessage: function( title, text ){
-        var opts = {
-            title: title,
-            text: text
-        };
-        Shopware.Notification.createStickyGrowlMessage( opts, this.snippets.main );
-    },
-    isJson: function( str ){
-        try {
-            Ext.JSON.decode( str, false );
-            return true;
-        } catch( e ) {
-            // console.log(e);
-            return false;
-        }
-    },
-    handleErrors: function( errors, formPnl ){
+    handleErrors: function(errors, formPnl) {
         var me = this;
-        if( Ext.isArray( errors ) === false && Ext.isObject( errors ) === false ) {
+        if (Ext.isArray(errors) === false && Ext.isObject(errors) === false) {
             return;
         }
-        if( Ext.isDefined( errors.errorCode ) ) {
+        if (Ext.isDefined(errors.errorCode)) {
             var errorText = me.snippets.generalError;
-            if( Ext.isEmpty( errors.errorText ) ) {
-                errorText = Ext.isEmpty( errors.title ) || errors.title === '' ? me.snippets.generalError : errors.title;
+            if (Ext.isEmpty(errors.errorText)) {
+                errorText = Ext.isEmpty(errors.title) || errors.title === '' ? me.snippets.generalError : errors.title;
             } else {
                 errorText = errors.errorText;
             }
-            errorText += Ext.isDefined( errors.timestamp ) ? '<br />' + errors.timestamp : '';
-            me.showStickyMessage( '', errorText );
+            errorText += Ext.isDefined(errors.timestamp) ? '<br />' + errors.timestamp : '';
+            CrefoUtil.showStickyMessage('', errorText);
             return;
         }
-        if( Ext.isDefined( errors.validationfault ) ) {
-            var validationFault = Ext.isDefined( errors.timestamp ) ? errors.timestamp + '<br />' : '';
+        if (Ext.isDefined(errors.validationfault)) {
+            var validationFault = Ext.isDefined(errors.timestamp) ? errors.timestamp + '<br />' : '';
             validationFault += me.snippets.validation.fault.contactText;
-            me.showStickyMessage( me.snippets.validation.fault.title, validationFault );
+            CrefoUtil.showStickyMessage(me.snippets.validation.fault.title, validationFault);
             return;
         }
 
-        if( Ext.isDefined( errors.faults ) ) {
+        if (Ext.isDefined(errors.faults)) {
             var errorsText, index, title;
-            errorsText = Ext.isDefined( errors.timestamp ) ? errors.timestamp + '<br />' : '';
-            for( index = 0; index < errors.faults.length; index++ ) {
+            errorsText = Ext.isDefined(errors.timestamp) ? errors.timestamp + '<br />' : '';
+            for (index = 0; index < errors.faults.length; index++) {
                 var fault = errors.faults[ index ],
                     faultErrorText;
-                if( Ext.isObject( fault.errortext ) ) {
-                    textArray = me.getArrayFromObject( fault.errortext );
+                if (Ext.isObject(fault.errortext)) {
+                    var textArray = CrefoUtil.getArrayFromObject(fault.errortext);
                     faultErrorText = textArray[ 0 ];
                 } else {
                     faultErrorText = fault.errortext;
                 }
-                if( !Ext.isEmpty( fault.errorfield ) && Ext.isDefined( formPnl ) && (Ext.isDefined( Ext.getCmp( fault.errorfield ) ) || Ext.isDefined( Ext.ComponentQuery.query( '#' + fault.errorfield )[ 0 ] ) ) ) {
-                    var component = Ext.getCmp( fault.errorfield ) || Ext.ComponentQuery.query( '#' + fault.errorfield )[ 0 ];
-                    Ext.isEmpty( component ) ? null : component.markInvalid( faultErrorText );
+                if (!Ext.isEmpty(fault.errorfield) && Ext.isDefined(formPnl) && (Ext.isDefined(Ext.getCmp(fault.errorfield)) || Ext.isDefined(Ext.ComponentQuery.query('#' + fault.errorfield)[ 0 ]))) {
+                    var component = Ext.getCmp(fault.errorfield) || Ext.ComponentQuery.query('#' + fault.errorfield)[ 0 ];
+                    if (!Ext.isEmpty(component)) { component.markInvalid(faultErrorText); }
                 } else {
-                    if( errorsText === undefined ) errorsText = '';
-                    errorsText += Ext.isDefined( fault.errorFieldLabel ) ? fault.errorFieldLabel + ": " : "";
-                    errorsText += faultErrorText + "<br/>";
+                    if (errorsText === undefined) errorsText = '';
+                    errorsText += Ext.isDefined(fault.errorFieldLabel) ? fault.errorFieldLabel + ': ' : '';
+                    errorsText += faultErrorText + '<br/>';
                 }
             }
-            if( Ext.isObject( errors.title ) ) {
-                titleArray = me.getArrayFromObject( errors.title );
+            if (Ext.isObject(errors.title)) {
+                var titleArray = CrefoUtil.getArrayFromObject(errors.title);
                 title = titleArray[ 0 ];
             } else {
                 title = errors.title;
             }
-            me.showStickyMessage( title, errorsText );
+            CrefoUtil.showStickyMessage(title, errorsText);
         }
-    },
-    getArrayFromObject: function( objectToArray ){
-        return Object.keys( objectToArray ).map(
-            function( key ){
-                return objectToArray[ key ]
-            }
-        );
     }
-} );
+});
 //{/block}
-
-

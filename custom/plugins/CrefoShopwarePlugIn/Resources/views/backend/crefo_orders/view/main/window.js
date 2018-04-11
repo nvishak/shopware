@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/view/main/window"}
-Ext.define( 'Shopware.apps.CrefoOrders.view.main.Window', {
+Ext.define('Shopware.apps.CrefoOrders.view.main.Window', {
     extend: 'Enlight.app.Window',
     cls: Ext.baseCSSPrefix + 'crefo-orders-list-main-window',
     alias: 'widget.crefo-orders-list-main-window',
@@ -32,7 +32,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.main.Window', {
     stateId: 'shopware-crefo-orders-main-window',
     title: '{s name="crefoorders/view/main/window/title"}Creditreform Bestellungen{/s}',
 
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
         //add the order list grid panel and set the store
         me.items = [
@@ -43,7 +43,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.main.Window', {
                     align: 'stretch'
                 },
                 region: 'center',
-                items: [ Ext.create( 'Shopware.apps.CrefoOrders.view.list.List', {
+                items: [ Ext.create('Shopware.apps.CrefoOrders.view.list.List', {
                     flex: 2,
                     orderListingStore: me.orderListingStore,
                     crefoProposalStore: me.crefoProposalStore,
@@ -54,17 +54,16 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.main.Window', {
                     reportResultStore: me.reportResultStore,
                     statusStore: me.statusStore,
                     inkassoConfig: me.inkassoConfig
-                } ) ]
-            }, Ext.create( 'Shopware.apps.CrefoOrders.view.list.Navigation', {
+                }) ]
+            }, Ext.create('Shopware.apps.CrefoOrders.view.list.Navigation', {
                 region: 'west',
                 orderStatusStore: me.orderStatusStore,
                 paymentStatusStore: me.paymentStatusStore
-            } )
+            })
         ];
 
-        me.callParent( arguments );
-
+        me.callParent(arguments);
     }
 
-} );
+});
 //{/block}

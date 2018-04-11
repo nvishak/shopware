@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -20,30 +20,26 @@ interface PluginVersion
 {
 
     /**
-     * method used to modify DB (alter/create/insert/update/delete)
-     * @method modifyDB
-     */
-    public function modifyDB();
-
-    /**
-     * method used to remove unlinked/not used files on the server side
-     * @method removeFiles
-     */
-    public function removeOldFiles();
-
-    /**
-     * method used to create the path to the files that will be deleted
-     * @method createFilesArray
-     * return array
-     */
-    public function createFilesArray();
-
-    /**
-     * method used to create the path to the directories that will be deleted
-     * @method createDirArray
+     * method used to save the data that will be lost by modifying the schema of the database
+     *
      * @return array
      */
-    public function createDirArray();
+    public function saveMigrationData();
+
+    /**
+     * method used to migrate specific date to a version of the plugin
+     *
+     * @param array $oldData
+     * @return int
+     */
+    public function migrate(array $oldData);
+
+    /**
+     *  method used to modify DB (alter/create/insert/update/delete)
+     *
+     * @return int
+     */
+    public function modifyDB();
 
     /**
      * method used to create the sql commands

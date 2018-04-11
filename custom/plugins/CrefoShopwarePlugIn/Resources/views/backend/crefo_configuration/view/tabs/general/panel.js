@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,17 +10,18 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/general/panel"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.general.Panel', {
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.general.Panel', {
     extend: 'Ext.form.Panel',
     alias: 'widget.crefoconfig-tabs-general-panel',
+    id: 'settingsPanel',
     bodyPadding: 10,
     autoScroll: true,
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
 
         me.items = [ {
             xtype: 'crefoconfig-tabs-general-container',
-            generalStore: me.generalStore
+            parentPanel: me
         } ];
 
         me.dockedItems = [
@@ -32,27 +33,37 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.general.Panel', {
                 items: me.getBottomButtons()
             } ];
 
-        me.addEvents( 'resetSettings', 'saveSettings' );
-        me.callParent( arguments );
+        me.addEvents('saveSettings');
+        me.callParent(arguments);
     },
-    getBottomButtons: function(){
+    getBottomButtons: function() {
         var me = this;
         return [ '->',
             {
                 text: '{s name=crefo/buttons/reset}Reset{/s}',
                 xtype: 'button',
                 cls: 'secondary',
-                handler: function( event ){
-                    me.fireEvent( 'resetSettings', me.generalStore, me, event );
+                handler: function(event) {
+                    var foundLastRestField = false,
+                        container = me.down('container');
+                    me.getForm().getFields().each(function(f) {
+                        if (!foundLastRestField) {
+                            f.reset();
+                            if (f.id === 'general_error_notification') {
+                                foundLastRestField = true;
+                            }
+                        }
+                    });
+                    container.loadSettings(false);
                 }
             }, {
                 xtype: 'button',
                 cls: 'primary',
                 text: '{s name=crefo/buttons/save}Save{/s}',
-                handler: function( event ){
-                    me.fireEvent( 'saveSettings', me.generalStore.first(), me );
+                handler: function() {
+                    me.fireEvent('saveSettings', me);
                 }
             } ];
     }
-} );
-// {/block}
+});
+//{/block}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,6 +12,8 @@
 
 namespace CrefoShopwarePlugIn\Components\Soap\Parsers;
 
+use \CrefoShopwarePlugIn\Components\Core\Enums\CompanyProductsType;
+use CrefoShopwarePlugIn\Components\Core\Enums\CountryType;
 use \CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser;
 use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 
@@ -30,13 +32,18 @@ class ReportCompaniesParser extends CrefoSoapParser
      */
     public function extractProducts()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==extractProducts==", ['start extracting products']);
         $products = [];
         try {
             $service = $this->getService(self::IDENTIFICATION_REPORT);
+            if (null === $service) {
+                throw new \Exception("Service not found");
+            }
             $products = $this->getProductsKeys($service);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==extractProducts::check-products==", [$products]);
         } catch (\Exception $ex) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==extractProducts>>Exception " . date("Y-m-d H:i:s") . "==", (array)$ex);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                "==extractProducts>>Exception " . date("Y-m-d H:i:s") . "==", [$ex]);
         }
         return $products;
     }
@@ -47,12 +54,15 @@ class ReportCompaniesParser extends CrefoSoapParser
      */
     private function getProductsKeys($service)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==getProductsKeys::check-service==", [$service]);
         $products = [];
         foreach ($service->countryconstraint as $constraint) {
             $countryKey = $constraint->country->key;
             try {
                 $productType = $this->getAllowedKeys($constraint, self::PRODUCT_TYPE);
             } catch (\Exception $e) {
+                CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                    "==getProductsKeys>>Exception " . date("Y-m-d H:i:s") . "==", [$e]);
                 $productType = null;
             }
             $tempProducts = $this->getProductsFromCountry($productType, $countryKey);
@@ -70,26 +80,26 @@ class ReportCompaniesParser extends CrefoSoapParser
      */
     private function getProductsFromCountry($allowedKey, $countryKey)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==getProductsFromCountry::allowedKey==", [$allowedKey]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==getProductsFromCountry::countryKey==", [$countryKey]);
         $countryProducts = [];
-        if (is_null($allowedKey)) {
+        if (null === $allowedKey) {
             return [];
         }
         $i = 0;
         if (is_object($allowedKey->keyconstraint) && $allowedKey->keyconstraint instanceof \stdClass) {
             $countryProducts[$i]['keyWS'] = $allowedKey->keyconstraint->keycontent->key;
             $countryProducts[$i]['nameWS'] = $allowedKey->keyconstraint->keycontent->designation;
-            $countryProducts[$i]['solvencyIndexWS'] = strcmp($allowedKey->keyconstraint->parameters->parameter->use,
+            $countryProducts[$i]['hasSolvencyIndex'] = strcmp($allowedKey->keyconstraint->parameters->parameter->use,
                 'required') === 0 ? true : false;
-            $countryProducts[$i]['available'] = true;
-            $countryProducts[$i]['country'] = $countryKey;
+            $countryProducts[$i]['country'] = CountryType::getCountryIdFromISO2($countryKey);
         } else {
-            foreach ($allowedKey->keyconstraint as $keyconstraint) {
-                $countryProducts[$i]['keyWS'] = $keyconstraint->keycontent->key;
-                $countryProducts[$i]['nameWS'] = $keyconstraint->keycontent->designation;
-                $countryProducts[$i]['solvencyIndexWS'] = strcmp($keyconstraint->parameters->parameter->use,
+            foreach ($allowedKey->keyconstraint as $keyConstraint) {
+                $countryProducts[$i]['keyWS'] = $keyConstraint->keycontent->key;
+                $countryProducts[$i]['nameWS'] = $keyConstraint->keycontent->designation;
+                $countryProducts[$i]['hasSolvencyIndex'] = strcmp($keyConstraint->parameters->parameter->use,
                     'required') === 0 ? true : false;
-                $countryProducts[$i]['available'] = true;
-                $countryProducts[$i]['country'] = $countryKey;
+                $countryProducts[$i]['country'] = CountryType::getCountryIdFromISO2($countryKey);
                 $i++;
             }
         }
@@ -102,7 +112,8 @@ class ReportCompaniesParser extends CrefoSoapParser
      */
     private function filterUnallowedProducts(array $products)
     {
-        $allowedProductsKeys = $this->getApplicationAllowedCrefoProductsKeys();
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==filterUnallowedProducts::UnfilteredProducts==", $products);
+        $allowedProductsKeys = CompanyProductsType::AllowedProducts();
         $filteredProducts = [];
         if (empty($products) || empty($allowedProductsKeys)) {
             return [];
@@ -112,30 +123,9 @@ class ReportCompaniesParser extends CrefoSoapParser
                 $filteredProducts[] = $product;
             }
         }
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==filterUnallowedProducts::FilteredProducts==",
+            $filteredProducts);
         return $filteredProducts;
     }
 
-    /**
-     * loads ini file either the default or a given file
-     * @method loadIni
-     * @param file
-     * @return array
-     */
-    private function getApplicationAllowedCrefoProductsKeys($file = null)
-    {
-        $allowedProductsKeys = [];
-        if ($file == null) {
-            $file = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . "_resources" . DIRECTORY_SEPARATOR . "webservice.ini";
-        }
-        if (file_exists($file)) {
-            $ini_array = parse_ini_file(filter_var($file, FILTER_SANITIZE_STRING), true);
-            if (array_key_exists("application_allowed_products", $ini_array)) {
-                $ws_config = $ini_array['application_allowed_products'];
-                foreach ($ws_config as $key) {
-                    $allowedProductsKeys[] = $key;
-                }
-            }
-        }
-        return $allowedProductsKeys;
-    }
 }

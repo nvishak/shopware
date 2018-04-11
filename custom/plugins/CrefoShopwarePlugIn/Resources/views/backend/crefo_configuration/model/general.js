@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -9,10 +9,10 @@
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
 //{block name="crefo_configuration/model/general"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.model.General', {
+Ext.define('Shopware.apps.CrefoConfiguration.model.General', {
     extend: 'Shopware.data.Model',
     alias: 'model.general',
-    configure: function(){
+    configure: function() {
         return {
             controller: 'CrefoConfiguration'
         };
@@ -25,8 +25,8 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.model.General', {
         { name: 'logsMaxStorageTime', type: 'integer', useNull: false },
         { name: 'errorNotificationStatus', type: 'boolean' },
         { name: 'emailAddress', type: 'string', useNull: true },
-        { name: 'requestCheckAtValue', type: 'integer', useNull: false },
-        { name: 'errorTolerance', type: 'integer', useNull: false }
+        { name: 'requestCheckAtValue', type: 'integer', useNull: true },
+        { name: 'errorTolerance', type: 'integer', useNull: true }
     ],
     proxy: {
         type: 'ajax',
@@ -39,5 +39,5 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.model.General', {
             root: 'data'
         }
     }
-} );
+});
 //{/block}

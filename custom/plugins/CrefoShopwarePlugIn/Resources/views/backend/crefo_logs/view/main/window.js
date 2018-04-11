@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_logs/view/main/window"}
-Ext.define( 'Shopware.apps.CrefoLogs.view.main.Window', {
+Ext.define('Shopware.apps.CrefoLogs.view.main.Window', {
     extend: 'Enlight.app.Window',
     alias: 'widget.crefo-logs-main-window',
     id: 'CrefoLogsWindow',
@@ -32,7 +32,7 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.main.Window', {
         }
     },
 
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
         me.title = me.snippets.title;
         me.registerEvents();
@@ -45,9 +45,9 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.main.Window', {
             items: [ me.tabPanel ]
         } ];
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    registerEvents: function(){
+    registerEvents: function() {
         this.addEvents(
             /**
              * This event is fired, when the user changes the active tab
@@ -59,21 +59,20 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.main.Window', {
             'changeTab'
         );
     },
-    createTabPanel: function(){
+    createTabPanel: function() {
         var me = this;
 
-        // me.serverPanel = Ext.create('Shopware.apps.CrefoLogs.view.tabs.ServerPanel');
+        //me.serverPanel = Ext.create('Shopware.apps.CrefoLogs.view.tabs.ServerPanel');
 
-        me.serverList = Ext.create( 'Shopware.apps.CrefoLogs.view.tabs.ServerList', {
+        me.serverList = Ext.create('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
             listServerStore: me.listServerStore
-        } );
+        });
 
-        me.listTab = Ext.create( 'Shopware.apps.CrefoLogs.view.tabs.List', {
+        me.listTab = Ext.create('Shopware.apps.CrefoLogs.view.tabs.List', {
             crefoListStore: me.crefoListStore
-        } );
+        });
 
-
-        return Ext.create( 'Ext.tab.Panel', {
+        return Ext.create('Ext.tab.Panel', {
             autoShow: true,
             layout: 'fit',
             region: 'center',
@@ -93,19 +92,19 @@ Ext.define( 'Shopware.apps.CrefoLogs.view.main.Window', {
                 {
                     xtype: 'container',
                     autoRender: true,
-                    // tabConfig: {
-                    //     tooltip: me.snippets.tabs.tooltip
-                    // },
+                    //tabConfig: {
+                    //tooltip: me.snippets.tabs.tooltip
+                    //},
                     title: me.snippets.tabs.serverLogs,
                     items: [ me.serverList ]
                 }
             ],
             listeners: {
-                tabchange: function( tabPanel, newTab, oldTab ){
-                    me.fireEvent( 'changeTab', tabPanel, newTab, oldTab );
+                tabchange: function(tabPanel, newTab, oldTab) {
+                    me.fireEvent('changeTab', tabPanel, newTab, oldTab);
                 }
             }
-        } );
+        });
     }
-} );
+});
 //{/block}

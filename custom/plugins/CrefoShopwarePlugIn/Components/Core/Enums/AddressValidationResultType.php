@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,6 +13,7 @@
 namespace CrefoShopwarePlugIn\Components\Core\Enums;
 
 /**
+ * @codeCoverageIgnore
  * Class AddressValidationResultType
  * @package CrefoShopwarePlugIn\Components\Core\Enums
  */
@@ -70,10 +71,10 @@ abstract class AddressValidationResultType
      */
     final public static function getAddressAcronym($id = null, $key = null)
     {
-        if (!is_null($id)) {
+        if (null !== $id) {
             return self::$addressAcronyms[$id];
         }
-        if (!is_null($key)) {
+        if (null !== $key) {
             $flippedArray = array_flip(self::$addressAllowedKeys);
             return self::getAddressAcronym($flippedArray[$key]);
         }

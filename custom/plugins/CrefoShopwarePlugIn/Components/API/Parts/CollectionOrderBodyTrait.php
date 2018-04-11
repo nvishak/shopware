@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -15,6 +15,7 @@ namespace CrefoShopwarePlugIn\Components\API\Parts;
 /**
  * Class CollectionOrderBodyTrait
  * @package CrefoShopwarePlugIn\Components\API\Parts
+ * @codeCoverageIgnore
  */
 trait CollectionOrderBodyTrait
 {
@@ -83,7 +84,7 @@ trait CollectionOrderBodyTrait
      */
     public function setUser($user)
     {
-        if (!is_null($user) && strcmp((string)$user, '') != 0) {
+        if (null !== $user && strcmp((string)$user, '') != 0) {
             $this->user = $user;
         }
     }

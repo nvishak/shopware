@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/view/detail/container/proposal"}
-Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
+Ext.define('Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
     {
         extend: 'Ext.form.FieldContainer',
         autoShow: true,
@@ -73,22 +73,22 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
             },
             validation: {
                 invalidValue: '{s name="crefo/validation/invalidValue"}Ungültiger Wert{/s}'
-            },
-            filterValues: {
-                collectionOrderType: 'CCORTY',
-                turnoverType: 'CCTOTY',
-                receivableReason: 'CCRCRS'
             }
         },
+        collectionValueTypes: {
+            collectionOrderType: 0,
+            collectionTurnoverType: 1,
+            receivableReason: 2
+        },
         listeners: {
-            "afterrender": function(){
-                var me = this;
-                formPnl = me.up( 'panel' );
-                formPnl.getForm().getFields().each( function( f ){
+            'afterrender': function() {
+                var me = this,
+                    formPnl = me.up('panel');
+                formPnl.getForm().getFields().each(function(f) {
                     f.validate();
-                } );
-                if( Ext.isDefined( me.displayErrors ) ) {
-                    me.fireEvent( 'showErrors', me.displayErrors, formPnl.getForm() );
+                });
+                if (Ext.isDefined(me.displayErrors)) {
+                    me.fireEvent('showErrors', me.displayErrors, formPnl.getForm());
                 }
             }
         },
@@ -96,32 +96,39 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
          * This function is called, when the component is initiated
          * It creates the columns of the grid
          */
-        initComponent: function(){
+        initComponent: function() {
             var me = this;
             me.registerEvents();
             me.data = me.crefoProposalRecord.data;
-            Ext.applyIf( me, {
-                items: me.getItems()
-            } );
+            me.collectionOrderTypeStore = Ext.create('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues');
+            me.collectionTurnoverTypeStore = Ext.create('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues');
+            me.collectionReceivableReasonStore = Ext.create('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues');
+            me.collectionOrderTypeStore.loadRecords(me.inkassoValuesStore.getRecordsOfTypeValue(me.collectionValueTypes.collectionOrderType));
+            me.collectionTurnoverTypeStore.loadRecords(me.inkassoValuesStore.getRecordsOfTypeValue(me.collectionValueTypes.collectionTurnoverType));
+            me.collectionReceivableReasonStore.loadRecords(me.inkassoValuesStore.getRecordsOfTypeValue(me.collectionValueTypes.receivableReason));
 
-            Ext.apply( Ext.form.field.VTypes, {
-                interestRateProposal: function( val, field ){
+            Ext.applyIf(me, {
+                items: me.getItems()
+            });
+
+            Ext.apply(Ext.form.field.VTypes, {
+                interestRateProposal: function(val, field) {
                     var success = true;
                     //{literal}
                     var patt = /^\d{0,2}([,|.]\d{1,2})*$/;
                     //{/literal}
-                    if( val.length > 5 || !patt.test( val ) ) {
+                    if (val.length > 5 || !patt.test(val)) {
                         success = false;
                     }
                     return success;
                 },
                 interestRateProposalText: this.snippets.validation.invalidValue
-            } );
+            });
 
-            me.callParent( arguments );
+            me.callParent(arguments);
         },
 
-        registerEvents: function(){
+        registerEvents: function() {
             this.addEvents(
                 /**
                  * Event will be fired when proposal errors exists
@@ -134,7 +141,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
             );
         },
 
-        getItems: function(){
+        getItems: function() {
             var me = this;
 
             return [
@@ -164,7 +171,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             flex: 1,
                             width: '100%',
                             labelWidth: '30%',
-                            padding: '10 5 0 5',
+                            padding: '10 5 0 5'
                         },
                         {
                             xtype: 'displayfield',
@@ -218,13 +225,14 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             padding: '5 5 0 5',
                             submitValue: true,
                             value: me.getDebtorStreet()
-                        }, {
+                        },
+                        {
                             xtype: 'container',
                             layout: 'hbox',
                             flex: 1,
                             width: '100%',
                             padding: '5 5 0 5',
-                            // margin: '10 0 0 0',
+                            //margin: '10 0 0 0',
                             items: [
                                 {
                                     xtype: 'displayfield',
@@ -270,13 +278,17 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             value: null,
                             valueField: 'useraccount',
                             listConfig: {
-                                tpl: '<tpl for=".">'
-                                + '<div class="x-boundlist-item">{literal}{useraccount} - {name} {address}{/literal}</div>'
-                                + '</tpl>'
+                                tpl: '<tpl for=".">' +
+                                  '<tpl if="useraccount.length &gt; 0">' +
+                                  '<div class="x-boundlist-item">{literal}{useraccount} - {name} {address}{/literal}</div>' +
+                                  '<tpl else>' +
+                                  '<div class="x-boundlist-item">&nbsp;</div>' +
+                                  '</tpl>' +
+                                  '</tpl>'
                             },
                             listeners: {
-                                afterrender: function(){
-                                    this.setValue( me.getUpdatedCreditor() );
+                                afterrender: function() {
+                                    this.setValue(me.getUpdatedCreditor());
                                 }
                             }
                         },
@@ -297,7 +309,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             labelWidth: '30%',
                             padding: '10 5 0 5',
                             emptyText: me.snippets.labels.collectionOrderType,
-                            store: me.inkassoValuesStore.keyFilter( me.snippets.filterValues.collectionOrderType ),
+                            store: me.collectionOrderTypeStore,
                             queryMode: 'local',
                             allowBlank: false,
                             forceSelection: true,
@@ -306,12 +318,8 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             displayField: 'textWS',
                             valueField: 'keyWS',
                             listeners: {
-                                afterrender: function(){
-                                    this.getStore().keyFilter( me.snippets.filterValues.collectionOrderType );
-                                    this.setValue( me.crefoProposalRecord.get( 'orderTypeKey' ) );
-                                },
-                                focus: function(){
-                                    this.getStore().keyFilter( me.snippets.filterValues.collectionOrderType );
+                                afterrender: function() {
+                                    this.setValue(me.crefoProposalRecord.get('orderTypeKey'));
                                 }
                             }
                         },
@@ -323,123 +331,260 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             flex: 1,
                             width: '100%',
                             margin: '5 5 0 5',
-                            items: [ {
-                                xtype: 'radiogroup',
-                                columns: 1,
-                                vertical: true,
-                                items: [ {
-                                    boxLabel: me.snippets.labels.interestRate.legal,
-                                    name: 'interestRateRadio',
-                                    itemId: 'interestRateRadioLegal',
-                                    id: 'interestRateRadioLegal',
-                                    inputValue: '1',
-                                    width: '100%',
-                                    checked: true
-                                }, {
-                                    xtype: 'container',
-                                    layout: 'hbox',
-                                    width: '100%',
-                                    margin: '10 0 0 0',
+                            items: [
+                                {
+                                    xtype: 'radiogroup',
+                                    columns: 1,
+                                    vertical: true,
+                                    useDBValues: true,
                                     items: [
                                         {
-                                            xtype: 'radio',
-                                            boxLabel: me.snippets.labels.interestRate.variableSpread + me.snippets.labels.parts.column,
-                                            itemId: 'interestRateRadioSpread',
-                                            id: 'interestRateRadioSpread',
-                                            name: 'interestRateRadio',
-                                            flex: 2.9,
-                                            inputValue: '2'
-                                        }, {
-                                            xtype: 'numberfield',
-                                            name: 'interestRateValue',
-                                            itemId: 'interestRateRadioSpreadText',
-                                            id: 'interestRateRadioSpreadText',
-                                            disabled: true,
-                                            allowBlank: false,
-                                            blankText: me.snippets.validation.invalidValue,
-                                            decimalPrecision: 2,
-                                            minValue: 0,
-                                            // Remove spinner buttons, and arrow key and mouse wheel listeners
-                                            hideTrigger: true,
-                                            keyNavEnabled: false,
-                                            mouseWheelEnabled: false,
-                                            maxLength: 5,
-                                            maskRe: /[\d,.]/,
-                                            enforceMaxLength: true,
-                                            vtype: 'interestRateProposal',
-                                            validateOnChange: false,
-                                            validateOnBlur: false,
-                                            flex: 7
-                                        }, {
-                                            xtype: 'displayfield',
-                                            value: '%',
-                                            flex: 0.1
-                                        }
-                                    ]
-                                }, {
-                                    xtype: 'container',
-                                    layout: 'hbox',
-                                    width: '100%',
-                                    margin: '10 0 0 0',
-                                    items: [
+                                            xtype: 'container',
+                                            layout: 'column',
+                                            defaults: {
+                                                height: '28px'
+                                            },
+                                            items: [
+                                                {
+                                                    xtype: 'radio',
+                                                    boxLabel: me.snippets.labels.interestRate.legal,
+                                                    name: 'interestRateRadio',
+                                                    itemId: 'interestRateRadioLegal',
+                                                    id: 'interestRateRadioLegal',
+                                                    inputValue: '1',
+                                                    fieldStyle: {
+                                                        verticalAlign: '-2px'
+                                                    },
+                                                    columnWidth: 1,
+                                                    width: '100%',
+                                                    listeners: {
+                                                        afterrender: function () {
+                                                            var radioInput = me.crefoProposalRecord.get('interestRateRadio');
+                                                            if (!Ext.getCmp('interestRateFieldSet').down('radiogroup').useDBValues) {
+                                                                this.setValue(true);
+                                                            } else {
+                                                                this.checked = false;
+                                                                if (parseInt(radioInput) === 1) {
+                                                                    this.setValue(true);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
                                         {
-                                            xtype: 'radio',
-                                            boxLabel: me.snippets.labels.interestRate.fix + me.snippets.labels.parts.column,
-                                            itemId: 'interestRateRadioFix',
-                                            id: 'interestRateRadioFix',
-                                            name: 'interestRateRadio',
-                                            flex: 2.9,
-                                            inputValue: '3'
-                                        }, {
-                                            xtype: 'numberfield',
-                                            itemId: 'interestRateRadioFixText',
-                                            id: 'interestRateRadioFixText',
-                                            name: 'interestRateValue',
-                                            disabled: true,
-                                            allowBlank: false,
-                                            blankText: me.snippets.validation.invalidValue,
-                                            decimalPrecision: 2,
-                                            minValue: 0,
-                                            // Remove spinner buttons, and arrow key and mouse wheel listeners
-                                            hideTrigger: true,
-                                            keyNavEnabled: false,
-                                            mouseWheelEnabled: false,
-                                            maxLength: 5,
-                                            maskRe: /[\d,.]/,
-                                            enforceMaxLength: true,
-                                            vtype: 'interestRateProposal',
-                                            validateOnChange: false,
-                                            validateOnBlur: false,
-                                            flex: 7
-                                        }, {
-                                            xtype: 'displayfield',
-                                            value: '%',
-                                            flex: 0.1
+                                            xtype: 'container',
+                                            layout: 'column',
+                                            defaults: {
+                                                height: '28px'
+                                            },
+                                            items: [
+                                                {
+                                                    xtype: 'radio',
+                                                    boxLabel: me.snippets.labels.interestRate.variableSpread + me.snippets.labels.parts.column,
+                                                    itemId: 'interestRateRadioSpread',
+                                                    id: 'interestRateRadioSpread',
+                                                    name: 'interestRateRadio',
+                                                    columnWidth: 0.29,
+                                                    inputValue: '2',
+                                                    fieldStyle: {
+                                                        verticalAlign: '-2px'
+                                                    },
+                                                    listeners: {
+                                                        beforerender: function () {
+                                                            var radioInput = me.crefoProposalRecord.get('interestRateRadio');
+                                                            if (!Ext.getCmp('interestRateFieldSet').down('radiogroup').useDBValues) {
+                                                                this.setValue(true);
+                                                            } else {
+                                                                this.checked = false;
+                                                                if (parseInt(radioInput) === 2) {
+                                                                    this.setValue(true);
+                                                                }
+                                                            }
+                                                        },
+                                                        change: function (cmp, newValue) {
+                                                            var container = cmp.findParentByType('container');
+                                                            if (newValue) {
+                                                                container.addValueField();
+                                                            } else {
+                                                                container.removeValueField();
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    itemId: 'interestRateVariableDisplayField',
+                                                    html: '&nbsp;',
+                                                    columnWidth: 0.71,
+                                                    padding: '3 0 0 0'
+                                                }
+                                            ],
+                                            addValueField: function () {
+                                                var container = this;
+                                                container.remove(container.getComponent('interestRateVariableDisplayField'), true);
+                                                container.add({
+                                                    xtype: 'numberfield',
+                                                    name: 'interestRateValue',
+                                                    itemId: 'interestRateRadioSpreadText',
+                                                    id: 'interestRateRadioSpreadText',
+                                                    allowBlank: false,
+                                                    blankText: me.snippets.validation.invalidValue,
+                                                    decimalPrecision: 2,
+                                                    minValue: 0,
+                                                    //Remove spinner buttons, and arrow key and mouse wheel listeners
+                                                    hideTrigger: true,
+                                                    keyNavEnabled: false,
+                                                    mouseWheelEnabled: false,
+                                                    maxLength: 5,
+                                                    maskRe: /[\d,.]/,
+                                                    enforceMaxLength: true,
+                                                    vtype: 'interestRateProposal',
+                                                    validateOnChange: false,
+                                                    validateOnBlur: false,
+                                                    columnWidth: 0.7,
+                                                    listeners: {
+                                                        afterrender: function (cmp) {
+                                                            var radioGroup = cmp.findParentByType('container').findParentByType('radiogroup');
+                                                            if (radioGroup.useDBValues) {
+                                                                radioGroup.useDBValues = false;
+                                                                var radioValue = me.crefoProposalRecord.get('interestRateValue');
+                                                                if (!Ext.isEmpty(radioValue)) {
+                                                                    cmp.setValue(radioValue);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                container.add({
+                                                    xtype: 'displayfield',
+                                                    itemId: 'interestRateVariableDisplayField',
+                                                    value: '%',
+                                                    columnWidth: 0.01,
+                                                    padding: '3 0 0 0'
+                                                });
+                                            },
+                                            removeValueField: function () {
+                                                var container = this;
+                                                container.remove(container.getComponent('interestRateVariableDisplayField'), true);
+                                                container.remove(container.getComponent('interestRateRadioSpreadText'), true);
+                                                container.add({
+                                                    xtype: 'displayfield',
+                                                    itemId: 'interestRateVariableDisplayField',
+                                                    html: '&nbsp;',
+                                                    columnWidth: 0.71,
+                                                    padding: '3 0 0 0'
+                                                });
+                                            }
+                                        },
+                                        {
+                                            xtype: 'container',
+                                            layout: 'column',
+                                            defaults: {
+                                                height: '28px'
+                                            },
+                                            items: [
+                                                {
+                                                    xtype: 'radio',
+                                                    boxLabel: me.snippets.labels.interestRate.fix + me.snippets.labels.parts.column,
+                                                    itemId: 'interestRateRadioFix',
+                                                    id: 'interestRateRadioFix',
+                                                    name: 'interestRateRadio',
+                                                    columnWidth: 0.29,
+                                                    inputValue: '3',
+                                                    fieldStyle: {
+                                                        verticalAlign: '-2px'
+                                                    },
+                                                    listeners: {
+                                                        beforerender: function () {
+                                                            var radioInput = me.crefoProposalRecord.get('interestRateRadio');
+                                                            if (!Ext.getCmp('interestRateFieldSet').down('radiogroup').useDBValues) {
+                                                                this.setValue(true);
+                                                            } else {
+                                                                this.checked = false;
+                                                                if (parseInt(radioInput) === 3) {
+                                                                    this.setValue(true);
+                                                                }
+                                                            }
+                                                        },
+                                                        change: function (cmp, newValue) {
+                                                            var container = cmp.findParentByType('container');
+                                                            if (newValue) {
+                                                                container.addValueField();
+                                                            } else {
+                                                                container.removeValueField();
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    xtype: 'displayfield',
+                                                    itemId: 'interestRateFixDisplayField',
+                                                    html: '&nbsp;',
+                                                    columnWidth: 0.71,
+                                                    padding: '3 0 0 0'
+                                                }
+                                            ],
+                                            addValueField: function () {
+                                                var container = this;
+                                                container.remove(container.getComponent('interestRateFixDisplayField'), true);
+                                                container.add({
+                                                    xtype: 'numberfield',
+                                                    itemId: 'interestRateRadioFixText',
+                                                    id: 'interestRateRadioFixText',
+                                                    name: 'interestRateValue',
+                                                    allowBlank: false,
+                                                    blankText: me.snippets.validation.invalidValue,
+                                                    decimalPrecision: 2,
+                                                    minValue: 0,
+                                                    //Remove spinner buttons, and arrow key and mouse wheel listeners
+                                                    hideTrigger: true,
+                                                    keyNavEnabled: false,
+                                                    mouseWheelEnabled: false,
+                                                    maxLength: 5,
+                                                    maskRe: /[\d,.]/,
+                                                    enforceMaxLength: true,
+                                                    vtype: 'interestRateProposal',
+                                                    validateOnChange: false,
+                                                    validateOnBlur: false,
+                                                    columnWidth: 0.7,
+                                                    listeners: {
+                                                        afterrender: function (cmp) {
+                                                            var radioGroup = cmp.findParentByType('container').findParentByType('radiogroup');
+                                                            if (radioGroup.useDBValues) {
+                                                                radioGroup.useDBValues = false;
+                                                                var radioValue = me.crefoProposalRecord.get('interestRateValue');
+                                                                if (!Ext.isEmpty(radioValue)) {
+                                                                    cmp.setValue(radioValue);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                                container.add({
+                                                    xtype: 'displayfield',
+                                                    itemId: 'interestRateFixDisplayField',
+                                                    value: '%',
+                                                    columnWidth: 0.01,
+                                                    padding: '3 0 0 0'
+                                                });
+                                            },
+                                            removeValueField: function () {
+                                                var container = this;
+                                                container.remove(container.getComponent('interestRateFixDisplayField'), true);
+                                                container.remove(container.getComponent('interestRateRadioFixText'), true);
+                                                container.add({
+                                                    xtype: 'displayfield',
+                                                    itemId: 'interestRateFixDisplayField',
+                                                    html: '&nbsp;',
+                                                    columnWidth: 0.71,
+                                                    padding: '3 0 0 0'
+                                                });
+                                            }
                                         }
                                     ]
-                                } ],
-                                listeners: {
-                                    "afterrender": function( checkbox, eOpts ){
-                                        me.setInterestRate( me.crefoProposalRecord.get( 'interestRateRadio' ), me.crefoProposalRecord.get( 'interestRateValue' ) );
-                                    },
-                                    "change": function( checkbox, newValue, oldValue, eOpts ){
-                                        var newRadio = parseInt( newValue.interestRateRadio ),
-                                            variableSpread = Ext.ComponentQuery.query( '#interestRateRadioSpreadText' )[ 0 ],
-                                            fix = Ext.ComponentQuery.query( '#interestRateRadioFixText' )[ 0 ];
-
-                                        if( newRadio === 1 ) {
-                                            variableSpread.setDisabled( true );
-                                            fix.setDisabled( true );
-                                        } else if( newRadio === 2 ) {
-                                            variableSpread.setDisabled( false );
-                                            fix.setDisabled( true );
-                                        } else {
-                                            variableSpread.setDisabled( true );
-                                            fix.setDisabled( false );
-                                        }
-                                    }
-                                }
-                            } ]
+                                } ]
                         }, {
                             fieldLabel: me.snippets.labels.customerReference,
                             xtype: 'textfield',
@@ -455,16 +600,16 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             maxLength: 30,
                             maxLengthText: me.snippets.validation.invalidValue,
                             listeners: {
-                                'afterrender': function(){
-                                    var customerReference = me.crefoProposalRecord.get( 'customerReference' );
-                                    if( customerReference !== null && Ext.isDefined( customerReference ) ) {
-                                        this.setValue( Ext.util.Format.trim( customerReference ) );
+                                'afterrender': function() {
+                                    var customerReference = me.crefoProposalRecord.get('customerReference');
+                                    if (customerReference !== null && Ext.isDefined(customerReference)) {
+                                        this.setValue(Ext.util.Format.trim(customerReference));
                                     }
                                 }
                             }
                         }, {
                             xtype: 'textareafield',
-                            // grow      : true,
+                            //grow      : true,
                             name: 'remarks',
                             itemId: 'remarks',
                             id: 'remarks',
@@ -479,8 +624,8 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             validateOnChange: false,
                             validateOnBlur: false,
                             listeners: {
-                                'afterrender': function(){
-                                    this.setValue( me.crefoProposalRecord.get( 'remarks' ) );
+                                'afterrender': function() {
+                                    this.setValue(me.crefoProposalRecord.get('remarks'));
                                 }
                             }
                         },
@@ -495,7 +640,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             labelWidth: '30%',
                             padding: '10 5 0 5',
                             emptyText: me.snippets.labels.turnoverType,
-                            store: me.inkassoValuesStore.keyFilter( me.snippets.filterValues.turnoverType ),
+                            store: me.collectionTurnoverTypeStore,
                             queryMode: 'local',
                             forceSelection: true,
                             allowBlank: false,
@@ -504,12 +649,8 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             displayField: 'textWS',
                             valueField: 'keyWS',
                             listeners: {
-                                afterrender: function(){
-                                    this.getStore().keyFilter( me.snippets.filterValues.turnoverType );
-                                    this.setValue( me.crefoProposalRecord.get( 'turnoverTypeKey' ) );
-                                },
-                                focus: function(){
-                                    this.getStore().keyFilter( me.snippets.filterValues.turnoverType );
+                                afterrender: function() {
+                                    this.setValue(me.crefoProposalRecord.get('turnoverTypeKey'));
                                 }
                             }
                         },
@@ -523,11 +664,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             width: '100%',
                             labelWidth: '30%',
                             padding: '10 5 0 5',
-                            renderer: function( value, metaData, record ){
-                                if( value === Ext.undefined ) {
+                            renderer: function(value, metaData, record) {
+                                if (value === Ext.undefined) {
                                     return value;
                                 }
-                                return Ext.util.Format.date( value, 'Y-m-d' );
+                                return Ext.util.Format.date(value, 'Y-m-d');
                             },
                             fieldLabel: me.snippets.labels.contractDate,
                             value: me.getContractDate()
@@ -550,8 +691,8 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             validateOnChange: false,
                             validateOnBlur: false,
                             listeners: {
-                                'afterrender': function(){
-                                    this.setValue( me.crefoProposalRecord.get( 'invoiceNumber' ) );
+                                'afterrender': function() {
+                                    this.setValue(me.crefoProposalRecord.get('invoiceNumber'));
                                 }
                             }
                         },
@@ -566,7 +707,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             labelWidth: '30%',
                             padding: '10 5 0 5',
                             emptyText: me.snippets.labels.receivableReason,
-                            store: me.inkassoValuesStore.keyFilter( me.snippets.filterValues.receivableReason ),
+                            store: me.collectionReceivableReasonStore,
                             queryMode: 'local',
                             forceSelection: true,
                             allowBlank: false,
@@ -575,12 +716,8 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             displayField: 'textWS',
                             valueField: 'keyWS',
                             listeners: {
-                                afterrender: function(){
-                                    this.getStore().keyFilter( me.snippets.filterValues.receivableReason );
-                                    this.setValue( me.crefoProposalRecord.get( 'receivableReasonKey' ) );
-                                },
-                                focus: function(){
-                                    this.getStore().keyFilter( me.snippets.filterValues.receivableReason );
+                                afterrender: function() {
+                                    this.setValue(me.crefoProposalRecord.get('receivableReasonKey'));
                                 }
                             }
                         },
@@ -592,12 +729,12 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                             width: '100%',
                             padding: '10 5 10 5',
                             flex: 1,
-                            // margin: '10 0 0 0',
+                            //margin: '10 0 0 0',
                             items: [
                                 {
                                     xtype: 'label',
                                     forId: 'amount',
-                                    text: me.snippets.labels.amount + ":",
+                                    text: me.snippets.labels.amount + ':',
                                     cls: 'x-form-item-label x-form-item-label-left',
                                     width: '30%'
                                 },
@@ -609,11 +746,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                                     padding: '0 3 0 0',
                                     submitValue: true,
                                     value: me.getAmount(),
-                                    renderer: function( value, metaData, record ){
-                                        if( value === Ext.undefined ) {
+                                    renderer: function(value, metaData, record) {
+                                        if (value === Ext.undefined) {
                                             return value;
                                         }
-                                        return Ext.util.Format.currency( value );
+                                        return Ext.util.Format.currency(value);
                                     }
                                 }, {
                                     xtype: 'displayfield',
@@ -634,35 +771,41 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                     ]
                 } ];
         },
-        getCheckText: function(){
+        getCheckText: function() {
             var me = this;
-            if( me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined ) {
+            if (me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined) {
                 return me.snippets.labels.checkText;
             }
-            var status = me.crefoProposalRecord.get( 'proposalStatus' );
-            if( parseInt( status ) === 0 ) {
+            var status = me.crefoProposalRecord.get('proposalStatus');
+            if (parseInt(status) === 0) {
                 return me.snippets.labels.checkErrorText;
             } else {
                 return me.snippets.labels.checkText;
             }
         },
-        getReplacementText: function(){
+        getReplacementText: function() {
             var me = this;
-            if( me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined ) {
+            if (me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined) {
                 return me.snippets.values.proposal;
             }
-            var status = me.crefoProposalRecord.get( 'proposalStatus' );
-            if( parseInt( status ) === 0 ) {
+            var status = me.crefoProposalRecord.get('proposalStatus');
+            if (parseInt(status) === 0) {
                 return me.snippets.values.errorText;
             } else {
                 return me.snippets.values.proposal;
             }
         },
-        getDebtorType: function(){
+        getDebtorType: function() {
             var me = this,
                 debtorHead = null;
-            if( me.hasDebtorCompany() ) {
-                var companyName = me.getDebtorCompany();
+            if (me.hasDebtorCompany()) {
+                var textCompany = me.getDebtorCompany();
+                var marginValues = '0 0 0 0';
+                if (textCompany.length > 105 && textCompany.length < 210) {
+                    marginValues = '0 0 15 0';
+                } else if (textCompany.length >= 210) {
+                    marginValues = '0 0 30 0';
+                }
                 debtorHead = {
                     xtype: 'displayfield',
                     name: 'debtorCompany',
@@ -673,8 +816,9 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                     width: '100%',
                     labelWidth: '30%',
                     padding: '0 5 0 5',
+                    margin: marginValues,
                     fieldLabel: me.snippets.labels.debtor,
-                    value: me.getDebtorCompany(),
+                    value: textCompany,
                     fieldBodyCls: 'crefo-wrap-text'
                 };
             } else {
@@ -688,7 +832,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         {
                             xtype: 'label',
                             forId: 'debtorSalutation',
-                            text: me.snippets.labels.debtor + ":",
+                            text: me.snippets.labels.debtor + ':',
                             cls: 'x-form-item-label x-form-item-label-left',
                             width: '30%'
                         },
@@ -723,135 +867,134 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
             }
             return debtorHead;
         },
-        getDebtorCompany: function(){
+        getDebtorCompany: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.companyName;
             }
             return value;
         },
-        hasDebtorCompany: function(){
+        hasDebtorCompany: function() {
             var me = this,
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder,
-                company = (proposalOrder !== null && !Ext.isEmpty( proposalOrder.companyName )) ? proposalOrder.companyName : '';
+                company = (proposalOrder !== null && !Ext.isEmpty(proposalOrder.companyName)) ? proposalOrder.companyName : '';
             return company !== '';
         },
-        getDebtorSalutation: function(){
+        getDebtorSalutation: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
-                if( proposalOrder.salutation === "mr" || proposalOrder.salutation === "SA-1" ) {
+            if (!Ext.isEmpty(proposalOrder)) {
+                if (proposalOrder.salutation === 'mr' || proposalOrder.salutation === 'SA-1') {
                     value = me.snippets.values.mr;
-                } else if( proposalOrder.salutation === "ms" || proposalOrder.salutation === "SA-2" ) {
+                } else if (proposalOrder.salutation === 'ms' || proposalOrder.salutation === 'SA-2') {
                     value = me.snippets.values.ms;
                 }
             }
             return value;
         },
-        getDebtorFirstName: function(){
+        getDebtorFirstName: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.firstName;
             }
             return value;
         },
-        getDebtorLastName: function(){
+        getDebtorLastName: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.surname;
             }
             return value;
         },
-        getDebtorStreet: function(){
+        getDebtorStreet: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.street;
-                if( !Ext.isEmpty( proposalOrder.houseNumber ) ) {
+                if (!Ext.isEmpty(proposalOrder.houseNumber)) {
                     value += ' ' + proposalOrder.houseNumber;
                 }
-                if( !Ext.isEmpty( proposalOrder.houseNumberAffix ) ) {
+                if (!Ext.isEmpty(proposalOrder.houseNumberAffix)) {
                     value += proposalOrder.houseNumberAffix;
                 }
             }
             return value;
         },
-        getDebtorZipCode: function(){
+        getDebtorZipCode: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.postcode;
             }
             return value;
         },
-        getDebtorCity: function(){
+        getDebtorCity: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.city;
             }
             return value;
         },
-        getDebtorCountry: function( realValue ){
+        getDebtorCountry: function(realValue) {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.country;
-                if( !realValue ) {
+                if (!realValue) {
                     value = proposalOrder.countryIso;
                 }
             }
             return value;
         },
-        displayCountry: function(){
+        displayCountry: function() {
             var me = this,
-                countryRawValue = me.getDebtorCountry( false ),
-                countryRow = {
-                    xtype: 'container',
-                    layout: 'hbox',
-                    width: '100%',
-                    padding: '10 5 10 5',
-                    flex: 1,
-                    items: [
-                        {
-                            xtype: 'displayfield',
-                            name: 'emptySpace',
-                            width: '30%',
-                            value: ' '
-                        }, {
-                            xtype: 'displayfield',
-                            name: 'debtorCountry',
-                            itemId: 'debtorCountry',
-                            id: 'debtorCountry',
-                            submitValue: true,
-                            value: me.getDebtorCountry( true ),
-                            rawValue: countryRawValue
-                        }
-                    ]
-                };
-            return countryRow;
+                countryRawValue = me.getDebtorCountry(false);
+            return {
+                xtype: 'container',
+                layout: 'hbox',
+                width: '100%',
+                padding: '10 5 10 5',
+                flex: 1,
+                items: [
+                    {
+                        xtype: 'displayfield',
+                        name: 'emptySpace',
+                        width: '30%',
+                        value: ' '
+                    }, {
+                        xtype: 'displayfield',
+                        name: 'debtorCountry',
+                        itemId: 'debtorCountry',
+                        id: 'debtorCountry',
+                        submitValue: true,
+                        value: me.getDebtorCountry(true),
+                        rawValue: countryRawValue
+                    }
+                ]
+            };
         },
-        getDebtorEmail: function(){
+        getDebtorEmail: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.email;
             }
             return value;
         },
-        displayDebtorEmail: function(){
+        displayDebtorEmail: function() {
             var me = this,
                 email = me.getDebtorEmail(),
                 emailRow = {
@@ -864,7 +1007,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         {
                             xtype: 'label',
                             forId: 'debtorEmail',
-                            text: me.snippets.labels.email + ":",
+                            text: me.snippets.labels.email + ':',
                             cls: 'x-form-item-label x-form-item-label-left',
                             width: '30%'
                         },
@@ -880,16 +1023,16 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         }
                     ]
                 };
-            if( email.length > 100 ) {
-                emailRow.items.push( {
+            if (email.length > 100) {
+                emailRow.items.push({
                     xtype: 'displayfield',
                     name: 'editEmailSign',
-                    value: Ext.String.format( "&nbsp;<span data-qtip='[0]' class='sprite-exclamation' style='padding-left: 25px;'></span>", me.snippets.signs.toEdit )
-                } );
+                    value: Ext.String.format("&nbsp;<span data-qtip='[0]' class='sprite-exclamation' style='padding-left: 25px;'></span>", me.snippets.signs.toEdit)
+                });
             }
             return emailRow;
         },
-        displayInvoiceDate: function(){
+        displayInvoiceDate: function() {
             var me = this;
             return {
                 xtype: 'container',
@@ -901,7 +1044,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                     {
                         xtype: 'label',
                         forId: 'dateInvoice',
-                        text: me.snippets.labels.invoiceDate + ":",
+                        text: me.snippets.labels.invoiceDate + ':',
                         cls: 'x-form-item-label x-form-item-label-left',
                         flex: 3
                     },
@@ -919,19 +1062,19 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         validateOnBlur: false,
                         flex: 7,
                         listeners: {
-                            'afterrender': function(){
-                                this.setValue( me.crefoProposalRecord.get( 'dateInvoice' ) );
+                            'afterrender': function() {
+                                this.setValue(me.crefoProposalRecord.get('dateInvoice'));
                             }
                         }
                     }
                 ]
             };
         },
-        getContractDate: function(){
+        getContractDate: function() {
             var me = this;
-            return me.listRecord.get( "orderTime" );
+            return me.listRecord.get('orderTime');
         },
-        displayValutaDate: function(){
+        displayValutaDate: function() {
             var me = this;
             return {
                 xtype: 'container',
@@ -943,7 +1086,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                     {
                         xtype: 'label',
                         forId: 'valutaDate',
-                        text: me.snippets.labels.valutaDate + ":",
+                        text: me.snippets.labels.valutaDate + ':',
                         cls: 'x-form-item-label x-form-item-label-left',
                         flex: 3
                     },
@@ -961,11 +1104,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         validateOnBlur: false,
                         flex: 6.1,
                         listeners: {
-                            'afterrender': function(){
-                                if( me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined ) {
+                            'afterrender': function() {
+                                if (me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined) {
                                     return null;
                                 }
-                                this.setValue( me.crefoProposalRecord.get( 'valutaDate' ) );
+                                this.setValue(me.crefoProposalRecord.get('valutaDate'));
                             }
                         }
                     },
@@ -975,17 +1118,17 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         scale: 'small',
                         flex: 0.9,
                         listeners: {
-                            click: function(){
-                                var cmp = Ext.ComponentQuery.query( '#valutaDate' )[ 0 ],
-                                    invoiceCmp = Ext.ComponentQuery.query( '#dateInvoice' )[ 0 ],
-                                    dateToSet = (Ext.isDate( invoiceCmp.getValue() ) ? invoiceCmp.getValue() : new Date( Date.now() ));
-                                if( me.inkassoConfig === null || me.inkassoConfig === Ext.undefined || me.inkassoConfig.first() === Ext.undefined ) {
-                                    cmp.setValue( dateToSet );
+                            click: function() {
+                                var cmp = Ext.getCmp('valutaDate'),
+                                    invoiceCmp = Ext.getCmp('dateInvoice'),
+                                    dateToSet = (Ext.isDate(invoiceCmp.getValue()) ? invoiceCmp.getValue() : new Date(Date.now()));
+                                if (Ext.isEmpty(me.inkassoConfig) || Ext.isEmpty(me.inkassoConfig.first())) {
+                                    cmp.setValue(dateToSet);
                                     return false;
                                 }
-                                var extraDate = me.inkassoConfig.first().get( 'inkasso_valuta_date' );
-                                if( Ext.isNumber( extraDate ) ) {
-                                    cmp.setValue( Ext.Date.add( dateToSet, Ext.Date.DAY, extraDate ) );
+                                var extraDate = me.inkassoConfig.first().get('valuta_date');
+                                if (Ext.isNumber(extraDate)) {
+                                    cmp.setValue(Ext.Date.add(dateToSet, Ext.Date.DAY, extraDate));
                                 }
                             }
                         }
@@ -993,7 +1136,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                 ]
             };
         },
-        displayDueDate: function(){
+        displayDueDate: function() {
             var me = this;
             return {
                 xtype: 'container',
@@ -1005,7 +1148,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                     {
                         xtype: 'label',
                         forId: 'dueDate',
-                        text: me.snippets.labels.dueDate + ":",
+                        text: me.snippets.labels.dueDate + ':',
                         cls: 'x-form-item-label x-form-item-label-left',
                         flex: 3
                     },
@@ -1023,11 +1166,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         validateOnBlur: false,
                         flex: 6.1,
                         listeners: {
-                            'afterrender': function(){
-                                if( me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined ) {
+                            'afterrender': function() {
+                                if (me.crefoProposalRecord === null || me.crefoProposalRecord === Ext.undefined) {
                                     return null;
                                 }
-                                this.setValue( me.crefoProposalRecord.get( 'dueDate' ) );
+                                this.setValue(me.crefoProposalRecord.get('dueDate'));
                             }
                         }
                     },
@@ -1037,17 +1180,17 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                         scale: 'small',
                         flex: 0.9,
                         listeners: {
-                            click: function(){
-                                var cmp = Ext.ComponentQuery.query( '#dueDate' )[ 0 ],
-                                    invoiceCmp = Ext.ComponentQuery.query( '#dateInvoice' )[ 0 ],
-                                    dateToSet = (Ext.isDate( invoiceCmp.getValue() ) ? invoiceCmp.getValue() : new Date( Date.now() ));
-                                if( me.inkassoConfig === null || me.inkassoConfig === Ext.undefined || me.inkassoConfig.first() === Ext.undefined ) {
-                                    cmp.setValue( dateToSet );
+                            click: function() {
+                                var cmp = Ext.getCmp('dueDate'),
+                                    invoiceCmp = Ext.getCmp('dateInvoice'),
+                                    dateToSet = (Ext.isDate(invoiceCmp.getValue()) ? invoiceCmp.getValue() : new Date(Date.now()));
+                                if (Ext.isEmpty(me.inkassoConfig) || Ext.isEmpty(me.inkassoConfig.first())) {
+                                    cmp.setValue(dateToSet);
                                     return false;
                                 }
-                                var extraDate = me.inkassoConfig.first().get( 'inkasso_due_date' );
-                                if( Ext.isNumber( extraDate ) ) {
-                                    cmp.setValue( Ext.Date.add( dateToSet, Ext.Date.DAY, extraDate ) );
+                                var extraDate = me.inkassoConfig.first().get('due_date');
+                                if (Ext.isNumber(extraDate)) {
+                                    cmp.setValue(Ext.Date.add(dateToSet, Ext.Date.DAY, extraDate));
                                 }
                             }
                         }
@@ -1055,47 +1198,46 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal',
                 ]
             };
         },
-        setInterestRate: function( radio, value ){
-            if( parseInt( radio ) === 1 ) {
-                Ext.ComponentQuery.query( '#interestRateRadioLegal' )[ 0 ].setValue( true );
-                Ext.ComponentQuery.query( '#interestRateRadioSpreadText' )[ 0 ].setDisabled( true );
-                Ext.ComponentQuery.query( '#interestRateRadioFixText' )[ 0 ].setDisabled( true );
-            } else if( parseInt( radio ) === 2 ) {
-                Ext.ComponentQuery.query( '#interestRateRadioSpreadText' )[ 0 ].setDisabled( false );
-                Ext.ComponentQuery.query( '#interestRateRadioSpread' )[ 0 ].setValue( true );
-                Ext.ComponentQuery.query( '#interestRateRadioSpreadText' )[ 0 ].setValue( value );
+        setInterestRate: function(radio, value) {
+            if (parseInt(radio) === 1) {
+                Ext.ComponentQuery.query('#interestRateRadioLegal')[ 0 ].setValue(true);
+                Ext.ComponentQuery.query('#interestRateRadioSpreadText')[ 0 ].setDisabled(true);
+                Ext.ComponentQuery.query('#interestRateRadioFixText')[ 0 ].setDisabled(true);
+            } else if (parseInt(radio) === 2) {
+                Ext.ComponentQuery.query('#interestRateRadioSpreadText')[ 0 ].setDisabled(false);
+                Ext.ComponentQuery.query('#interestRateRadioSpread')[ 0 ].setValue(true);
+                Ext.ComponentQuery.query('#interestRateRadioSpreadText')[ 0 ].setValue(value);
             } else {
-                Ext.ComponentQuery.query( '#interestRateRadioFixText' )[ 0 ].setDisabled( false );
-                Ext.ComponentQuery.query( '#interestRateRadioFix' )[ 0 ].setValue( true );
-                Ext.ComponentQuery.query( '#interestRateRadioFixText' )[ 0 ].setValue( value );
+                Ext.ComponentQuery.query('#interestRateRadioFixText')[ 0 ].setDisabled(false);
+                Ext.ComponentQuery.query('#interestRateRadioFix')[ 0 ].setValue(true);
+                Ext.ComponentQuery.query('#interestRateRadioFixText')[ 0 ].setValue(value);
             }
         },
-        getAmount: function(){
+        getAmount: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.invoiceAmount;
             }
             return value;
         },
-        getCurrency: function(){
+        getCurrency: function() {
             var me = this,
                 value = '',
                 proposalOrder = me.crefoProposalRecord.raw.proposalOrder;
-            if( !Ext.isEmpty( proposalOrder ) ) {
+            if (!Ext.isEmpty(proposalOrder)) {
                 value = proposalOrder.currency;
             }
             return value;
         },
-        getUpdatedCreditor: function(){
+        getUpdatedCreditor: function() {
             var me = this,
-                value = me.crefoProposalRecord.get( 'creditor' );
-            if( Ext.isEmpty( me.inkassoCreditorsStore.findRecord( 'useraccount', value ) ) ) {
+                value = me.crefoProposalRecord.get('creditor');
+            if (Ext.isEmpty(me.inkassoCreditorsStore.findRecord('useraccount', value))) {
                 value = null;
             }
             return value;
         }
-    } );
-// {/block}
-
+    });
+//{/block}

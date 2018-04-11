@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,44 +10,42 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_logs/controller/list"}
-Ext.define( 'Shopware.apps.CrefoLogs.controller.List', {
+Ext.define('Shopware.apps.CrefoLogs.controller.List', {
     extend: 'Ext.app.Controller',
     refs: [
         { ref: 'mainWindow', selector: 'crefologs-main-window' },
         { ref: 'tabList', selector: 'crefo-logs-interface-list' }
     ],
-    init: function(){
+    init: function() {
         var me = this;
-        me.mainController = me.getController( 'Main' );
+        me.mainController = me.getController('Main');
 
-        me.control( {
+        me.control({
             'crefo-logs-interface-list': {
                 showData: me.onShowData,
                 downloadZip: me.onDownloadZip
             }
-        } );
-        me.callParent( arguments );
+        });
+        me.callParent(arguments);
     },
 
-    onShowData: function( xmlId, iColIdx ){
-        var me = this,
-            window = Ext.getCmp( 'CrefoLogsWindow' );
-        window.setLoading( true );
-        Ext.Ajax.request( {
+    onShowData: function(xmlId, iColIdx) {
+        var window = Ext.getCmp('CrefoLogsWindow');
+        window.setLoading(true);
+        Ext.Ajax.request({
             url: '{url controller=CrefoLogs action=openXml}',
             method: 'POST',
             params: { xmlId: xmlId, columnId: iColIdx },
-            success: function( response ){
+            success: function(response) {
                 try {
-                    if( !me.mainController.isJson( response.responseText ) ) {
-                        throw new Error( "no response" );
+                    if (!CrefoUtil.isJson(response.responseText)) {
+                        throw new Error('no response');
                     }
-                    var result = Ext.JSON.decode( response.responseText );
-                    if( !result.success ) {
-                        throw new Error( "not successful" );
+                    var result = Ext.JSON.decode(response.responseText);
+                    if (!result.success) {
+                        throw new Error('not successful');
                     }
-
-                    var myWindow = Ext.create( "Ext.window.Window", {
+                    var myWindow = Ext.create('Ext.window.Window', {
                         title: result.title,
                         height: '90%',
                         width: Ext.getBody().getViewSize().width / 1.4,
@@ -68,53 +66,50 @@ Ext.define( 'Shopware.apps.CrefoLogs.controller.List', {
                                 name: 'message',
                                 value: result.dataXml,
                                 listeners: {
-                                    'afterrender': function( cmp, eOpts ){
-                                        window.setLoading( false );
+                                    'afterrender': function(cmp, eOpts) {
+                                        window.setLoading(false);
                                     }
                                 }
                             }
                         ]
-                    } );
+                    });
                     myWindow.show();
-                } catch( e ) {
-                    console.log( e );
+                } catch (e) {
                 }
             }
-        } );
+        });
     },
-    onDownloadZip: function( list ){
-        var me = this;
+    onDownloadZip: function(list) {
         var records = list.getSelectionModel().getSelection();
-        Ext.Ajax.request( {
+        Ext.Ajax.request({
             url: '{url controller=CrefoLogs action=exportLogsZip}',
             method: 'GET',
-            params: { xmlRowId: records[ 0 ].get( 'id' ), reportResultId: records[ 0 ].get( 'reportResultId' ) },
-            success: function( response ){
+            params: { xmlRowId: records[ 0 ].get('id'), reportResultId: records[ 0 ].get('reportResultId') },
+            success: function(response) {
                 try {
-                    if( !me.mainController.isJson( response.responseText ) ) {
-                        throw new Error( "no response" );
+                    if (!CrefoUtil.isJson(response.responseText)) {
+                        throw new Error('no response');
                     }
-                    var result = Ext.JSON.decode( response.responseText );
-                    if( !result.success ) {
-                        throw new Error( "not successful" );
+                    var result = Ext.JSON.decode(response.responseText);
+                    if (!result.success) {
+                        throw new Error('not successful');
                     }
 
-                    Ext.create( 'Ext.Component', {
+                    Ext.create('Ext.Component', {
                         frameborder: 0,
                         style: {
                             display: 'none'
                         },
                         autoEl: {
-                            tag: "iframe",
+                            tag: 'iframe',
                             src: 'CrefoLogs/downloadZip?zipName=' + result.zipName
                         },
                         renderTo: Ext.getBody()
-                    } );
-                } catch( e ) {
-                    // console.log(e);
+                    });
+                } catch (e) {
                 }
             }
-        } );
+        });
     }
-} );
+});
 //{/block}

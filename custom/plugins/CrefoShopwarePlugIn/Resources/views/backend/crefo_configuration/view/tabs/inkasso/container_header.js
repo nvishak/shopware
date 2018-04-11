@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/inkasso/container_header"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader',
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader',
     {
         extend: 'Ext.container.Container',
         autoShow: true,
@@ -31,36 +31,28 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader'
         minWidth: 155,
         snippets: {
             labels: {
-                account: '{s name="crefoconfig/view/tabs/inkasso/panel/labels/useraccounts"}Mitgliedskennung{/s}',
+                account: '{s name="crefoconfig/view/tabs/inkasso/panel/labels/useraccounts"}Mitgliedskennung{/s}'
             },
             errors: {
-                noservice: '{s name="crefoconfig/view/tabs/inkasso/panel/noInkassoService"}ACHTUNG! Die Mitgliedskennung ist für die Abgabe von Inkasso-'
-                + 'aufträgen nicht berechtigt.<br/>Dies ist eine Voraussetzung für die Nutzung der Funktionalität Inkassoauftrag in der Bestellübersicht.{/s}'
+                noservice: '{s name="crefoconfig/view/tabs/inkasso/panel/noInkassoService"}ACHTUNG! Die Mitgliedskennung ist für die Abgabe von Inkasso-' +
+                'aufträgen nicht berechtigt.<br/>Dies ist eine Voraussetzung für die Nutzung der Funktionalität Inkassoauftrag in der Bestellübersicht.{/s}'
             }
         },
-        initComponent: function(){
+        initComponent: function() {
             var me = this;
             me.items = me.getItems();
-            Ext.apply( Ext.form.field.VTypes, {
-                userAccountInkassoVtype: function( val, field ){
-                    if( val === null || !Ext.isDefined( val ) || val === '' ) {
+            Ext.apply(Ext.form.field.VTypes, {
+                userAccountInkassoVtype: function(val) {
+                    if (Ext.isEmpty(val)) {
                         return true;
                     }
-                    var container = Ext.getCmp( 'inkassoContainer' );
-                    if( !Ext.isDefined( container ) ) {
-                        return true;
-                    }
-                    if( me.parentPanel.inkassoValuesStore.getCount() === 0 ) {
-                        this.userAccountInkassoVtypeText = me.snippets.errors.noservice;
-                        return false;
-                    }
-                    return true;
+                    return !me.parentPanel.config.noService;
                 },
                 userAccountInkassoVtypeText: this.snippets.errors.noservice
-            } );
-            me.callParent( arguments );
+            });
+            me.callParent(arguments);
         },
-        getItems: function(){
+        getItems: function() {
             var me = this;
             return [
                 {
@@ -75,7 +67,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader'
                             fieldLabel: me.snippets.labels.account,
                             xtype: 'combo',
                             id: 'inkasso_user_account',
-                            name: 'inkasso_user_account',
+                            name: 'collectionUserAccountId',
                             flex: 1,
                             width: '100%',
                             labelWidth: '30%',
@@ -85,60 +77,26 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader'
                             store: me.parentPanel.accountStore,
                             queryMode: 'local',
                             displayField: 'useraccount',
-                            value: '',
                             valueField: 'id',
                             vtype: 'userAccountInkassoVtype',
-                            listConfig: {
-                                tpl: '<div class="my-boundlist-item-menu" style="font-size: 11px;color: #475c6a;padding: 4px 6px;cursor: pointer;position: relative;">&nbsp;</div>'
-                                + '<tpl for=".">'
-                                + '<div class="x-boundlist-item">{literal}{useraccount}{/literal}</div></tpl>',
-                                listeners: {
-                                    el: {
-                                        delegate: '.my-boundlist-item-menu',
-                                        'click': function(){
-                                            var useraccount = Ext.getCmp( 'inkasso_user_account' );
-                                            useraccount.clearValue();
-                                            useraccount.collapse();
-                                        }
-                                    }
-                                }
-                            },
                             listeners: {
-                                'afterrender': function( cmp ){
-                                    var record = me.parentPanel.inkassoStore.findRecord( 'id', 1 );
-                                    if( record !== null && record.get( 'inkasso_user_account' ) !== undefined ) {
-                                        this.suspendEvents( false );
-                                        this.setValue( record.get( 'inkasso_user_account' ) );
+                                'afterrender': function() {
+                                    var record = me.parentPanel.inkassoStore.first();
+                                    if (!Ext.isEmpty(record) && !Ext.isEmpty(record.UserAccount)) {
+                                        this.suspendEvents(false);
+                                        this.setValue(record.UserAccount.get('id'));
                                         this.resumeEvents();
                                     }
-                                    if( cmp.getValue() === null || cmp.getValue() === undefined || cmp.getValue() === '' ) {
-                                        Ext.getCmp( 'inkasso_valuta_date' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_due_date' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_order_type' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_receivable_reason' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_turnover_type' ).allowBlank = true;
-                                    } else {
-                                        Ext.getCmp( 'inkasso_valuta_date' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_due_date' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_order_type' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_receivable_reason' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_turnover_type' ).allowBlank = false;
-                                    }
                                 },
-                                'change': function( combo, newValue, oldValue, eOpt ){
-                                    me.fireEvent( 'performLogonInkasso', newValue, oldValue, me.parentPanel, false );
-                                    if( Ext.isEmpty( newValue ) || newValue === '' ) {
-                                        Ext.getCmp( 'inkasso_valuta_date' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_due_date' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_order_type' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_receivable_reason' ).allowBlank = true;
-                                        Ext.getCmp( 'inkasso_turnover_type' ).allowBlank = true;
-                                    } else {
-                                        Ext.getCmp( 'inkasso_valuta_date' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_due_date' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_order_type' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_receivable_reason' ).allowBlank = false;
-                                        Ext.getCmp( 'inkasso_turnover_type' ).allowBlank = false;
+                                'change': function(combo, newValue) {
+                                    me.fireEvent('performLogonInkasso', newValue, false);
+                                },
+                                /**
+                               * Prevents "&nbsp;" text from being displayed on selection
+                               */
+                                'select': function(combo) {
+                                    if (Ext.isEmpty(combo.getValue()) || combo.getRawValue() === '&nbsp;') {
+                                        combo.setValue(null);
                                     }
                                 }
                             }
@@ -155,5 +113,5 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader'
                 }
             ];
         }
-    } );
+    });
 //{/block}

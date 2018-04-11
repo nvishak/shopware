@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,6 +12,8 @@
 
 namespace CrefoShopwarePlugIn\Components\Core;
 
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+
 /**
  * Class XmlManager
  * @package CrefoShopwarePlugIn\Components\Core
@@ -21,6 +23,7 @@ class XmlManager implements Manager
 
     /**
      * ZipManager constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -33,6 +36,7 @@ class XmlManager implements Manager
      */
     public function formatXmlPretty($data)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==XmlManager::formatXmlPretty==',[]);
         $noStripsData = stripslashes($data);
         if (strpos($noStripsData, '<?xml version="1.0" encoding') !== false) {
             $noStripsData = stripslashes($data);
@@ -42,22 +46,26 @@ class XmlManager implements Manager
             $noStripsData = str_replace('<?xml version="1.0"?>', '<?xml version="1.0" encoding="UTF-8"?>',
                 $noStripsData);
         }
-        $domxml = new \DOMDocument('1.0', 'UTF-8');
-        $domxml->preserveWhiteSpace = false;
-        $domxml->formatOutput = true;
+        $domXml = new \DOMDocument('1.0', 'UTF-8');
+        $domXml->preserveWhiteSpace = false;
+        $domXml->formatOutput = true;
         try {
             $xml = simplexml_load_string($noStripsData);
+            // @codeCoverageIgnoreStart
             if (!is_object($xml)) {
                 throw new \Exception('Not an XML File.');
             }
-            $domxml->loadXML($xml->asXML());
+            // @codeCoverageIgnoreEnd
+            $domXml->loadXML($xml->asXML());
         } catch (\Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==XmlManager::Error==',[$e]);
             $xmlError = simplexml_load_string('<?xml version="1.0" encoding="UTF-8"?><Error>Error</Error>');
-            $domxml->loadXML($xmlError->asXML());
-        } finally {
-            return $domxml->saveXML();
+            $domXml->loadXML($xmlError->asXML());
+        }// @codeCoverageIgnoreStart
+        finally {
+            return $domXml->saveXML();
         }
-    }
+    }// @codeCoverageIgnoreEnd
 
     /**
      * @param string $data

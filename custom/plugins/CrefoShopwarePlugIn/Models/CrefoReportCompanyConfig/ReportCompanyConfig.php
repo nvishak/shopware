@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,13 +12,14 @@
 
 namespace CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig;
 
+use CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount;
+use \Doctrine\Common\Collections\ArrayCollection;
 use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\ORM\Mapping as ORM;
-use \Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="crefo_report_company_config")
- * @ORM\Entity(repositoryClass="ReportCompanyRepository")
+ * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
 class ReportCompanyConfig extends ModelEntity
@@ -56,6 +57,13 @@ class ReportCompanyConfig extends ModelEntity
     private $reportLanguageKey;
 
     /**
+     * @var ArrayCollection $countries
+     *
+     * @ORM\OneToMany(targetEntity="CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\CountriesForCompanies", mappedBy="configId")
+     */
+    private $countries;
+
+    /**
      * @return int
      */
     public function getId()
@@ -64,7 +72,7 @@ class ReportCompanyConfig extends ModelEntity
     }
 
     /**
-     * @return object
+     * @return object|CrefoAccount
      */
     public function getUserAccountId()
     {
@@ -87,6 +95,13 @@ class ReportCompanyConfig extends ModelEntity
         return $this->reportLanguageKey;
     }
 
+    /**
+     * @return ArrayCollection
+     */
+    public function getCountries()
+    {
+        return $this->countries;
+    }
 
     /**
      * @param object $id
@@ -110,6 +125,14 @@ class ReportCompanyConfig extends ModelEntity
     public function setReportLanguageKey($key)
     {
         $this->reportLanguageKey = $key;
+    }
+
+    /**
+     * @param ArrayCollection $countries
+     */
+    public function setCountries($countries)
+    {
+        $this->countries = $countries;
     }
 
 }

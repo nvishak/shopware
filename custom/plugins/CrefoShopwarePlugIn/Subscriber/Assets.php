@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -19,6 +19,7 @@ use \Shopware\Components\DependencyInjection\Container;
 
 /**
  * Class Assets
+ * @codeCoverageIgnore
  * @package CrefoShopwarePlugIn\Subscriber
  */
 class Assets implements SubscriberInterface
@@ -59,7 +60,7 @@ class Assets implements SubscriberInterface
             [
                 $this->container->getParameter('creditreform.plugin_dir') . '/Resources/views/frontend/_public/src/less/all.less'
             ],
-            __DIR__
+            $this->container->getParameter('creditreform.plugin_dir') . '/Resources/views/frontend/_public/src/less/'
         );
 
         return new ArrayCollection([$less]);

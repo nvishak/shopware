@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -15,19 +15,12 @@ namespace CrefoShopwarePlugIn\Components\Soap\Mappers;
 use \CrefoShopwarePlugIn\Components\Soap\CrefoMapper;
 
 /**
+ * @codeCoverageIgnore
  * Class IdentificationReportMapper
  * @package CrefoShopwarePlugIn\Components\Soap\Mappers
  */
 class IdentificationReportMapper extends CrefoMapper
 {
-    /**
-     * CollectionOrderMapper constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /**
      * @inheritdoc
      */

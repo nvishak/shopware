@@ -6,7 +6,4 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Stagehand\\ComponentFactory' => array($vendorDir . '/piece/stagehand-componentfactory/src'),
-    'Stagehand\\AlterationMonitor' => array($vendorDir . '/piece/stagehand-alterationmonitor/src'),
-    'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
 );

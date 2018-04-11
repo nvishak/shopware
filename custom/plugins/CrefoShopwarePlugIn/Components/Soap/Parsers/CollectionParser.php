@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -41,13 +41,21 @@ class CollectionParser extends CrefoSoapParser
     }
 
     /**
-     * @param $subuser
+     * @return bool
+     */
+    public function hasService()
+    {
+        return null !== $this->getService('collectionorder');
+    }
+
+    /**
+     * @param $subUser
      * @return array|null
      */
-    private function getSubUserInfo($subuser)
+    private function getSubUserInfo($subUser)
     {
-        if (is_object($subuser) && !is_null($subuser->user) && !is_null($subuser->name) && !is_null($subuser->address)) {
-            return ["useraccount" => $subuser->user, "name" => $subuser->name, "address" => $subuser->address];
+        if (is_object($subUser) && null !== $subUser->user && null !== $subUser->name && null !== $subUser->address) {
+            return ["useraccount" => $subUser->user, "name" => $subUser->name, "address" => $subUser->address];
         } else {
             return null;
         }

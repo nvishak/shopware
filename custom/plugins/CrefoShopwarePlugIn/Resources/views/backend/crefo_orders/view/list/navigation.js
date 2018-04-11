@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -11,15 +11,15 @@
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/view/list/navigation"}
 Ext.define('Shopware.apps.CrefoOrders.view.list.Navigation', {
-    extend:'Shopware.apps.Order.view.list.Navigation',
-    alias:'widget.crefo-orders-list-navigation',
-    layout:'anchor',
-    cls:Ext.baseCSSPrefix + 'crefo-orders-list-navigation',
-    width:300,
-    collapsed:false,
-    collapsible:true,
+    extend: 'Shopware.apps.Order.view.list.Navigation',
+    alias: 'widget.crefo-orders-list-navigation',
+    layout: 'anchor',
+    cls: Ext.baseCSSPrefix + 'crefo-orders-list-navigation',
+    width: 300,
+    collapsed: false,
+    collapsible: true,
 
-    initComponent:function () {
+    initComponent: function () {
         var me = this;
         me.callParent(arguments);
     },

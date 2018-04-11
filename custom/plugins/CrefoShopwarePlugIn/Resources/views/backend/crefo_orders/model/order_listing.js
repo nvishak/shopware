@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,18 +13,18 @@ Ext.define('Shopware.apps.CrefoOrders.model.OrderListing', {
     extend: 'Shopware.data.Model',
 
     fields: [
-        { name : 'id', type: 'int' },
-        { name : 'orderId', type: 'int' },
-        { name : 'crefoOrderId', type: 'int' },
-        { name : 'crefoOrderType', type: 'int' }
+        { name: 'id', type: 'int' },
+        { name: 'orderId', type: 'int' },
+        { name: 'crefoOrderId', type: 'int' },
+        { name: 'crefoOrderType', type: 'int' }
     ],
-    requires:[
+    requires: [
         'Shopware.apps.CrefoOrders.model.CrefoProposal'
     ],
     proxy: {
         type: 'ajax',
         api: {
-            read:'{url controller="CrefoOrders" action="getCrefoOrderList"}'
+            read: '{url controller="CrefoOrders" action="getCrefoOrderList"}'
         },
         reader: {
             type: 'json',
@@ -36,13 +36,13 @@ Ext.define('Shopware.apps.CrefoOrders.model.OrderListing', {
      * Define the associations of the order model.
      * @array
      */
-    associations:[
+    associations: [
         {
-            type:'hasOne',
-            model:'Shopware.apps.CrefoOrders.model.CrefoProposal',
-            name:'crefoOrderProposal',
-            associationKey:'crefoOrderProposal',
-            primaryKey : 'crefoOrderId',
+            type: 'hasOne',
+            model: 'Shopware.apps.CrefoOrders.model.CrefoProposal',
+            name: 'crefoOrderProposal',
+            associationKey: 'crefoOrderProposal',
+            primaryKey: 'crefoOrderId',
             foreignKey: 'id'
         },
         {

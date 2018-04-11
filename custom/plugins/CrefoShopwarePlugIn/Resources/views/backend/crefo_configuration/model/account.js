@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -9,7 +9,7 @@
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
 //{block name="backend/crefo_configuration/model/account"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.model.Account', {
+Ext.define('Shopware.apps.CrefoConfiguration.model.Account', {
     extend: 'Ext.data.Model',
     alias: 'model.crefo.account',
     fields: [
@@ -36,6 +36,14 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.model.Account', {
         {
             type: 'belongsTo',
             model: 'Shopware.apps.CrefoConfiguration.model.ReportPrivatePerson'
+        },
+        {
+            type: 'belongsTo',
+            model: 'Shopware.apps.CrefoConfiguration.model.ReportCompany'
+        },
+        {
+            type: 'belongsTo',
+            model: 'Shopware.apps.CrefoConfiguration.model.Inkasso'
         }
     ],
     validations: [
@@ -43,8 +51,8 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.model.Account', {
         { field: 'individualpassword', type: 'length', min: 6 },
         { field: 'useraccount', type: 'length', min: 12 }
     ],
-    allowAccountDelete: function( inUseAccounts ){
-        return inUseAccounts.findRecord( 'id', this.get( 'id' ) ) !== null;
+    allowAccountDelete: function(inUseAccounts) {
+        return inUseAccounts.findRecord('id', this.get('id')) !== null;
     }
-} );
+});
 //{/block}

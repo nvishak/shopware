@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,16 +13,15 @@ Ext.define('Shopware.apps.CrefoConfiguration.model.Inkasso', {
     alias: 'model.inkasso',
     fields: [
         { name: 'id', type: 'int', useNull: false },
-        { name: 'inkasso_user_account', type: 'int', useNull: true },
-        { name: 'inkasso_creditor', type: 'string', useNull: true },
-        { name: 'inkasso_order_type', type: 'string', useNull: true },
-        { name: 'inkasso_interest_rate_radio', type: 'string', useNull: true },
-        { name: 'inkasso_interest_rate_value', type: 'decimal', useNull: true },
-        { name: 'inkasso_customer_reference', type: 'string', useNull: true },
-        { name: 'inkasso_turnover_type', type: 'string', useNull: true },
-        { name: 'inkasso_receivable_reason', type: 'string', useNull: true },
-        { name: 'inkasso_valuta_date', type: 'int', useNull: true },
-        { name: 'inkasso_due_date', type: 'int', useNull: true }
+        { name: 'creditor', type: 'string', useNull: true },
+        { name: 'order_type', type: 'string', useNull: true },
+        { name: 'interest_rate_radio', type: 'string', useNull: true },
+        { name: 'interest_rate_value', type: 'decimal', useNull: true },
+        { name: 'customer_reference', type: 'string', useNull: true },
+        { name: 'turnover_type', type: 'string', useNull: true },
+        { name: 'receivable_reason', type: 'string', useNull: true },
+        { name: 'valuta_date', type: 'int', useNull: true },
+        { name: 'due_date', type: 'int', useNull: true }
     ],
     proxy: {
         type: 'ajax',
@@ -33,5 +32,14 @@ Ext.define('Shopware.apps.CrefoConfiguration.model.Inkasso', {
             type: 'json',
             root: 'data'
         }
-    }
+    },
+    associations: [
+        {
+            type: 'hasOne',
+            model: 'Shopware.apps.CrefoConfiguration.model.Account',
+            name: 'getUserAccount',
+            instanceName: 'UserAccount',
+            associationKey: 'useraccount_id'
+        }
+    ]
 });

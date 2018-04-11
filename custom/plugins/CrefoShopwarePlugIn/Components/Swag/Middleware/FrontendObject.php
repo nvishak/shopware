@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,18 +12,18 @@
 
 namespace CrefoShopwarePlugIn\Components\Swag\Middleware;
 
-use \CrefoShopwarePlugIn\Components\Core\Enums\PaymentType;
-use \CrefoShopwarePlugIn\Models\CrefoPayment\PaymentData;
-use \Enlight\Event\SubscriberInterface;
-use \Shopware\Components\DependencyInjection\Container;
-use \Shopware\Models\Customer\Customer;
-use \Enlight_Components_Session_Namespace as Session;
-use \CrefoShopwarePlugIn\CrefoShopwarePlugIn;
-use \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings;
+use CrefoShopwarePlugIn\Components\Core\Enums\CountryType;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use CrefoShopwarePlugIn\CrefoShopwarePlugIn;
+use CrefoShopwarePlugIn\Models\CrefoPayment\PaymentData;
+use CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings;
+use Enlight\Event\SubscriberInterface;
+use Enlight_Components_Session_Namespace as Session;
+use Shopware\Components\DependencyInjection\Container;
+use Shopware\Models\Customer\Customer;
 
 /**
  * Class FrontendObject
- * @package Components\Swag\Middleware
  */
 abstract class FrontendObject implements SubscriberInterface
 {
@@ -52,48 +52,55 @@ abstract class FrontendObject implements SubscriberInterface
     protected $session;
 
     /**
-     * @var \CrefoShopwarePlugIn\Models\CrefoPayment\PaymentData|null
-     */
-    private $crefoPaymentData;
-
-    /**
      * @var \Enlight_View_Default
      */
     protected $view = null;
 
     /**
+     * @var \CrefoShopwarePlugIn\Models\CrefoPayment\PaymentData|null
+     */
+    private $crefoPaymentData;
+
+    /**
+     * @codeCoverageIgnore
      * @param Container $container
      */
     public function __construct(Container $container)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==Create Fronted Object.==',
+            ['Constructor of FrontendObject.']);
         $this->container = $container;
         $this->creditreform = CrefoCrossCuttingComponent::getCreditreformPlugin();
         $this->swagModelManager = $this->container->get('Models');
         $this->session = $this->container->get('Session');
-        $this->crefoPaymentData = $this->swagModelManager->getRepository('CrefoShopwarePlugIn\Models\CrefoPayment\PaymentData')->findOneBy(['userId' => $this->session->sUserId]);
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     abstract public function hasCorrectCompanyReportConfiguration();
 
     /**
-     * @return boolean
+     * @return bool
      */
     abstract public function hasCorrectPersonReportConfiguration();
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function validateCrefoInvoiceConditions()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==validateCrefoInvoiceConditions.==',
+            ['Validate conditions for crefo invoice.']);
         $hasValidConditions = true;
         if ($this instanceof \CrefoShopwarePlugIn\Subscriber\FrontendCheckout) {
             $hasValidConditions = $hasValidConditions && $this->hasAllowedCurrency();
         }
         $isCompany = $this->isCompany();
         $country = $this->getCountryFromUserData();
+        if ($country === null) {
+            return false;
+        }
         if ($isCompany) {
             $hasValidConditions = $hasValidConditions && $this->isAllowedCountry($country, $isCompany);
             $hasValidConditions = $hasValidConditions && $this->hasCorrectCompanyReportConfiguration();
@@ -101,165 +108,8 @@ abstract class FrontendObject implements SubscriberInterface
             $hasValidConditions = $hasValidConditions && $this->isAllowedCountry($country);
             $hasValidConditions = $hasValidConditions && $this->hasCorrectPersonReportConfiguration();
         }
+
         return $hasValidConditions;
-    }
-
-    /**
-     * Checks if the company field is set in the billing address
-     * @return bool
-     */
-    protected function isCompany()
-    {
-        $userData = $this->getUserData();
-        if (!$userData) {
-            /**
-             * @var Customer $customer
-             */
-            $customer = $this->swagModelManager->getRepository('Shopware\Models\Customer\Customer')->findOneBy(['id' => $this->session->sUserId]);
-            $companyName = $customer->getDefaultBillingAddress()->getCompany();
-            return !is_null($companyName) && $companyName != '';
-        } else {
-            $billingAddressArray = $userData['billingaddress'];
-            return !is_null($billingAddressArray['company']) && strcmp($billingAddressArray['company'], '') !== 0;
-        }
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCountryFromUserData()
-    {
-        $userData = $this->getUserData();
-        if (!$userData) {
-            /**
-             * @var Customer $customer
-             */
-            $customer = $this->swagModelManager->getRepository('Shopware\Models\Customer\Customer')->findOneBy(['id' => $this->session->sUserId]);
-            return $customer->getDefaultBillingAddress()->getCountry()->getIso();
-        } else {
-            $additional = $userData['additional'];
-            return $additional['country']['countryiso'];
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    protected function hasAllowedCurrency()
-    {
-        /**
-         * @var \Shopware\Models\Shop\Shop $shop
-         */
-        $shop = $this->container->get('Shop');
-        /**
-         * @var \Shopware\Models\Shop\Currency $currency
-         */
-        $currency = $shop->getCurrency();
-        return $currency->getCurrency() == self::ALLOWED_CURRENCY;
-    }
-
-    /**
-     * @return array|false
-     */
-    protected function getUserData()
-    {
-        /**
-         * @var \sAdmin $admin
-         */
-        $admin = $this->container->get('Modules')->Admin();
-        return !is_null($admin) ? $admin->sGetUserData() : false;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function hasConsentDeclaration()
-    {
-        $pluginSettingsId = $this->creditreform->getConfigurationId(PluginSettings::class);
-        $repoPluginSettings = $this->swagModelManager->getRepository('CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings');
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings $pluginSettings
-         */
-        $pluginSettings = $repoPluginSettings->find($pluginSettingsId);
-        return boolval($pluginSettings->getConsentDeclaration());
-    }
-
-    /**
-     * Checks if the country is allowed by the crefo plugin
-     * @param string $country
-     * @param boolean $isCompany
-     * @return bool
-     */
-    protected function isAllowedCountry($country, $isCompany = false)
-    {
-        if ($isCompany) {
-            return in_array(strtoupper($country), $this->creditreform->getAllowedCountriesISOForCompanies());
-        } else {
-            return in_array(strtoupper($country), $this->creditreform->getAllowedCountriesISOForPrivatePerson());
-        }
-    }
-
-    /**
-     * Removes Crefo Invoice payment from the view
-     */
-    protected function removePayment()
-    {
-        /**
-         * @var \sAdmin $admin
-         */
-        $admin = $this->container->get('Modules')->Admin();
-        $paymentsWithoutCrefoInvoice = [];
-        if (isset($this->view->sPayments)) {
-            $paymentsWithCrefoInvoice = $this->view->sPayments;
-        } elseif (isset($this->view->sPaymentMeans)) {
-            $paymentsWithCrefoInvoice = $this->view->sPaymentMeans;
-        } else {
-            $paymentsWithCrefoInvoice = $admin->sGetPaymentMeans();
-        }
-        foreach ($paymentsWithCrefoInvoice as $key => $payment) {
-            if (strcmp($payment['name'], self::PAYMENT_NAME) !== 0) {
-                $paymentsWithoutCrefoInvoice[$key] = $payment;
-            }
-        }
-        if (isset($this->view->sPayments)) {
-            /**
-             * needed in checkout page
-             */
-            $this->view->sPayments = $paymentsWithoutCrefoInvoice;
-        }
-        if (isset($this->view->sPaymentMeans)) {
-            /**
-             * needed in account page
-             */
-            $this->view->sPaymentMeans = $paymentsWithoutCrefoInvoice;
-        }
-    }
-
-    /**
-     * register the needed frontend templates
-     */
-    protected function registerFrontendTemplates()
-    {
-        $template = $this->container->get('Template');
-        $template->addTemplateDir(
-            $this->container->getParameter('creditreform.plugin_dir') . '/Resources/views/'
-        );
-    }
-
-    /**
-     * @param integer $paymentId
-     * @return bool
-     */
-    protected function isCrefoInvoicePayment($paymentId)
-    {
-        /**
-         * @var \Shopware\Models\Payment\Payment $payment
-         */
-        $payment = $this->swagModelManager->getRepository('Shopware\Models\Payment\Payment')->findOneBy(['id' => intval($paymentId)]);
-        if (is_null($payment) || is_null($payment->getPlugin())) {
-            return false;
-        }
-        return $payment->getPlugin()->getName() == $this->creditreform->getName();
     }
 
     /**
@@ -269,7 +119,149 @@ abstract class FrontendObject implements SubscriberInterface
      */
     public function isUserLoggedIn()
     {
-        return isset($this->session->sUserId) && !empty($this->session->sUserId);
+        return $this->session->get('sUserId', null) !== null;
+    }
+
+    /**
+     * Returns if it is a guest account
+     *
+     * @return bool
+     */
+    public function isAccountOneTime()
+    {
+        return $this->session->offsetGet('sOneTimeAccount');
+    }
+
+    /**
+     * Checks if the company field is set in the billing address
+     *
+     * @return bool|null
+     */
+    abstract protected function isCompany();
+
+    /**
+     * @return string|null
+     */
+    abstract protected function getCountryFromUserData();
+
+    /**
+     * @return bool
+     */
+    protected function hasAllowedCurrency()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==hasAllowedCurrency.==', ['Check the allowed currency.']);
+        /**
+         * @var \Shopware\Models\Shop\Shop $shop
+         */
+        $shop = $this->container->get('Shop');
+        $basketCurrencyId = $this->session->offsetGet('sBasketCurrency');
+        $shopCurrency = null;
+        $currencies = $shop->getCurrencies();
+        /**
+         * @var \Shopware\Models\Shop\Currency $currency
+         */
+        foreach ($currencies as $currency) {
+            if ($currency->getId() === intval($basketCurrencyId)) {
+                $shopCurrency = $currency;
+            }
+        }
+
+        return $shopCurrency->getCurrency() == self::ALLOWED_CURRENCY;
+    }
+
+    /**
+     * @return bool
+     */
+    abstract protected function hasConfiguredConsentDeclaration();
+
+    /**
+     * Checks if the country is allowed by the crefo plugin
+     *
+     * @param string $country
+     * @param bool   $isCompany
+     *
+     * @return bool
+     */
+    protected function isAllowedCountry($country, $isCompany = false)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==isAllowedCountry.==',
+            ['Check country: ' . $country . ' for ' . ($isCompany ? 'company' : 'person')]);
+        if ($isCompany) {
+            return in_array(strtoupper($country), CountryType::getAllowedCountriesISOForCompanies());
+        }
+
+        return in_array(strtoupper($country), CountryType::getAllowedCountriesISOForPrivatePerson());
+    }
+
+    /**
+     * Removes Crefo Invoice payment from the view
+     */
+    protected function removePayment()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==removePayment.==', ['Remove payment from the view.']);
+        /**
+         * @var \sAdmin $admin
+         */
+        $admin = $this->container->get('Modules')->Admin();
+        $paymentsWithoutCrefoInvoice = [];
+        if ($this->view->getAssign('sPayments') !== null) {
+            $paymentsWithCrefoInvoice = $this->view->getAssign('sPayments');
+        } elseif ($this->view->getAssign('sPaymentMeans') !== null) {
+            $paymentsWithCrefoInvoice = $this->view->getAssign('sPaymentMeans');
+        } else {
+            $paymentsWithCrefoInvoice = $admin->sGetPaymentMeans();
+        }
+        foreach ($paymentsWithCrefoInvoice as $key => $payment) {
+            if (strcmp($payment['name'], self::PAYMENT_NAME) !== 0) {
+                $paymentsWithoutCrefoInvoice[$key] = $payment;
+            }
+        }
+        if ($this->view->getAssign('sPayments') !== null) {
+            /*
+             * needed in checkout page
+             */
+            $this->view->assign('sPayments', $paymentsWithoutCrefoInvoice);
+        }
+        if ($this->view->getAssign('sPaymentMeans') !== null) {
+            /*
+             * needed in account page
+             */
+            $this->view->assign('sPaymentMeans', $paymentsWithoutCrefoInvoice);
+        }
+    }
+
+    /**
+     * register the needed frontend templates
+     * @codeCoverageIgnore
+     */
+    protected function registerFrontendTemplates()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==registerFrontendTemplates.==',
+            ['Register frontend templates.']);
+        $template = $this->container->get('Template');
+        $template->addTemplateDir(
+            $this->container->getParameter('creditreform.plugin_dir') . '/Resources/views/'
+        );
+    }
+
+    /**
+     * @param int $paymentId
+     *
+     * @return bool
+     */
+    protected function isCrefoInvoicePayment($paymentId)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==isCrefoInvoicePayment.==',
+            ['Check for crefo payment. ID:' . $paymentId]);
+        /**
+         * @var \Shopware\Models\Payment\Payment $payment
+         */
+        $payment = $this->swagModelManager->getRepository('Shopware\Models\Payment\Payment')->findOneBy(['id' => intval($paymentId)]);
+        if (null === $payment || null === $payment->getPlugin()) {
+            return false;
+        }
+
+        return $payment->getPlugin()->getName() == $this->creditreform->getName();
     }
 
     /**
@@ -277,33 +269,23 @@ abstract class FrontendObject implements SubscriberInterface
      */
     protected function saveCrefoPaymentData($request)
     {
-        $this->initPaymentData();
-        if (!is_null($request->getParam('sCrefoBirthDate', null))) {
-            $this->getPaymentDataInstance()->setBirthdate(\DateTime::createFromFormat('d.m.Y',
-                $request->getParam('sCrefoBirthDate')));
-        }
-        if (!is_null($request->getParam('sCrefoConfirmation', null))) {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==saveCrefoPaymentData.==', ['Save the payment data.']);
+        if ($request->getParam('sCrefoConfirmation', null) === 'on') {
             $this->getPaymentDataInstance()->setConsent(true);
+            $this->flushPaymentData();
         }
-        $this->getPaymentDataInstance()->setPaymentType($this->isCompany() ? PaymentType::COMPANY : PaymentType::PERSON);
-        $this->flushPaymentData();
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function flushPaymentData()
     {
-        $this->swagModelManager->persist($this->getPaymentDataInstance());
-        $this->swagModelManager->flush();
-    }
-
-    private function initPaymentData()
-    {
-        if (is_null($this->crefoPaymentData)) {
-            $this->crefoPaymentData = new PaymentData();
-            /**
-             * @var Customer $customer
-             */
-            $customer = $this->swagModelManager->getRepository('Shopware\Models\Customer\Customer')->findOneBy(['id' => $this->session->sUserId]);
-            $this->crefoPaymentData->setUserId($customer);
+        try {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==flushPaymentData.==', ['Flush the payment data.']);
+            $this->swagModelManager->flush($this->getPaymentDataInstance());
+        } catch (\Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, "==Couldn't flush the payment data.==", (array) $e);
         }
     }
 
@@ -312,17 +294,32 @@ abstract class FrontendObject implements SubscriberInterface
      */
     protected function getPaymentDataInstance()
     {
-        if (is_null($this->crefoPaymentData)) {
+        if (null === $this->crefoPaymentData) {
             $this->initPaymentData();
         }
+
         return $this->crefoPaymentData;
     }
 
     /**
-     * @return bool
+     * init Payment Data
      */
-    protected function hasCrefoPayment()
+    private function initPaymentData()
     {
-        return !is_null($this->crefoPaymentData);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, '==initPaymentData.==', ['Init the payment data.']);
+        $this->crefoPaymentData = $this->swagModelManager->getRepository('CrefoShopwarePlugIn\Models\CrefoPayment\PaymentData')
+            ->findOneBy(['userId' => $this->session->offsetGet('sUserId')]);
+        // @codeCoverageIgnoreStart
+        if (null === $this->crefoPaymentData) {
+            $this->crefoPaymentData = new PaymentData();
+            /**
+             * @var Customer $customer
+             */
+            $customer = $this->swagModelManager->getRepository('Shopware\Models\Customer\Customer')
+                ->findOneBy(['id' => $this->session->offsetGet('sUserId')]);
+            $this->crefoPaymentData->setUserId($customer);
+            $this->swagModelManager->persist($this->crefoPaymentData);
+        }
+        // @codeCoverageIgnoreEnd
     }
 }

@@ -78,6 +78,9 @@
         <service id="creditreform.config_header_request"
                  class="CrefoShopwarePlugIn\Components\Swag\Middleware\ConfigHeaderRequest"/>
 
+        <!--Payment Service-->
+        <service id="creditreform.crefo_invoice_service" class="CrefoShopwarePlugIn\Components\Payment\CrefoInvoiceService"/>
+
         <!-- Event Subscribers -->
         <service id="creditreform.subscriber.assets" class="CrefoShopwarePlugIn\Subscriber\Assets">
             <argument type="service" id="service_container"/>

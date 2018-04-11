@@ -6,7 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => $vendorDir . '/symfony/polyfill-mbstring/bootstrap.php',
-    'ef722eccde9ba0c408feb2390308de65' => $vendorDir . '/defuse/php-encryption/autoload.php',
-    'ea994598b26f8836130c579298b92024' => $baseDir . '/autoload.php',
+    '5255c38a0faeba867671b61dfda6d864' => $vendorDir . '/paragonie/random_compat/lib/random.php',
+    '27c26b02b2b408b69b0a5ff12f746b77' => $baseDir . '/autoload.php',
 );

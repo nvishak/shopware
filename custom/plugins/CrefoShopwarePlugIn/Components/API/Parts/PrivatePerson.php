@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -43,6 +43,7 @@ class PrivatePerson
     }
 
     /**
+     * @codeCoverageIgnore
      * @return mixed
      */
     public function getSurname()
@@ -51,6 +52,7 @@ class PrivatePerson
     }
 
     /**
+     * @codeCoverageIgnore
      * @param mixed $surname
      */
     public function setSurname($surname)
@@ -59,6 +61,7 @@ class PrivatePerson
     }
 
     /**
+     * @codeCoverageIgnore
      * @return mixed
      */
     public function getFirstname()
@@ -67,6 +70,7 @@ class PrivatePerson
     }
 
     /**
+     * @codeCoverageIgnore
      * @param mixed $firstname
      */
     public function setFirstname($firstname)

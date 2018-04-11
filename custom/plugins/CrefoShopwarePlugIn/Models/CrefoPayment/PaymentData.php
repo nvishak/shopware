@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,7 +13,7 @@
 namespace CrefoShopwarePlugIn\Models\CrefoPayment;
 
 use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM;
 use \Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -36,7 +36,7 @@ class PaymentData extends ModelEntity
     /**
      * @var \Shopware\Models\Customer\Customer $userId
      *
-     * @ORM\OneToOne(targetEntity="\Shopware\Models\Customer\Customer")
+     * @ORM\OneToOne(targetEntity="Shopware\Models\Customer\Customer")
      * @ORM\JoinColumn(name="userId", referencedColumnName="id")
      */
     private $userId;
@@ -47,20 +47,6 @@ class PaymentData extends ModelEntity
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $consent;
-
-    /**
-     * @var \DateTime $birthdate
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $birthdate;
-
-    /**
-     * @var integer $paymentType
-     *
-     * @ORM\Column(type="smallint", nullable=false)
-     */
-    private $paymentType;
 
     /**
      * @return int
@@ -95,43 +81,10 @@ class PaymentData extends ModelEntity
     }
 
     /**
-     * @return int
-     */
-    public function getPaymentType()
-    {
-        return $this->paymentType;
-    }
-
-    /**
-     * @param int $paymentType
-     */
-    public function setPaymentType($paymentType)
-    {
-        $this->paymentType = $paymentType;
-    }
-
-    /**
      * @param int $consent
      */
     public function setConsent($consent)
     {
         $this->consent = $consent;
     }
-
-    /**
-     * @return \DateTime
-     */
-    public function getBirthdate()
-    {
-        return $this->birthdate;
-    }
-
-    /**
-     * @param \DateTime $birthdate
-     */
-    public function setBirthdate($birthdate)
-    {
-        $this->birthdate = $birthdate;
-    }
-
 }

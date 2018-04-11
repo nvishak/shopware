@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -14,35 +14,37 @@ namespace CrefoShopwarePlugIn\Components\Core;
 
 /**
  * Class CrefoSanitizer
- * @package CrefoShopwarePlugIn\Components\Core
  */
 class CrefoSanitizer
 {
+    /**
+     * the sanitized values
+     *
+     * @var array
+     */
+    public $sanitized = [];
 
     /**
      * sanitizer rules
+     *
      * @var array
      */
     private $sanitize_rules = [];
 
     /**
      * source
+     *
      * @var array
      */
     private $source = [];
 
     /**
-     * the sanitized values
-     * @var array
-     */
-    public $sanitized = [];
-
-    /**
+     * @codeCoverageIgnore
      * CrefoSanitizer constructor.
      */
     public function __construct()
     {
-        mb_internal_encoding("UTF-8");
+        mb_internal_encoding('UTF-8');
     }
 
     /**
@@ -59,7 +61,7 @@ class CrefoSanitizer
     public function run()
     {
         foreach (new \ArrayIterator($this->sanitize_rules) as $var => $opt) {
-            if (array_key_exists('trim', $opt) && $opt['trim'] == true && !is_null($this->source[$var])) {
+            if (array_key_exists('trim', $opt) && $opt['trim'] == true && null !== $this->source[$var]) {
                 $this->source[$var] = trim($this->source[$var]);
             }
             $this->sanitizeLength($var, $opt['length']);
@@ -94,13 +96,15 @@ class CrefoSanitizer
     /**
      * @param $varName
      * @param $type
-     * @param int $length
+     * @param int  $length
      * @param bool $trim
+     *
      * @return $this
      */
     public function addRule($varName, $type, $length = 0, $trim = false)
     {
         $this->sanitize_rules[$varName] = ['type' => $type, 'length' => $length, 'trim' => $trim];
+
         return $this;
     }
 
@@ -117,12 +121,13 @@ class CrefoSanitizer
      */
     private function sanitizeEmail($var)
     {
-        if (is_null($this->source[$var])) {
+        if (null === $this->source[$var]) {
             $this->sanitized[$var] = null;
+
             return;
         }
         $email = preg_replace('((?:\n|\r|\t|%0A|%0D|%08|%09)+)i', '', $this->source[$var]);
-        $this->sanitized[$var] = (string)filter_var($email, FILTER_SANITIZE_EMAIL);
+        $this->sanitized[$var] = (string) filter_var($email, FILTER_SANITIZE_EMAIL);
     }
 
     /**
@@ -130,11 +135,12 @@ class CrefoSanitizer
      */
     private function sanitizeNumeric($var)
     {
-        if (is_null($this->source[$var])) {
+        if ( null === $this->source[$var]) {
             $this->sanitized[$var] = null;
+
             return;
         }
-        $this->sanitized[$var] = (int)filter_var($this->source[$var], FILTER_SANITIZE_NUMBER_INT);
+        $this->sanitized[$var] = (int) filter_var($this->source[$var], FILTER_SANITIZE_NUMBER_INT);
     }
 
     /**
@@ -142,11 +148,12 @@ class CrefoSanitizer
      */
     private function sanitizeString($var)
     {
-        if (is_null($this->source[$var])) {
+        if (null === $this->source[$var]) {
             $this->sanitized[$var] = null;
+
             return;
         }
-        $this->sanitized[$var] = (string)filter_var($this->source[$var], FILTER_SANITIZE_STRING);
+        $this->sanitized[$var] = (string) filter_var($this->source[$var], FILTER_SANITIZE_STRING);
     }
 
     /**
@@ -154,11 +161,12 @@ class CrefoSanitizer
      */
     private function sanitizeStringNumeric($var)
     {
-        if (is_null($this->source[$var])) {
+        if (null === $this->source[$var]) {
             $this->sanitized[$var] = null;
+
             return;
         }
-        $this->sanitized[$var] = (string)preg_replace('/[^\d]+/i', "",
+        $this->sanitized[$var] = (string) preg_replace('/[^\d]+/i', '',
             filter_var($this->source[$var], FILTER_SANITIZE_STRING));
     }
 
@@ -167,11 +175,12 @@ class CrefoSanitizer
      */
     private function sanitizeNumericFloat($var)
     {
-        if (is_null($this->source[$var])) {
+        if (null === $this->source[$var]) {
             $this->sanitized[$var] = null;
+
             return;
         }
-        $this->sanitized[$var] = (float)filter_var($this->source[$var], FILTER_SANITIZE_NUMBER_FLOAT,
+        $this->sanitized[$var] = (float) filter_var($this->source[$var], FILTER_SANITIZE_NUMBER_FLOAT,
             FILTER_FLAG_ALLOW_FRACTION);
     }
 
@@ -181,12 +190,11 @@ class CrefoSanitizer
      */
     private function sanitizeLength($var, $length)
     {
-        if (is_null($var) || mb_strlen($this->source[$var]) == 0 || $length == 0) {
+        if (null === $var || mb_strlen($this->source[$var]) == 0 || $length == 0) {
             return; //do nothing
         }
         if (mb_strlen($this->source[$var]) > $length) {
             $this->source[$var] = mb_substr($this->source[$var], 0, $length - mb_strlen($this->source[$var]));
         }
     }
-
 }

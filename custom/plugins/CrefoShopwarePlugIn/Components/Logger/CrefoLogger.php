@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,81 +12,62 @@
 
 namespace CrefoShopwarePlugIn\Components\Logger;
 
-use \Monolog\Processor\IntrospectionProcessor;
-use \Monolog\Handler\RotatingFileHandler;
-use \Shopware\Components\Logger as ShopwareLogger;
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
+use CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Processor\IntrospectionProcessor;
+use Monolog\Logger;
 
 /**
  * Class CrefoLogger
- * @package Components\Logger
+ * @codeCoverageIgnore
  */
-class CrefoLogger extends ShopwareLogger
+class CrefoLogger extends Logger
 {
-
-    const PATH_LOGFILE = "var/log/crefo.log";
-    const CREFO_LOGGER_NAME = "crefologger";
-    const MAXFILENR = 31; //0 = unlimited
+    const FILE_LOGGER_INI = __DIR__ . DIRECTORY_SEPARATOR . 'logger.ini';
+    const INI_LOGGER_CONFIG = 'config';
 
     /**
-     * Detailed debug information
+     * @var CrefoLogger
      */
-    const DEBUG = 100;
-
-    /**
-     * Interesting events
-     *
-     * Examples: User logs in, SQL logs.
-     */
-    const INFO = 200;
-
-    /**
-     * Uncommon events
-     */
-    const NOTICE = 250;
-
-    /**
-     * Exceptional occurrences that are not errors
-     *
-     * Examples: Use of deprecated APIs, poor use of an API,
-     * undesirable things that are not necessarily wrong.
-     */
-    const WARNING = 300;
-
-    /**
-     * Runtime errors
-     */
-    const ERROR = 400;
-
-    /**
-     * Critical conditions
-     *
-     * Example: Application component unavailable, unexpected exception.
-     */
-    const CRITICAL = 500;
-
-    /**
-     * Action must be taken immediately
-     *
-     * Example: Entire website down, database unavailable, etc.
-     * This should trigger the SMS alerts and wake you up.
-     */
-    const ALERT = 550;
-
-    /**
-     * Urgent alert.
-     */
-    const EMERGENCY = 600;
+    private static $crefoLogger = null;
 
     /**
      * CrefoLogger constructor.
      */
     public function __construct()
     {
-        $rotatingFieldHandler = new RotatingFileHandler(CrefoCrossCuttingComponent::getShopwareInstance()->DocPath() . self::PATH_LOGFILE,
-            self::MAXFILENR);
-        $proc = new IntrospectionProcessor();
-        parent::__construct(self::CREFO_LOGGER_NAME, [$rotatingFieldHandler], [$proc]);
+        date_default_timezone_set('Europe/Berlin');
+        $configLogger = $this->getLoggerIni();
+        $rotatingFieldHandler = new RotatingFileHandler(CrefoCrossCuttingComponent::getShopwareInstance()->DocPath() . $configLogger['pathLogFile'],
+            $configLogger['logFiles'], $configLogger['level']);
+        $processor = new IntrospectionProcessor($configLogger['level']);
+        parent::__construct($configLogger['loggerName'], [$rotatingFieldHandler], [$processor]);
     }
 
+    /**
+     * @return CrefoLogger
+     */
+    public static function getCrefoLogger()
+    {
+        if (self::$crefoLogger == null) {
+            self::$crefoLogger = new self();
+        }
+
+        return self::$crefoLogger;
+    }
+
+    /**
+     * @return array
+     */
+    private function getLoggerIni()
+    {
+        $ini_array = parse_ini_file(filter_var(self::FILE_LOGGER_INI, FILTER_SANITIZE_STRING), true);
+        if (array_key_exists(self::INI_LOGGER_CONFIG, $ini_array)) {
+            $config = $ini_array[self::INI_LOGGER_CONFIG];
+
+            return $config;
+        }
+
+        return [];
+    }
 }

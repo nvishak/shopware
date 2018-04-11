@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -21,6 +21,7 @@ class CrefoValidator
 
     /**
      * CrefoValidator constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -160,25 +161,35 @@ class CrefoValidator
                 $formatter->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, 2);
             }
             return $formatter->format($currency);
-        } else {
-            if (is_numeric($currency) && (strlen($currency) > 2 && floatval($currency) >= 0 || strlen($currency) > 3 && floatval($currency) < 0)) {
-                if (preg_match('/\.|,/', $currency)) {
-                    return number_format(floatval($currency), 2, $this->getDecimalPoint($lang),
-                        $this->getThousandsPoint($lang));
-                } else {
-                    return number_format(floatval($currency), 0, $this->getDecimalPoint($lang),
-                        $this->getThousandsPoint($lang));
-                }
+        }// @codeCoverageIgnoreStart
+        else {
+            return $this->fallbackCurrencyFormat($currency, $lang);
+        } // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * @param float $currency
+     * @param string $lang
+     * @return string
+     */
+    private function fallbackCurrencyFormat($currency, $lang = 'de'){
+        if (is_numeric($currency) && (strlen($currency) > 2 && floatval($currency) >= 0 || strlen($currency) > 3 && floatval($currency) < 0)) {
+            if (preg_match('/\.|,/', $currency)) {
+                return number_format(floatval($currency), 2, $this->getDecimalPoint($lang),
+                    $this->getThousandsPoint($lang));
             } else {
-                $newCurrency = floatval($currency);
-                if (strlen($newCurrency) != strlen($currency) && preg_match('/\d/', $currency)) {
-                    $newCurrency .= $this->getDecimalPoint($lang) . '00';
-                }
-                if (strpos((string)$newCurrency, '.') !== false) {
-                    return $this->formatCurrency($newCurrency, $lang);
-                }
-                return (string)$newCurrency;
+                return number_format(floatval($currency), 0, $this->getDecimalPoint($lang),
+                    $this->getThousandsPoint($lang));
             }
+        } else {
+            $newCurrency = floatval($currency);
+            if (strlen($newCurrency) != strlen($currency) && preg_match('/\d/', $currency)) {
+                $newCurrency .= $this->getDecimalPoint($lang) . '00';
+            }
+            if (strpos((string)$newCurrency, '.') !== false) {
+                return $this->formatCurrency($newCurrency, $lang);
+            }
+            return (string)$newCurrency;
         }
     }
 

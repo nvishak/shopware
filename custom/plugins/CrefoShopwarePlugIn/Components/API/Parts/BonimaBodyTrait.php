@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -51,20 +51,22 @@ trait BonimaBodyTrait
     }
 
     /**
-     * @param integer $producttype
+     * @param integer $productType
      */
-    public function setProductTypeFromId($producttype)
+    public function setProductTypeFromId($productType)
     {
         $productsTypes = PrivatePersonProductsType::AllowedProducts();
-        $this->producttype = $productsTypes[$producttype];
+        if(array_key_exists($productType, $productsTypes)) {
+            $this->producttype = $productsTypes[$productType];
+        }
     }
 
     /**
-     * @param string $producttype
+     * @param string $productType
      */
-    public function setProductType($producttype)
+    public function setProductType($productType)
     {
-        $this->producttype = $producttype;
+        $this->producttype = $productType;
     }
 
     /**
@@ -96,7 +98,11 @@ trait BonimaBodyTrait
      */
     public function setSalutation($salutation)
     {
-        $this->salutation = strpos(strtolower(trim($salutation)), "s") === false ? "SA-1" : "SA-2";
+        if (is_string($salutation) && strcmp(strtolower($salutation), "mr") == 0) {
+            $this->salutation = "SA-1";
+        } else {
+            $this->salutation = "SA-2";
+        }
     }
 
     /**
@@ -140,13 +146,13 @@ trait BonimaBodyTrait
     }
 
     /**
-     * @param mixed $dateofbirth
+     * @param mixed $dateOfBirth
      */
-    public function setDateOfBirth($dateofbirth)
+    public function setDateOfBirth($dateOfBirth)
     {
-        preg_match("/\d\d\d\d\-\d\d-\d\d/", $dateofbirth, $matches);
+        preg_match("/\d\d\d\d\-\d\d-\d\d/", $dateOfBirth, $matches);
         if (count($matches) == 0) {
-            $value = preg_replace('/[^\d\.]/', '', $dateofbirth);
+            $value = preg_replace('/[^\d\.]/', '', $dateOfBirth);
             $values = preg_split("/[\.]/", $value);
             if (count($values) == 3) {
                 $this->dateofbirth = $values[2] . "-" . $values[1] . "-" . $values[0];
@@ -154,7 +160,7 @@ trait BonimaBodyTrait
                 $this->dateofbirth = $value;
             }
         } else {
-            $this->dateofbirth = $dateofbirth;
+            $this->dateofbirth = $dateOfBirth;
         }
     }
 
@@ -167,6 +173,7 @@ trait BonimaBodyTrait
     }
 
     /**
+     * @codeCoverageIgnore
      * @return AddressOne
      */
     public function getAddressOne()
@@ -175,6 +182,7 @@ trait BonimaBodyTrait
     }
 
     /**
+     * @codeCoverageIgnore
      * @param AddressOne $addressOne
      */
     public function setAddressOne($addressOne)

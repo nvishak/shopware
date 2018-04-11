@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,18 +10,29 @@
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
 
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
-use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
-use \CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount;
-use \CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ProductsConfig;
-use \CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\PrivatePersonConfig;
-use \CrefoShopwarePlugIn\Components\Core\Enums\PrivatePersonProductsType;
-use \CrefoShopwarePlugIn\Components\Core\Enums\IdentificationResultType;
-use \CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsPrivatePerson;
-use \Shopware\Components\CSRFWhitelistAware;
+use CrefoShopwarePlugIn\Components\Core\Enums\AddressValidationResultType;
+use CrefoShopwarePlugIn\Components\Core\Enums\CollectionOrderFieldType;
+use CrefoShopwarePlugIn\Components\Core\Enums\CompanyProductsType;
+use CrefoShopwarePlugIn\Components\Core\Enums\CountryType;
+use CrefoShopwarePlugIn\Components\Core\Enums\PrivatePersonProductsType;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
+use CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount;
+use CrefoShopwarePlugIn\Models\CrefoErrorRequests\ErrorRequests;
+use CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig;
+use CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoCreditors;
+use CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoWSValues;
+use CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings;
+use CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\CountriesForCompanies;
+use CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ProductsConfig;
+use CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyConfig;
+use CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\PrivatePersonConfig;
+use CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductScoreConfig;
+use CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsPrivatePerson;
+use Shopware\Components\CSRFWhitelistAware;
 
 /**
- * Class Shopware_Controllers_Backend_CrefoConfiguration
+ * Class Shopware_Controllers_Backend_CrefoConfiguration.
  */
 class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controllers_Backend_Application implements CSRFWhitelistAware
 {
@@ -32,129 +43,23 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
      * @var null|\CrefoShopwarePlugIn\Models\CrefoAccounts\Repository $accountRepository
      */
     private $accountRepository = null;
+
     /**
      * @var null|\Shopware\Models\Payment\Repository $paymentRepository
      */
     private $paymentRepository = null;
-    /**
-     * @var null|\CrefoShopwarePlugIn\Models\CrefoPluginSettings\SettingsRepository $settingsRepository
-     */
-    private $settingsRepository = null;
-    /**
-     * @var null|\CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyRepository $reportCompanyRepository
-     */
-    private $reportCompanyRepository = null;
-
-    /**
-     * @var null|\CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\Repository $reportPrivatePersonRepository
-     */
-    private $reportPrivatePersonRepository = null;
 
     /**
      * @var null|\CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsRepository $productsPrivatePersonRepository
      */
     private $productsPrivatePersonRepository = null;
-    /**
-     * @var null|\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfigRepository $inkassoConfigRepository
-     */
-    private $inkassoConfigRepository = null;
-    /**
-     * @var null|CrefoLogger $crefoLogger
-     */
-    private $crefoLogger = null;
 
     /**
-     * @return null|CrefoLogger
+     * @codeCoverageIgnore
      */
-    private function getCrefoLogger()
-    {
-        if ($this->crefoLogger === null) {
-            $this->crefoLogger = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.logger');
-        }
-        return $this->crefoLogger;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoAccounts\Repository
-     */
-    private function getAccountRepository()
-    {
-        if ($this->accountRepository === null) {
-            $this->accountRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount');
-        }
-        return $this->accountRepository;
-    }
-
-    /**
-     * @return null|\Shopware\Models\Payment\Repository
-     */
-    private function getPaymentRepository()
-    {
-        if ($this->paymentRepository === null) {
-            $this->paymentRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('\Shopware\Models\Payment\Payment');
-        }
-        return $this->paymentRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoPluginSettings\SettingsRepository
-     */
-    private function getPluginSettingsRepository()
-    {
-        if ($this->settingsRepository === null) {
-            $this->settingsRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings');
-        }
-        return $this->settingsRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyRepository
-     */
-    private function getReportCompanyRepository()
-    {
-        if ($this->reportCompanyRepository === null) {
-            $this->reportCompanyRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyConfig');
-        }
-        return $this->reportCompanyRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\Repository
-     */
-    private function getReportPrivatePersonRepository()
-    {
-        if ($this->reportPrivatePersonRepository === null) {
-            $this->reportPrivatePersonRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\PrivatePersonConfig');
-        }
-        return $this->reportPrivatePersonRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsRepository
-     */
-    private function getProductsPrivatePersonRepository()
-    {
-        if ($this->productsPrivatePersonRepository === null) {
-            $this->productsPrivatePersonRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsPrivatePerson');
-        }
-        return $this->productsPrivatePersonRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfigRepository
-     */
-    private function getInkassoConfigRepository()
-    {
-        if ($this->inkassoConfigRepository === null) {
-            $this->inkassoConfigRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig');
-        }
-        return $this->inkassoConfigRepository;
-    }
-
-
     public function logonAction()
     {
-        $this->getCrefoLogger()->log(CrefoLogger::DEBUG, "==logon==", ["Perform Logon."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Perform Logon.', ['==logon==']);
         $errors = null;
         $id = $this->Request()->getParam('id', null);
         $params = $this->Request()->getParams();
@@ -171,9 +76,12 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => $successful, 'errors' => $errors]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function changePasswordAction()
     {
-        $this->getCrefoLogger()->log(CrefoLogger::DEBUG, "==changePassword==", ["Perform Change Password."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Perform Change Password.', ['==changePassword==']);
         $errors = null;
         $params = $this->Request()->getParams();
         $account = $this->createAccountFromDB($params['useraccount']);
@@ -193,10 +101,13 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => $successful, 'errors' => $errors, 'account' => $account]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function changeDefaultPasswordAction()
     {
-        $this->getCrefoLogger()->log(CrefoLogger::DEBUG, "==changeDefaultPassword==",
-            ["Perform Change Default Password."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Perform Change Default Password.',
+            ['==changeDefaultPassword==']);
         $params = $this->Request()->getParams();
         /**
          * @var \CrefoShopwarePlugIn\Components\Core\PasswordEncoder $passwordEncoder
@@ -232,13 +143,17 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
                 $dataAccount = $shopwareModels->toArray($account);
             }
         } else {
-            is_null($rawResponse) ? ($errors = ['error' => 'connection']) : ($errors = $this->processWSErrors($rawResponse));
+            null === $rawResponse ? ($errors = ['error' => 'connection']) : ($errors = $this->processWSErrors($rawResponse));
         }
         $this->View()->assign(['success' => $successful, 'errors' => $errors, 'data' => $dataAccount]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function checkIndividualPasswordAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==checkIndividualPasswordAction==', []);
         $params = $this->Request()->getParams();
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount $account
@@ -251,18 +166,23 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $key = $this->getEncryptionKey($passwordEncoder);
         $this->View()->assign([
             'success' => strcmp($passwordEncoder->decrypt($account->getIndividualPassword(), $key),
-                    $params['individualpassword']) == 0
+                    $params['individualpassword']) == 0,
         ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function activatePaymentAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==activatePaymentAction==',
+            [$this->Request()->getParam('state', null)]);
         $state = $this->Request()->getParam('state', null);
         /**
          * @var \Shopware\Models\Payment\Payment $crefoInvoice
          */
         $crefoInvoice = $this->getPaymentRepository()->findOneBy(['name' => 'crefo_invoice']);
-        if (!is_null($crefoInvoice) && !is_null($state)) {
+        if (null !== $crefoInvoice && null !== $state) {
             $statusPaymentBeforeChange = boolval($crefoInvoice->getActive());
             $crefoInvoice->setActive($state);
             /**
@@ -279,49 +199,47 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => $success, 'status' => $statusPaymentBeforeChange]);
     }
 
-    public function resetGeneralSettingsAction()
-    {
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings::class);
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings $settings
-         */
-        $settings = $this->getPluginSettingsRepository()->find($configId);
-        $settings->setCommunicationLanguage('de');
-        $settings->setConsentDeclaration(true);
-        $settings->setEmailAddress(null);
-        $settings->setErrorNotificationActive(false);
-        $settings->setErrorTolerance(1);
-        $settings->setLogsMaxNumberOfRequests(0);
-        $settings->setLogsMaxStorageTime(2);
-        $settings->setRequestCheckAtValue(2);
-        $shopwareModels->persist($settings);
-        $shopwareModels->flush();
-        $this->View()->assign(['success' => true, 'data' => $shopwareModels->toArray($settings)]);
-    }
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function getGeneralSettingsAction()
     {
-        $arraySettings = $this->getPluginSettingsRepository()->getGeneralSettingsArray();
-        $this->View()->assign(['success' => true, 'data' => $arraySettings]);
-    }
-
-    public function updateGeneralSettingsAction()
-    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getGeneralSettingsAction==', []);
         $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings::class);
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings $settings
          */
-        $settings = $this->getPluginSettingsRepository()->find($configId);
+        $settings = $shopwareModels->find(PluginSettings::class, $configId);
+        $settingsArray = $shopwareModels->toArray($settings);
+
+        $this->View()->assign(['success' => true, 'data' => $settingsArray]);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function updateGeneralSettingsAction()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Change general Settings.', ['==updateGeneralSettingsAction==']);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings::class);
+        /**
+         * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings $settings
+         */
+        $settings = $shopwareModels->find(PluginSettings::class, $configId);
         $params = $this->Request()->getParams();
         $settings->setCommunicationLanguage($params['communicationLanguage']);
         $settings->setConsentDeclaration(boolval($params['consentDeclaration']));
         $errorNotificationStatus = boolval($params['errorNotificationStatus']);
         if ($errorNotificationStatus) {
-            $settings->setErrorTolerance(intval($params['errorTolerance']));
-            $settings->setEmailAddress($params['emailAddress']);
-            $settings->setRequestCheckAtValue(intval($params['requestCheckAtValue']));
+            $settings = $this->checkForChangesInNotificationArea($settings, $params);
+        } else {
+            //defaults
+            $settings->setErrorTolerance(null);
+            $settings->setEmailAddress(null);
+            $settings->setRequestCheckAtValue(null);
+            $this->resetNotificationCounters();
         }
         $settings->setErrorNotificationActive($errorNotificationStatus);
         $settings->setLogsMaxNumberOfRequests(intval($params['logsMaxNumberOfRequest']));
@@ -332,31 +250,38 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => true, 'data' => $shopwareModels->toArray($settings)]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getErrorNotificationStatusAction()
     {
-        $repoErrorRequests = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoErrorRequests\ErrorRequests');
-        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoErrorRequests\ErrorRequests::class);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getErrorNotificationStatusAction==', []);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(ErrorRequests::class);
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoErrorRequests\ErrorRequests $errorRequestObj
          */
-        $errorRequestObj = $repoErrorRequests->find($configId);
+        $errorRequestObj = $shopwareModels->find(ErrorRequests::class, $configId);
         $this->View()->assign(
             [
                 'success' => true,
                 'data' => [
                     'numReq' => $errorRequestObj->getNumberOfRequests(),
                     'numErr' => $errorRequestObj->getNumberOfFailedRequests(),
-                    'errTolerance' => $errorRequestObj->getFailurePercent()
-                ]
+                    'errTolerance' => $errorRequestObj->getFailurePercent(),
+                ],
             ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getAccountsAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getAccountsAction==', []);
         $params = $this->Request()->getParams();
-        $limit = (empty($params["limit"])) ? 20 : $params["limit"];
-        $offset = (empty($params["start"])) ? 0 : $params["start"];
-
+        $limit = (empty($params['limit'])) ? 20 : $params['limit'];
+        $offset = (empty($params['start'])) ? 0 : $params['start'];
 
         $query = $this->getAccountRepository()->getAccountsQuery($limit, $offset);
 
@@ -369,12 +294,16 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign([
             'success' => true,
             'data' => $customers,
-            'total' => $totalResult
+            'total' => $totalResult,
         ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function createAccountAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Add new Account.', ['==createAccountAction==']);
         $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         $params = $this->Request()->getParams();
 
@@ -385,8 +314,12 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => true, 'data' => $shopwareModels->toArray($account)]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function updateAccountAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Update Account.', ['==updateAccountAction==']);
         $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         /**
          * @var \CrefoShopwarePlugIn\Components\Core\PasswordEncoder $passwordEncoder
@@ -409,8 +342,12 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => true, 'data' => $shopwareModels->toArray($account)]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function deleteAccountAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Delete Account.', ['==deleteAccountAction==']);
         //get doctrine entity manager
         $manager = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
 
@@ -426,145 +363,129 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => true]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getReportCompanyInfoAction()
     {
-        $query = $this->getReportCompanyRepository()->getReportCompanyConfigQueryBuilder()->getQuery();
-        //returns the customer data
-        $reportComp = $query->getArrayResult();
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getReportCompanyInfoAction==', []);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(ReportCompanyConfig::class);
+        /**
+         * @var ReportCompanyConfig $companyConfig
+         */
+        $companyConfig = $shopwareModels->find(ReportCompanyConfig::class, $configId);
 
+        $companyArray = $shopwareModels->toArray($companyConfig);
+
+        $countries = $companyConfig->getCountries();
+        /**
+         * @var CountriesForCompanies $country
+         */
+        foreach ($countries as $country) {
+            $products = $country->getProducts();
+            $countriesArray = $shopwareModels->toArray($country);
+            /**
+             * @var ProductsConfig $product
+             */
+            foreach ($products as $product) {
+                $countriesArray['products'][] = $shopwareModels->toArray($product);
+            }
+            $companyArray['countries'][] = $countriesArray;
+        }
+        if (!is_null($companyConfig->getUserAccountId())) {
+            $companyArray['useraccountId'] = $companyConfig->getUserAccountId()->getId();
+            $companyArray['user_account_id'] = $shopwareModels->toArray($companyConfig->getUserAccountId());
+        }
         $this->View()->assign([
             'success' => true,
-            'data' => $reportComp
+            'data' => $companyArray,
         ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getReportPrivatePersonInfoAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getReportPrivatePersonInfoAction==', []);
         $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(PrivatePersonConfig::class);
         /**
          * @var PrivatePersonConfig $privatePersonConfig
          */
-        $privatePersonConfig = $this->getReportPrivatePersonRepository()->findCrefoObject(PrivatePersonConfig::class,
+        $privatePersonConfig = $this->getProductsPrivatePersonRepository()->findCrefoObject(PrivatePersonConfig::class,
             $configId);
         $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         $privatePersonArray = $shopwareModels->toArray($privatePersonConfig);
-        if (!is_null($privatePersonConfig->getUserAccountId())) {
+        $products = $privatePersonConfig->getProducts();
+        /**
+         * @var ProductsPrivatePerson $product
+         */
+        foreach ($products as $product) {
+            $scoreProducts = $product->getScoreProducts();
+            $productArray = $shopwareModels->toArray($product);
+            /*
+             * @var ProductScoreConfig $scoreProduct
+             */
+            foreach ($scoreProducts as $scoreProduct) {
+                $productArray['scoreProducts'][] = $shopwareModels->toArray($scoreProduct);
+            }
+            $privatePersonArray['products'][] = $productArray;
+        }
+        if (null !== $privatePersonConfig->getUserAccountId()) {
             $privatePersonArray['userAccountId'] = $privatePersonConfig->getUserAccountId()->getId();
             $privatePersonArray['user_account_id'] = $shopwareModels->toArray($privatePersonConfig->getUserAccountId());
         }
         $this->View()->assign([
             'success' => true,
-            'data' => $privatePersonArray
+            'data' => $privatePersonArray,
         ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getInkassoInfoAction()
     {
-        $query = $this->getInkassoConfigRepository()->getInkassoConfigQueryBuilder()->getQuery();
-        //returns the customer data
-        $data = $query->getArrayResult();
-
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getInkassoInfoAction==', []);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(InkassoConfig::class);
+        /**
+         * @var \CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig $configCollection
+         */
+        $configCollection = $shopwareModels->find(InkassoConfig::class, $configId);
+        $data = $shopwareModels->toArray($configCollection);
+        if (null !== $configCollection->getUserAccountId()) {
+            $data['useraccount_id'] = $shopwareModels->toArray($configCollection->getUserAccountId());
+        }
         $this->View()->assign(['success' => true, 'data' => $data]);
     }
 
-    public function getInkassoCreditorsAction()
-    {
-        /**
-         * @var \Doctrine\ORM\Query $query
-         */
-        $query = $this->getInkassoConfigRepository()->getInkassoCreditorsQueryBuilder()->getQuery();
-        //returns the customer data
-        $creditorsFromDB = $query->getArrayResult();
-        if (!empty($creditorsFromDB)) {
-            $data = array_merge([0 => ['id' => 0, 'useraccount' => '', 'name' => '', 'address' => '']],
-                $creditorsFromDB);
-        } else {
-            $data = $creditorsFromDB;
-        }
-
-        $this->View()->assign(['success' => true, 'creditors' => $data]);
-    }
-
-    public function destroyInkassoCreditorsAction()
-    {
-        /**
-         * @var \Doctrine\ORM\Query $query
-         */
-        $query = $this->getInkassoConfigRepository()->getInkassoCreditorsQueryBuilder()->getQuery();
-        //returns the customer data
-        $data = $query->getArrayResult();
-
-        //get doctrine entity manager
-        $manager = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-
-        foreach ($data as $value) {
-            $entity = $this->getInkassoConfigRepository()->findCrefoObject(\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoCreditors::class,
-                $value['id']);
-            if (!is_null($entity)) {
-                $manager->remove($entity);
-                //Performs all of the collected actions.
-                $manager->flush();
-            }
-        }
-
-        $this->View()->assign(['success' => true]);
-    }
-
-    public function getInkassoValuesAction()
-    {
-        /**
-         * @var \Doctrine\ORM\Query $query
-         */
-        $query = $this->getInkassoConfigRepository()->getInkassoValuesQueryBuilder()->getQuery();
-        //returns the customer data
-        $data = $query->getArrayResult();
-
-        $this->View()->assign(['success' => true, 'data' => $data]);
-    }
-
-    public function destroyInkassoValuesAction()
-    {
-        /**
-         * @var \Doctrine\ORM\Query $query
-         */
-        $query = $this->getInkassoConfigRepository()->getInkassoValuesQueryBuilder()->getQuery();
-        //returns the customer data
-        $data = $query->getArrayResult();
-
-        //get doctrine entity manager
-        $manager = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-
-        foreach ($data as $value) {
-            $entity = $this->getInkassoConfigRepository()->findCrefoObject(\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoWSValues::class,
-                $value['id']);
-            if (!is_null($entity)) {
-                $manager->remove($entity);
-                //Performs all of the collected actions.
-                $manager->flush();
-            }
-        }
-
-        $this->View()->assign(['success' => true]);
-    }
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function logonReportCompanyAction()
     {
-        $accountId = $this->Request()->getParam('useraccountId');
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Perform Logon for companies.',
+            ['userAccountID' => $this->Request()->getParam('useraccountId')]);
+        $accountId = $this->Request()->getParam('useraccountId', null);
         $successful = true;
         $account = null;
         $errors = null;
         $reportCompaniesData = null;
         $productsNotAvailable = null;
 
-        if (!is_null($accountId) && strcmp('', $accountId) != 0) {
+        if (null !== $accountId && strcmp('', $accountId) != 0) {
             $account = $this->getAccountRepository()->find($accountId);
         } else {
             $errors = 'null-account';
         }
 
-        if (!is_null($account)) {
+        if (null !== $account) {
             $rawResponseXml = $this->performLogon($account);
-            $successful = $this->processReportCompaniesData($rawResponseXml, $reportCompaniesData);
+            $reportCompaniesData = $this->processReportCompaniesData($rawResponseXml);
+            $successful = $reportCompaniesData['successful'];
+            unset($reportCompaniesData['successful']);
             if (!$successful) {
                 $errors = $this->processWSErrors($rawResponseXml);
             }
@@ -573,300 +494,264 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $this->View()->assign(['success' => $successful, 'errors' => $errors, 'data' => $reportCompaniesData]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function logonReportPrivatePersonAction()
     {
-        $accountId = $this->Request()->getParam('useraccountId');
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Perform logon for private persons.',
+            ['userAccountID' => $this->Request()->getParam('useraccountId')]);
+        $accountId = $this->Request()->getParam('useraccountId', null);
         $successful = true;
         $account = null;
         $errors = null;
         $reportData = null;
         $productsNotAvailable = null;
 
-        if (!is_null($accountId) && strcmp('', $accountId) != 0) {
+        if (null !== $accountId && strcmp('', $accountId) != 0) {
             $account = $this->getAccountRepository()->find($accountId);
         } else {
             $errors = 'null-account';
         }
 
-        if (!is_null($account)) {
+        if (null !== $account) {
             $rawResponseXml = $this->performLogon($account);
-            $successful = $this->processReportPrivatePersonData($rawResponseXml, $reportData);
+            $reportData = $this->processReportPrivatePersonData($rawResponseXml);
+            $successful = $reportData['successful'];
+            unset($reportData['successful']);
             if (!$successful) {
                 $errors = $this->processWSErrors($rawResponseXml);
             }
         }
-
         $this->View()->assign(['success' => $successful, 'errors' => $errors, 'data' => $reportData]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function logonInkassoAction()
     {
-        $accountId = $this->Request()->getParam('useraccountId');
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Perform logon for collection order.',
+            ['userAccountID' => $this->Request()->getParam('useraccountId')]);
+        $accountId = $this->Request()->getParam('useraccountId', null);
         $successful = true;
         $account = null;
         $errors = null;
         $inkassoData = null;
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
 
-        if (!is_null($accountId) && strcmp('', $accountId) != 0) {
-            $account = $this->getAccountRepository()->find($accountId);
+        if (null !== $accountId && strcmp('', $accountId) != 0) {
+            $account = $shopwareModels->find(CrefoAccount::class, $accountId);
         } else {
             $errors = 'null-account';
         }
 
-        if (!is_null($account)) {
+        if (null !== $account) {
             $rawResponseXml = $this->performLogon($account);
-            $successful = $this->processInkassoData($rawResponseXml, $inkassoData);
-            if (!$successful) {
+            $inkassoData = ['collectionOrderType' => [], 'collectionTurnoverType' => [], 'receivableReason' => [], 'creditors' => []];
+            if (null === $rawResponseXml || is_soap_fault($rawResponseXml) || ($rawResponseXml instanceof \Exception)) {
+                $successful = false;
                 $errors = $this->processWSErrors($rawResponseXml);
+            } else {
+                $processedData = $this->processInkassoData($rawResponseXml, $inkassoData);
+                if ($processedData === false) {
+                    $successful = false;
+                    $errors['title'] = 'no-service';
+                    $errors['errorCode'] = 999;
+                } else {
+                    $inkassoData = $processedData;
+                }
             }
         }
 
         $this->View()->assign(['success' => $successful, 'errors' => $errors, 'data' => $inkassoData]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getInUseAccountsAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getInUseAccountsAction==', []);
         $data = [];
-        $configReportCompanies = $this->getReportCompanyRepository()->getReportCompanyConfigQueryBuilder()->getQuery()->getArrayResult();
-        if (!empty($configReportCompanies)) {
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $configReportCompaniesId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(ReportCompanyConfig::class);
+        /**
+         * @var ReportCompanyConfig $configReportCompanies
+         */
+        $configReportCompanies = $shopwareModels->find(ReportCompanyConfig::class, $configReportCompaniesId);
+
+        if (null !== $configReportCompanies->getUserAccountId()) {
             $data[] = [
-                'id' => $configReportCompanies[0]['useraccountId'],
-                'serviceCallee' => \CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyConfig::class
+                'id' => $configReportCompanies->getUserAccountId()->getId(),
+                'serviceCallee' => ReportCompanyConfig::class,
             ];
         }
         $configReportPrivatePersonId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(PrivatePersonConfig::class);
         /**
          * @var PrivatePersonConfig $configReportPrivatePerson
          */
-        $configReportPrivatePerson = $this->getReportPrivatePersonRepository()->findCrefoObject(PrivatePersonConfig::class,
-            $configReportPrivatePersonId);
-        if (!is_null($configReportPrivatePerson->getUserAccountId())) {
+        $configReportPrivatePerson = $shopwareModels->find(PrivatePersonConfig::class, $configReportPrivatePersonId);
+        if (null !== $configReportPrivatePerson->getUserAccountId()) {
             $data[] = [
                 'id' => $configReportPrivatePerson->getUserAccountId()->getId(),
-                'serviceCallee' => PrivatePersonConfig::class
+                'serviceCallee' => PrivatePersonConfig::class,
             ];
         }
-        $configInkasso = $this->getInkassoConfigRepository()->getInkassoConfigQueryBuilder()->getQuery()->getArrayResult();
-        if (!empty($configInkasso)) {
+        $configCollectionId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(InkassoConfig::class);
+        /**
+         * @var InkassoConfig $configCollection
+         */
+        $configCollection = $shopwareModels->find(InkassoConfig::class, $configCollectionId);
+        if (null !== $configCollection->getUserAccountId()) {
             $data[] = [
-                'id' => $configInkasso[0]['inkasso_user_account'],
-                'serviceCallee' => \CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig::class
+                'id' => $configCollection->getUserAccountId()->getId(),
+                'serviceCallee' => InkassoConfig::class,
             ];
         }
         $this->View()->assign([
             'success' => true,
             'data' => $data,
-            'total' => count($data)
+            'total' => count($data),
         ]);
     }
 
-    public function getReportCompaniesProductConfigAction()
-    {
-        /**
-         * @var \CrefoShopwarePlugIn\CrefoShopwarePlugIn $bootstrap
-         */
-        $bootstrap = CrefoCrossCuttingComponent::getCreditreformPlugin();
-        $configClassName = \CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyConfig::class;
-        $configIdReportCompanies = $bootstrap->getConfigurationId($configClassName);
-
-        $query = $this->getReportCompanyRepository()->getCrefoProductsConfigQuery($configIdReportCompanies);
-
-        $configProducts = $query->getArrayResult();
-
-        $this->View()->assign([
-            'success' => true,
-            'data' => $configProducts
-        ]);
-    }
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function getAllowedBonimaProductsAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getAllowedBonimaProductsAction==', []);
         $buildAllowedProducts = [];
         foreach (PrivatePersonProductsType::AllowedProducts() as $key => $product) {
             $buildAllowedProducts[] = ['id' => $key, 'keyWS' => $product];
         }
         $this->View()->assign([
             'success' => true,
-            'data' => $buildAllowedProducts
+            'data' => $buildAllowedProducts,
         ]);
     }
 
-    public function getReportPrivatePersonProductsAction()
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getAllowedCompaniesProductsAction()
     {
-        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(PrivatePersonConfig::class);
-        /**
-         * @var PrivatePersonConfig $privatePersonConfig
-         */
-        $privatePersonConfig = $this->getReportPrivatePersonRepository()->findCrefoObject(PrivatePersonConfig::class,
-            $configId);
-        $products = [];
-        if (!empty($privatePersonConfig->getProducts()->toArray())) {
-            $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-            $tempArray = $privatePersonConfig->getProducts()->toArray();
-            /**
-             * @var ProductsPrivatePerson $product
-             */
-            foreach ($tempArray as $product) {
-                $productArray = $shopwareModels->toArray($product);
-                $productArray['configId'] = $product->getConfigId()->getId();
-                $products[] = $productArray;
-            }
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getAllowedCompaniesProductsAction==', []);
+        $buildAllowedProducts = [];
+        foreach (CompanyProductsType::AllowedProducts() as $key => $product) {
+            $buildAllowedProducts[] = ['id' => $key, 'keyWS' => $product];
         }
         $this->View()->assign([
             'success' => true,
-            'data' => $products
+            'data' => $buildAllowedProducts,
         ]);
     }
 
-    public function updateReportPrivatePersonProductsAction()
-    {
-        $params = $this->Request()->getParams();
-        $success = true;
-        $this->getProductsPrivatePersonRepository()->updateAvailabilityForProducts(boolval($params['isProductAvailable']),
-            intval($params['productKeyWS']));
-        $this->View()->assign(['success' => $success]);
-    }
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function saveReportCompaniesAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==saveReportCompaniesAction==',
+            [$this->Request()->getParams()]);
         $params = $this->Request()->getParams();
         $success = true;
-        /**
-         * @var \CrefoShopwarePlugIn\CrefoShopwarePlugIn $bootstrap
-         */
-        $bootstrap = CrefoCrossCuttingComponent::getCreditreformPlugin();
-        $configClassName = \CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyConfig::class;
-        $configIdReportCompanies = $bootstrap->getConfigurationId($configClassName);
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyConfig $reportCompanyConfigObj
-         */
-        $reportCompanyConfigObj = $this->getReportCompanyRepository()->findCrefoObject($configClassName,
-            $configIdReportCompanies);
-
-        if (strcmp($params['useraccountId'], '') == 0) {
-            $reportCompanyConfigObj->setLegitimateKey(null);
-            $reportCompanyConfigObj->setReportLanguageKey(null);
-            $reportCompanyConfigObj->setUserAccountId(null);
-        } else {
-            $reportCompanyConfigObj->setLegitimateKey(strval($params['legitimateKey']));
-            $reportCompanyConfigObj->setReportLanguageKey(strval($params['reportLanguageKey']));
-            $reportCompanyConfigObj->setUserAccountId($this->getAccountRepository()->find(intval($params['useraccountId'])));
-        }
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        $shopwareModels->persist($reportCompanyConfigObj);
-        $shopwareModels->flush();
-
-
-        //save products configuration: first remove old config and save from scratch new config
-        $query = $this->getReportCompanyRepository()->getCrefoProductsConfigQuery($configIdReportCompanies);
-        $arrayConfigProducts = $query->getArrayResult();
-        if (!empty($arrayConfigProducts)) {
-            $this->removeConfigProducts($arrayConfigProducts);
-        }
-        if (strcmp($params['useraccountId'], '') != 0) {
-            $success = $this->addConfigProductsFromParameters($params, $configIdReportCompanies);
+        try {
+            $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+            $configIdReportCompanies = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(ReportCompanyConfig::class);
+            /**
+             * @var \CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ReportCompanyConfig $reportCompanyConfigObj
+             */
+            $reportCompanyConfigObj = $shopwareModels->find(ReportCompanyConfig::class, $configIdReportCompanies);
+            if (strcmp($params['useraccountId'], '') == 0) {
+                $this->truncateTable(ProductsConfig::class);
+                $this->truncateTable(CountriesForCompanies::class);
+                $reportCompanyConfigObj->setLegitimateKey(null);
+                $reportCompanyConfigObj->setReportLanguageKey(null);
+                $reportCompanyConfigObj->setUserAccountId(null);
+                $shopwareModels->persist($reportCompanyConfigObj);
+            } else {
+                $reportCompanyConfigObj->setLegitimateKey(strval($params['legitimateKey']));
+                $reportCompanyConfigObj->setReportLanguageKey(strval($params['reportLanguageKey']));
+                $reportCompanyConfigObj->setUserAccountId($this->getAccountRepository()->find(intval($params['useraccountId'])));
+                $shopwareModels->persist($reportCompanyConfigObj);
+                $this->saveCompanyConfigBasedOnCountries($reportCompanyConfigObj, $params);
+            }
+            $shopwareModels->flush();
+        } catch (\Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==Exception==', [$e]);
+            $success = false;
         }
 
         $this->View()->assign(['success' => $success]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function saveReportPrivatePersonAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==saveReportPrivatePersonAction==',
+            [$this->Request()->getParams()]);
         $params = $this->Request()->getParams();
         $success = true;
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
 
         try {
             $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(PrivatePersonConfig::class);
             /**
-             * @var PrivatePersonConfig $reportPrivatePerson
+             * @var PrivatePersonConfig $reportPrivatePersonConfig
              */
-            $reportPrivatePerson = $this->getReportCompanyRepository()->findCrefoObject(PrivatePersonConfig::class,
-                $configId);
+            $reportPrivatePersonConfig = $shopwareModels->find(PrivatePersonConfig::class, $configId);
+
+            $this->truncateTable(ProductScoreConfig::class);
+            $this->truncateTable(ProductsPrivatePerson::class);
 
             if (strcmp($params['privatePersonUserAccountId'], '') == 0) {
-                $reportPrivatePerson->setLegitimateKey(null);
-                $reportPrivatePerson->setSelectedProductKey(null);
-                $reportPrivatePerson->setUserAccountId(null);
-                $reportPrivatePerson->setThresholdMax(null);
-                $reportPrivatePerson->setThresholdMin(null);
+                $reportPrivatePersonConfig->setLegitimateKey(null);
+                $reportPrivatePersonConfig->setUserAccountId(null);
+                $shopwareModels->persist($reportPrivatePersonConfig);
             } else {
-                $reportPrivatePerson->setLegitimateKey(strval($params['legitimateKeyPrivatePerson']));
-                $reportPrivatePerson->setSelectedProductKey(intval($params['selectedProductKey']));
-                $thresholdMax = is_null($params['thresholdMax']) || $params['thresholdMax'] === '' ? null : floatval($params['thresholdMax']);
-                $reportPrivatePerson->setThresholdMax($thresholdMax);
-                $reportPrivatePerson->setThresholdMin(floatval($params['thresholdMin']));
+                $reportPrivatePersonConfig->setLegitimateKey(strval($params['legitimateKeyPrivatePerson']));
                 /**
                  * @var CrefoAccount $account
                  */
                 $account = $this->getAccountRepository()->find(intval($params['privatePersonUserAccountId']));
-                $reportPrivatePerson->setUserAccountId($account);
-            }
-            $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-            $shopwareModels->persist($reportPrivatePerson);
-            if (!is_null($reportPrivatePerson->getSelectedProductKey())) {
-                if ($reportPrivatePerson->getSelectedProductKey() === PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT) {
-                    $products = $this->getProductsPrivatePersonRepository()->findBy([
-                        'productKeyWS' => PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT
-                    ], ['id' => 'ASC']);
-                    if (empty($products)) {
-                        $this->truncateTable($shopwareModels, ProductsPrivatePerson::class);
-                        for ($i = IdentificationResultType::IDENTIFIED; $i < IdentificationResultType::UNIDENTIFIED + 1; $i++) {
-                            $fromId = 'ident_from_' . $i;
-                            $toId = 'ident_to_' . $i;
-                            $fromScoreBonima = is_null($params[$fromId]) || $params[$fromId] === '' ? null : intval($params[$fromId]);
-                            $toScoreBonima = is_null($params[$toId]) || $params[$toId] === '' ? null : intval($params[$toId]);
-                            $bonimaProduct = $this->createBonimaScorePoolIdentProduct($reportPrivatePerson, $i,
-                                $fromScoreBonima, $toScoreBonima);
-                            $shopwareModels->persist($bonimaProduct);
-                        }
-                    } else {
-                        $this->setExistingProducts($products, $reportPrivatePerson, $params);
-                    }
-                } elseif ($reportPrivatePerson->getSelectedProductKey() === PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT_PREMIUM) {
-                    $products = $this->getProductsPrivatePersonRepository()->findBy([
-                        'productKeyWS' => PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT_PREMIUM
-                    ], ['id' => 'ASC']);
-                    if (empty($products)) {
-                        $this->truncateTable($shopwareModels, ProductsPrivatePerson::class);
-                        for ($i = IdentificationResultType::PERSON_IDENTIFIED; $i < IdentificationResultType::PERSON_UNIDENTIFIED + 1; $i++) {
-                            $fromId = 'ident_from_' . $i;
-                            $toId = 'ident_to_' . $i;
-                            $fromScoreBonima = is_null($params[$fromId]) || $params[$fromId] === '' ? null : intval($params[$fromId]);
-                            $toScoreBonima = is_null($params[$toId]) || $params[$toId] === '' ? null : intval($params[$toId]);
-                            $bonimaProduct = $this->createBonimaScorePoolIdentPremiumProduct($reportPrivatePerson, $i,
-                                $fromScoreBonima, $toScoreBonima);
-                            $shopwareModels->persist($bonimaProduct);
-                        }
-                    } else {
-                        $this->setExistingProducts($products, $reportPrivatePerson, $params);
-                    }
-                }
-            } else {
-                $this->truncateTable($shopwareModels, ProductsPrivatePerson::class);
+                $reportPrivatePersonConfig->setUserAccountId($account);
+                $shopwareModels->persist($reportPrivatePersonConfig);
+                $this->saveReportPrivatePersonProducts($params, $reportPrivatePersonConfig);
             }
             $shopwareModels->flush();
         } catch (\Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==Exception==', [$e]);
             $success = false;
         }
         $this->View()->assign(['success' => $success]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function saveInkassoConfigAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Save collection order configuration.',
+            [$this->Request()->getParams()]);
         $params = $this->Request()->getParams();
+
         $success = true;
-        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig::class);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(InkassoConfig::class);
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig $inkassoConfig
          */
-        $inkassoConfig = $this->getInkassoConfigRepository()->findCrefoObject(\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig::class,
-            $configId);
+        $inkassoConfig = $shopwareModels->find(InkassoConfig::class, $configId);
 
-        if (strcmp($params['inkasso_user_account'], '') == 0) {
+        if (array_key_exists('collectionUserAccountId', $params) && strcmp($params['collectionUserAccountId'], '') == 0) {
             $inkassoConfig->setCreditor(null);
             $inkassoConfig->setCustomerReference(null);
             $inkassoConfig->setDueDate(0);
-            $inkassoConfig->setInterestRateRadio(1);
+            $inkassoConfig->setInterestRateRadio(null);
             $inkassoConfig->setInterestRateValue(null);
             $inkassoConfig->setOrderType(null);
             $inkassoConfig->setReceivableReason(null);
@@ -874,175 +759,138 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
             $inkassoConfig->setValutaDate(0);
             $inkassoConfig->setUserAccountId(null);
         } else {
-            if (array_key_exists('inkasso_creditor', $params) && $params['inkasso_creditor'] !== '') {
-                $inkassoConfig->setCreditor(intval($params['inkasso_creditor']));
+            if (array_key_exists('creditor', $params) && $params['creditor'] !== '') {
+                $inkassoConfig->setCreditor(intval($params['creditor']));
             } else {
                 $inkassoConfig->setCreditor(null);
             }
-            if (array_key_exists('inkasso_customer_reference', $params)) {
-                $inkassoConfig->setCustomerReference(intval($params['inkasso_customer_reference']));
+            if (array_key_exists('customer_reference', $params)) {
+                $inkassoConfig->setCustomerReference(intval($params['customer_reference']));
             } else {
                 $inkassoConfig->setCustomerReference(null);
             }
-            if (!array_key_exists('inkasso_due_date', $params)) {
+            if (!array_key_exists('due_date', $params)) {
                 $inkassoConfig->setDueDate(0);
             } else {
-                $inkassoConfig->setDueDate(intval($params['inkasso_due_date']));
+                $inkassoConfig->setDueDate(intval($params['due_date']));
             }
-            if (!array_key_exists('inkasso_valuta_date', $params)) {
+            if (!array_key_exists('valuta_date', $params)) {
                 $inkassoConfig->setValutaDate(0);
             } else {
-                $inkassoConfig->setValutaDate(intval($params['inkasso_valuta_date']));
+                $inkassoConfig->setValutaDate(intval($params['valuta_date']));
             }
-            if (array_key_exists('inkasso_interest_rate_radio', $params)) {
-                $inkassoConfig->setInterestRateRadio(intval($params['inkasso_interest_rate_radio']));
+            if (array_key_exists('interest_rate_radio', $params)) {
+                $inkassoConfig->setInterestRateRadio(intval($params['interest_rate_radio']));
             } else {
                 $inkassoConfig->setInterestRateRadio(null);
             }
-            if (array_key_exists('inkasso_interest_rate_value', $params)) {
-                $inkassoConfig->setInterestRateValue(floatval($params['inkasso_interest_rate_value']));
+            if (array_key_exists('interest_rate_value', $params)) {
+                $inkassoConfig->setInterestRateValue(floatval($params['interest_rate_value']));
             } else {
                 $inkassoConfig->setInterestRateValue(null);
             }
-            if (array_key_exists('inkasso_order_type', $params)) {
-                $inkassoConfig->setOrderType(strval($params['inkasso_order_type']));
+            if (array_key_exists('order_type', $params)) {
+                $inkassoConfig->setOrderType(strval($params['order_type']));
             } else {
                 $inkassoConfig->setOrderType(null);
             }
-            if (array_key_exists('inkasso_receivable_reason', $params)) {
-                $inkassoConfig->setReceivableReason(strval($params['inkasso_receivable_reason']));
+            if (array_key_exists('receivable_reason', $params)) {
+                $inkassoConfig->setReceivableReason(strval($params['receivable_reason']));
             } else {
                 $inkassoConfig->setReceivableReason(null);
             }
-            if (array_key_exists('inkasso_turnover_type', $params)) {
-                $inkassoConfig->setTurnoverType(strval($params['inkasso_turnover_type']));
+            if (array_key_exists('turnover_type', $params)) {
+                $inkassoConfig->setTurnoverType(strval($params['turnover_type']));
             } else {
                 $inkassoConfig->setTurnoverType(null);
             }
-            $inkassoConfig->setUserAccountId($this->getAccountRepository()->find(intval($params['inkasso_user_account'])));
+            /**
+             * @var CrefoAccount $account
+             */
+            $account = $this->getAccountRepository()->findOneBy(['id' => intval($params['collectionUserAccountId'])]);
+            $inkassoConfig->setUserAccountId($account);
         }
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         $shopwareModels->persist($inkassoConfig);
         $shopwareModels->flush();
 
-
         $this->View()->assign(['success' => $success]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function saveInkassoWSValuesAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==saveInkassoWSValuesAction==',
+            [$this->Request()->getParams()]);
         $params = $this->Request()->getParams();
         $success = true;
-        $entries = json_decode($params['inkasso_values']);
-        foreach ($entries as $entry) {
-            $inkassoValue = new \CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoWSValues();
-            $inkassoValue->setKeyWS($entry->keyWS);
-            $inkassoValue->setTextWS($entry->textWS);
-            $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-            $shopwareModels->persist($inkassoValue);
-            $shopwareModels->flush();
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $this->truncateTable(InkassoWSValues::class);
+        foreach ($params as $key => $entry) {
+            if (is_array($entry) &&
+                array_key_exists('keyWS', $entry) &&
+                array_key_exists('textWS', $entry) &&
+                array_key_exists('typeValue', $entry)
+            ) {
+                $inkassoValue = new InkassoWSValues();
+                $inkassoValue->setKeyWS($entry['keyWS']);
+                $inkassoValue->setTextWS($entry['textWS']);
+                $inkassoValue->setTypeValue($entry['typeValue']);
+                $shopwareModels->persist($inkassoValue);
+                $shopwareModels->flush();
+            }
         }
-
         $this->View()->assign(['success' => $success]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function saveInkassoCreditorsAction()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==saveInkassoCreditorsAction==', [$this->Request()->getParams()]);
         $params = $this->Request()->getParams();
         $success = true;
-        $entries = json_decode($params['inkasso_creditors']);
-        foreach ($entries as $entry) {
-            if ($entry->id === 0) {
-                continue;
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $this->truncateTable(InkassoCreditors::class);
+        foreach ($params as $entry) {
+            if (is_array($entry) &&
+                array_key_exists('address', $entry) &&
+                array_key_exists('name', $entry) &&
+                array_key_exists('useraccount', $entry)
+            ) {
+                $inkassoCreditor = new InkassoCreditors();
+                $inkassoCreditor->setAddress($entry['address']);
+                $inkassoCreditor->setName($entry['name']);
+                $inkassoCreditor->setUseraccount($entry['useraccount']);
+                $shopwareModels->persist($inkassoCreditor);
+                $shopwareModels->flush();
             }
-            $inkassoCreditor = new \CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoCreditors();
-            $inkassoCreditor->setAddress($entry->address);
-            $inkassoCreditor->setName($entry->name);
-            $inkassoCreditor->setUseraccount($entry->useraccount);
-            $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-            $shopwareModels->persist($inkassoCreditor);
-            $shopwareModels->flush();
         }
-
         $this->View()->assign(['success' => $success]);
     }
 
     /**
-     * @param $productsToBeRemoved
+     * {@inheritdoc}
+     * @codeCoverageIgnore
      */
-    protected function removeConfigProducts($productsToBeRemoved)
+    public function getWhitelistedCSRFActions()
     {
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        foreach ($productsToBeRemoved as $removeProduct) {
-            $object = $this->getReportCompanyRepository()->findCrefoObject(\CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\ProductsConfig::class,
-                $removeProduct['id']);
-            $shopwareModels->remove($object);
-            $shopwareModels->flush();
-        }
+        return [];
     }
-
-    /**
-     * @param $params
-     * @param $configId
-     * @return bool
-     */
-    protected function addConfigProductsFromParameters($params, $configId)
-    {
-        $countries = ["de", "at", "lu"];
-        for ($i = 0; $i < 12; $i++) {
-            $this->addProductConfig($params, $countries[intval($i / 4)], $configId, $i + 1);
-        }
-        return true;
-    }
-
-    /**
-     * @param $params
-     * @param $land
-     * @param $configId
-     * @param $sequence
-     */
-    protected function addProductConfig($params, $land, $configId, $sequence)
-    {
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        $basket = $params[$land . '-' . $sequence . '-value'];
-        $thresholdIndex = $params[$land . '-' . $sequence . '-value-index'];
-        $productType = $params[$land . '-' . $sequence . '-product'];
-        $productRaw = $params[$land . '-' . $sequence . '-rawProduct'];
-        $hasSolvencyIndex = strcmp($params[$land . '-' . $sequence . '-solvencyIndex'], 'true') === 0;
-        if ((is_null($productType) || is_null($basket) || empty($productType) || empty($basket)) && !is_numeric($basket)) {
-            return;
-        }
-        $object = new ProductsConfig();
-        $object->setProductKeyWS($productType);
-        if (is_null($productRaw)) {
-            $object->setProductTextWS(null);
-        } else {
-            $object->setProductTextWS($productRaw);
-        }
-        $object->setLand($land);
-        $object->setThreshold(floatval($basket));
-        if (!is_null($thresholdIndex) && !empty($thresholdIndex) && is_numeric($thresholdIndex) && $hasSolvencyIndex) {
-            $object->setThresholdIndex($thresholdIndex);
-        } else {
-            $object->setThresholdIndex(null);
-        }
-        $object->setConfigId($configId);
-        $object->setSequence($sequence);
-        $object->setSolvencyIndexWS($hasSolvencyIndex);
-        $shopwareModels->persist($object);
-        $shopwareModels->flush();
-    }
-
 
     /**
      * @param null|\CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount $account
+     *
      * @return mixed
      */
     protected function performLogon($account = null)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==performLogon==', []);
         $snippets = CrefoCrossCuttingComponent::getShopwareInstance()->Snippets()->getNamespace('backend/creditreform/translation');
         /**
-         * @var  \CrefoShopwarePlugIn\Components\API\Request\LogonRequest $crefoLogon
+         * @var \CrefoShopwarePlugIn\Components\API\Request\LogonRequest $crefoLogon
          */
         $crefoLogon = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.logon_request');
         /**
@@ -1054,7 +902,7 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
          * @var \CrefoShopwarePlugIn\Components\Core\PasswordEncoder $passwordEncoder
          */
         $passwordEncoder = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.password_encoder');
-        if (is_null($account)) {
+        if (null === $account) {
             $accountArray = null;
         } else {
             $accountArray = [
@@ -1062,7 +910,7 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
                 'generalPassword' => $passwordEncoder->decrypt($account->getGeneralPassword(),
                     $config->getEncryptionKey()),
                 'individualPassword' => $passwordEncoder->decrypt($account->getIndividualPassword(),
-                    $config->getEncryptionKey())
+                    $config->getEncryptionKey()),
             ];
         }
         $crefoLogon->setHeaderAccount($accountArray);
@@ -1072,14 +920,14 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
             $crefoLogon->getCrefoParser()->setRawResponse($result);
             CrefoCrossCuttingComponent::saveCrefoLogs($crefoLogon->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
         } catch (\SoapFault $fault) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==performLogon>>SoapFault " . date("Y-m-d H:i:s") . "==",
-                (array)$fault);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==performLogon>>SoapFault ' . date('Y-m-d H:i:s') . '==',
+                (array) $fault);
             $result = $fault;
             $crefoLogon->getCrefoParser()->setRawResponse($result);
             CrefoCrossCuttingComponent::saveCrefoLogs($crefoLogon->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
         } catch (\CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==performLogon>>CrefoCommunicationException " . date("Y-m-d H:i:s") . "==", (array)$e);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                '==performLogon>>CrefoCommunicationException ' . date('Y-m-d H:i:s') . '==', [$e->getMessage()]);
             $result = new \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException($snippets->get('crefo/messages/error_in_communication'),
                 $e->getCode());
             $crefoLogon->getCrefoParser()->setRawResponse($e);
@@ -1087,8 +935,8 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
             CrefoCrossCuttingComponent::saveUnsuccessfulRequestLog($crefoLogon, $xmlText,
                 CrefoCrossCuttingComponent::ERROR);
         } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==performLogon>>Exception " . date("Y-m-d H:i:s") . "==", (array)$e);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                '==performLogon>>Exception ' . date('Y-m-d H:i:s') . '==', [$e->getMessage()]);
             $result = new \Exception($snippets->get('crefo/validation/generalError'), $e->getCode());
             $dateProcessEnd = new \DateTime('now');
             CrefoCrossCuttingComponent::saveCrefoLogs([
@@ -1098,21 +946,62 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
                 'requestXML' => '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/validation/generalError') . '</Error>',
                 'requestXMLDescription' => CrefoCrossCuttingComponent::ERROR,
                 'responseXML' => '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/validation/generalError') . '</Error>',
-                'responseXMLDescription' => CrefoCrossCuttingComponent::ERROR
+                'responseXMLDescription' => CrefoCrossCuttingComponent::ERROR,
             ]);
         }
+
         return $result;
     }
 
     /**
-     * @param $rawResponse
-     * @param null $reportCompaniesData
-     * @return bool
+     * @codeCoverageIgnore
+     * @return null|\CrefoShopwarePlugIn\Models\CrefoAccounts\Repository
      */
-    private function processReportCompaniesData($rawResponse, &$reportCompaniesData = null)
+    private function getAccountRepository()
     {
-        $reportCompaniesData = ['reportLanguages' => [], 'legitimateInterests' => [], 'products' => []];
-        if (is_soap_fault($rawResponse) || ($rawResponse instanceof \Exception)) {
+        if ($this->accountRepository === null) {
+            $this->accountRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount');
+        }
+
+        return $this->accountRepository;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|\Shopware\Models\Payment\Repository
+     */
+    private function getPaymentRepository()
+    {
+        if ($this->paymentRepository === null) {
+            $this->paymentRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('\Shopware\Models\Payment\Payment');
+        }
+
+        return $this->paymentRepository;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|\CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsRepository
+     */
+    private function getProductsPrivatePersonRepository()
+    {
+        if ($this->productsPrivatePersonRepository === null) {
+            $this->productsPrivatePersonRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsPrivatePerson');
+        }
+
+        return $this->productsPrivatePersonRepository;
+    }
+
+    /**
+     * @param $rawResponse
+     *
+     * @return array
+     */
+    private function processReportCompaniesData($rawResponse)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==processReportCompaniesData==', []);
+        $reportCompaniesData = ['reportLanguages' => [], 'legitimateInterests' => [], 'products' => [], 'successful' => false];
+        if (null === $rawResponse || is_soap_fault($rawResponse) || ($rawResponse instanceof \Exception)) {
             $successfulDataProcessed = false;
         } else {
             $successfulDataProcessed = true;
@@ -1121,24 +1010,26 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
              */
             $parser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.report_companies_config_parser');
             $parser->setRawResponse($rawResponse);
-            $reportCompaniesData['reportLanguages'] = $parser->extractKeysAndValuesFromWS("identificationreport",
-                "reportlanguage", $reportCompaniesData['reportLanguages']);
-            $reportCompaniesData['legitimateInterests'] = $parser->extractKeysAndValuesFromWS("identificationreport",
-                "legitimateinterest", $reportCompaniesData['legitimateInterests']);
+            $reportCompaniesData['reportLanguages'] = $parser->extractKeysAndValuesFromWS('identificationreport',
+                'reportlanguage', $reportCompaniesData['reportLanguages']);
+            $reportCompaniesData['legitimateInterests'] = $parser->extractKeysAndValuesFromWS('identificationreport',
+                'legitimateinterest', $reportCompaniesData['legitimateInterests']);
             $reportCompaniesData['products'] = $parser->extractProducts();
         }
-        return $successfulDataProcessed;
+        $reportCompaniesData['successful'] = $successfulDataProcessed;
+        return $reportCompaniesData;
     }
 
     /**
      * @param $rawResponse
-     * @param null $reportData
-     * @return bool
+     *
+     * @return array
      */
-    private function processReportPrivatePersonData($rawResponse, &$reportData = null)
+    private function processReportPrivatePersonData($rawResponse)
     {
-        $reportData = ['legitimateInterests' => [], 'products' => []];
-        if (is_soap_fault($rawResponse) || ($rawResponse instanceof \Exception)) {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==processReportPrivatePersonData==', []);
+        $reportData = ['legitimateInterests' => [], 'products' => [], 'successful' => false];
+        if (null === $rawResponse || is_soap_fault($rawResponse) || ($rawResponse instanceof \Exception)) {
             $successfulDataProcessed = false;
         } else {
             $successfulDataProcessed = true;
@@ -1147,60 +1038,87 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
              */
             $parser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.report_private_person_parser');
             $parser->setRawResponse($rawResponse);
-            $reportData['legitimateInterests'] = $parser->extractKeysAndValuesFromWS("bonimareport",
-                "legitimateinterest", $reportData['legitimateInterests']);
+            $reportData['legitimateInterests'] = $parser->extractKeysAndValuesFromWS('bonimareport',
+                'legitimateinterest', $reportData['legitimateInterests']);
             $reportData['products'] = $parser->extractProducts();
         }
-        return $successfulDataProcessed;
+        $reportData['successful'] = $successfulDataProcessed;
+        return $reportData;
     }
 
     /**
      * @param $rawResponse
-     * @param null $inkassoData
-     * @return bool
+     * @param null|array $inkassoData
+     *
+     * @return bool|array
      */
-    private function processInkassoData($rawResponse, &$inkassoData = null)
+    private function processInkassoData($rawResponse, array $inkassoData = null)
     {
-        $inkassoData = ['data' => [], 'creditors' => []];
-        if (is_soap_fault($rawResponse) || ($rawResponse instanceof \Exception)) {
-            $successfulDataProcessed = false;
-        } else {
-            $successfulDataProcessed = true;
-            /**
-             * @var \CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionParser $parser
-             */
-            $parser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.collection_config_parser');
-            $parser->setRawResponse($rawResponse);
-            $creditorsFromWS = $parser->extractCreditorFromWS();
-            if (!empty($creditorsFromWS)) {
-                $inkassoData['creditors'] = array_merge([
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==processInkassoData==', []);
+        /**
+         * @var \CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionParser $parser
+         */
+        $parser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.collection_config_parser');
+        $parser->setRawResponse($rawResponse);
+        if (!$parser->hasService()) {
+            return false;
+        }
+        $creditorsFromWS = $parser->extractCreditorFromWS();
+        if (!empty($creditorsFromWS)) {
+            $inkassoData['creditors'] = array_merge([
                     0 => [
                         'id' => 0,
                         'useraccount' => '',
                         'name' => '',
-                        'address' => ''
-                    ]
+                        'address' => '',
+                    ],
                 ], $creditorsFromWS);
-            } else {
-                $inkassoData['creditors'] = [];
-            }
-            $inkassoData['data'] = $parser->extractKeysAndValuesFromWS("collectionorder", "collectionordertype",
-                $inkassoData['data']);
-            $inkassoData['data'] = $parser->extractKeysAndValuesFromWS("collectionorder",
-                "partreceivable/collectionturnovertype", $inkassoData['data']);
-            $inkassoData['data'] = $parser->extractKeysAndValuesFromWS("collectionorder",
-                "partreceivable/receivablereason", $inkassoData['data']);
+        } else {
+            $inkassoData['creditors'] = [];
         }
-        return $successfulDataProcessed;
+        $inkassoData['collectionOrderType'] = $parser->extractKeysAndValuesFromWS('collectionorder', 'collectionordertype',
+                $inkassoData['collectionOrderType']);
+        $inkassoData['collectionTurnoverType'] = $parser->extractKeysAndValuesFromWS('collectionorder',
+                'partreceivable/collectionturnovertype', $inkassoData['collectionTurnoverType']);
+        $inkassoData['receivableReason'] = $parser->extractKeysAndValuesFromWS('collectionorder',
+                'partreceivable/receivablereason', $inkassoData['receivableReason']);
+
+        $inkassoData['collectionOrderType'] = $this->addCollectionOrderType($inkassoData['collectionOrderType'], CollectionOrderFieldType::ORDER);
+        $inkassoData['collectionTurnoverType'] = $this->addCollectionOrderType($inkassoData['collectionTurnoverType'], CollectionOrderFieldType::TURNOVER);
+        $inkassoData['receivableReason'] = $this->addCollectionOrderType($inkassoData['receivableReason'], CollectionOrderFieldType::RECEIVABLE_REASON);
+
+        return $inkassoData;
+    }
+
+    /**
+     * @param array $fieldType
+     * @param int   $type
+     *
+     * @return array
+     */
+    private function addCollectionOrderType(array $fieldType, $type)
+    {
+        foreach ($fieldType as $key => $field) {
+            if (isset($field['no_service']) || isset($field['no_key'])) {
+                return $fieldType;
+            }
+            $field['typeValue'] = $type;
+            $fieldType[$key] = $field;
+        }
+
+        return $fieldType;
     }
 
     /**
      * @param $rawResponse
+     *
      * @return bool
      */
     private function isWSRequestSuccessful($rawResponse)
     {
-        return !is_null($rawResponse)
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==isWSRequestSuccessful==', []);
+
+        return null !== $rawResponse
             && !($rawResponse instanceof \Exception)
             && !is_soap_fault($rawResponse)
             && !($rawResponse instanceof \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException);
@@ -1208,10 +1126,12 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
 
     /**
      * @param $params
+     *
      * @return CrefoAccount
      */
     private function createAccountFromParameters($params)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==createAccountFromParameters==', []);
         /**
          * @var \CrefoShopwarePlugIn\Components\Core\PasswordEncoder $passwordEncoder
          */
@@ -1221,31 +1141,38 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
         $key = $this->getEncryptionKey($passwordEncoder);
         $account->setIndividualPassword($passwordEncoder->encrypt($params['individualpassword'], $key));
         $account->setGeneralPassword($passwordEncoder->encrypt($params['generalpassword'], $key));
+
         return $account;
     }
 
     /**
+     * @codeCoverageIgnore
      * @param string $useraccount
+     *
      * @return CrefoAccount
      */
     private function createAccountFromDB($useraccount)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==createAccountFromDB==', [$useraccount]);
         $account = new CrefoAccount();
         $dbAccount = $this->getAccountRepository()->getAccountWithNumber($useraccount);
         $account->setAccountFromQuery($dbAccount);
+
         return $account;
     }
 
     /**
      * @param null|\CrefoShopwarePlugIn\Models\CrefoAccounts\CrefoAccount $account
      * @param $newPass
+     *
      * @return mixed
      */
     private function changePassword($account, $newPass)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==changePassword==', [$account]);
         $snippets = CrefoCrossCuttingComponent::getShopwareInstance()->Snippets()->getNamespace('backend/creditreform/translation');
         /**
-         * @var  \CrefoShopwarePlugIn\Components\API\Request\ChangePasswordRequest $crefoChangePassword
+         * @var \CrefoShopwarePlugIn\Components\API\Request\ChangePasswordRequest $crefoChangePassword
          */
         $crefoChangePassword = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.change_password_request');
         /**
@@ -1261,7 +1188,7 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
             'userAccount' => $account->getUserAccount(),
             'generalPassword' => $passwordEncoder->decrypt($account->getGeneralPassword(), $config->getEncryptionKey()),
             'individualPassword' => $passwordEncoder->decrypt($account->getIndividualPassword(),
-                $config->getEncryptionKey())
+                $config->getEncryptionKey()),
         ];
         $crefoChangePassword->setHeaderAccount($accountArray);
         $crefoChangePassword->setNewPassword($newPass);
@@ -1271,15 +1198,15 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
             $crefoChangePassword->getCrefoParser()->setRawResponse($result);
             CrefoCrossCuttingComponent::saveCrefoLogs($crefoChangePassword->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
         } catch (\SoapFault $fault) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==changePassword>>SoapFault " . date("Y-m-d H:i:s") . "==",
-                (array)$fault);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                '==changePassword>>SoapFault ' . date('Y-m-d H:i:s') . '==',
+                (array) $fault);
             $result = $fault;
             $crefoChangePassword->getCrefoParser()->setRawResponse($result);
             CrefoCrossCuttingComponent::saveCrefoLogs($crefoChangePassword->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
         } catch (\CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==changePassword>>CrefoCommunicationException " . date("Y-m-d H:i:s") . "==", (array)$e);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                '==changePassword>>CrefoCommunicationException ' . date('Y-m-d H:i:s') . '==', [$e->getMessage()]);
             $result = new \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException($snippets->get('crefo/messages/error_in_communication'),
                 $e->getCode());
             $crefoChangePassword->getCrefoParser()->setRawResponse($e);
@@ -1287,8 +1214,8 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
             CrefoCrossCuttingComponent::saveUnsuccessfulRequestLog($crefoChangePassword, $xmlText,
                 CrefoCrossCuttingComponent::ERROR);
         } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==changePassword>>Exception " . date("Y-m-d H:i:s") . "==", (array)$e);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                '==changePassword>>Exception ' . date('Y-m-d H:i:s') . '==', [$e->getMessage()]);
             $result = new \Exception($snippets->get('crefo/validation/generalError'), $e->getCode());
             $dateProcessEnd = new \DateTime('now');
             CrefoCrossCuttingComponent::saveCrefoLogs([
@@ -1298,99 +1225,40 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
                 'requestXML' => '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/validation/generalError') . '</Error>',
                 'requestXMLDescription' => CrefoCrossCuttingComponent::ERROR,
                 'responseXML' => '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/validation/generalError') . '</Error>',
-                'responseXMLDescription' => CrefoCrossCuttingComponent::ERROR
+                'responseXMLDescription' => CrefoCrossCuttingComponent::ERROR,
             ]);
         }
+
         return $result;
     }
 
     /**
      * @param $rawResponse
-     * @return array
+     *
      * @throws Exception
+     *
+     * @return array
      */
     private function processWSErrors($rawResponse)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==processWSErrors==', []);
         /**
          * @var \CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser $crefoParser
          */
         $crefoParser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.soap_parser');
         $crefoParser->setRawResponse($rawResponse);
+
         return $crefoParser->getSoapErrors();
     }
 
     /**
-     * @param PrivatePersonConfig $reportPrivatePerson
-     * @param integer $ident
-     * @param integer $from
-     * @param integer $to
-     * @return ProductsPrivatePerson
-     */
-    private function createBonimaScorePoolIdentProduct($reportPrivatePerson, $ident, $from, $to)
-    {
-        $product = new ProductsPrivatePerson();
-        $product->setConfigId($reportPrivatePerson);
-        $product->setAddressValidationResult(1);
-        $product->setIdentificationResult($ident);
-        $product->setVisualSequence($ident);
-        $product->setProductAvailability(true);
-        $product->setProductKeyWS(PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT);
-        $product->setProductScoreFrom($from);
-        $product->setProductScoreTo($to);
-        return $product;
-    }
-
-    /**
-     * @param PrivatePersonConfig $reportPrivatePerson
-     * @param integer $ident
-     * @param integer $from
-     * @param integer $to
-     * @return ProductsPrivatePerson
-     */
-    private function createBonimaScorePoolIdentPremiumProduct($reportPrivatePerson, $ident, $from, $to)
-    {
-        $product = new ProductsPrivatePerson();
-        $product->setConfigId($reportPrivatePerson);
-        $product->setAddressValidationResult(1);
-        $product->setIdentificationResult($ident);
-        $product->setVisualSequence($ident);
-        $product->setProductAvailability(true);
-        $product->setProductKeyWS(PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT_PREMIUM);
-        $product->setProductScoreFrom($from);
-        $product->setProductScoreTo($to);
-        return $product;
-    }
-
-    /**
-     * @param array $products
-     * @param PrivatePersonConfig $reportPrivatePerson
-     * @param array $params
-     */
-    private function setExistingProducts($products, $reportPrivatePerson, $params)
-    {
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        /**
-         * @var ProductsPrivatePerson $product
-         */
-        foreach ($products as $product) {
-            $fromId = 'ident_from_' . $product->getIdentificationResult();
-            $toId = 'ident_to_' . $product->getIdentificationResult();
-            $fromScoreBonima = is_null($params[$fromId]) || $params[$fromId] === '' ? null : intval($params[$fromId]);
-            $toScoreBonima = is_null($params[$toId]) || $params[$toId] === '' ? null : intval($params[$toId]);
-            $product->setProductScoreFrom($fromScoreBonima);
-            $product->setProductScoreTo($toScoreBonima);
-            $product->setProductAvailability(true);
-            $product->setConfigId($reportPrivatePerson);
-            $shopwareModels->persist($product);
-        }
-    }
-
-    /**
-     * @param \Shopware\Components\Model\ModelManager $em
+     * @codeCoverageIgnore
      * @param string $class
      */
-    private function truncateTable($em, $class)
+    private function truncateTable($class)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==truncateTable==', [$class]);
+        $em = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         $cmd = $em->getClassMetadata($class);
         $connection = $em->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
@@ -1408,30 +1276,279 @@ class Shopware_Controllers_Backend_CrefoConfiguration extends Shopware_Controlle
 
     /**
      * @param \CrefoShopwarePlugIn\Components\Core\PasswordEncoder $passwordEncoder
+     *
      * @return string
      */
     private function getEncryptionKey($passwordEncoder)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getEncryptionKey==', []);
         $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings::class);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings $settings
          */
-        $settings = $this->getPluginSettingsRepository()->find($configId);
+        $settings = $shopwareModels->find(PluginSettings::class, $configId);
         $key = $settings->getEncryptionKey();
-        if (is_null($key)) {
+        if (null === $key) {
             $key = $passwordEncoder->generateKey();
             $settings->setEncryptionKey($key);
             CrefoCrossCuttingComponent::getShopwareInstance()->Models()->persist($settings);
             CrefoCrossCuttingComponent::getShopwareInstance()->Models()->flush();
         }
+
         return $key;
     }
 
     /**
-     * @inheritdoc
+     * @param ReportCompanyConfig $companyConfig
+     * @param array               $params
      */
-    public function getWhitelistedCSRFActions()
+    private function saveCompanyConfigBasedOnCountries(ReportCompanyConfig $companyConfig, array $params)
     {
-        return [];
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Save configuration for companies.',
+            [$params, $companyConfig]);
+        $countriesStatus[CountryType::AT] = filter_var($params['companyConfigCheckbox_' . CountryType::AT], FILTER_VALIDATE_BOOLEAN);
+        $countriesStatus[CountryType::DE] = filter_var($params['companyConfigCheckbox_' . CountryType::DE], FILTER_VALIDATE_BOOLEAN);
+        $countriesStatus[CountryType::LU] = filter_var($params['companyConfigCheckbox_' . CountryType::LU], FILTER_VALIDATE_BOOLEAN);
+        foreach ($countriesStatus as $countryID => $countryActivated) {
+            $foundCountry = null;
+            /**
+             * @var CountriesForCompanies $country
+             */
+            foreach ($companyConfig->getCountries() as $country) {
+                if ($country->getCountry() === $countryID) {
+                    $foundCountry = $country;
+                }
+            }
+            if (!$countryActivated && $foundCountry != null) {
+                $this->removeCompanyConfigForCountry($foundCountry);
+            } elseif (filter_var($params['tabSeen_' . $countryID], FILTER_VALIDATE_BOOLEAN)) {
+                if ($foundCountry !== null) {
+                    $this->updateCountryConfigForCompanies($foundCountry, $params);
+                } else {
+                    $this->insertCountryConfigForCompanies($companyConfig, $countryID, $params);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array               $params
+     * @param PrivatePersonConfig $reportPrivatePersonConfig
+     */
+    private function saveReportPrivatePersonProducts(array $params, PrivatePersonConfig $reportPrivatePersonConfig)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Save configuration for private persons.',
+            [$params, $reportPrivatePersonConfig]);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $thresholdMax = null === $params['thresholdMax'] || $params['thresholdMax'] === '' ? null : floatval($params['thresholdMax']);
+        $basketThresholds = is_array($params['basketThresholdMin']) ? $params['basketThresholdMin'] : [$params['basketThresholdMin']];
+        $multiProducts = is_array($params['basketThresholdMin']) ? true : false;
+        $productsNumber = count($params['basketThresholdMin']);
+        $subProductsIndexes = ['start' => 0];
+        foreach ($basketThresholds as $productRow => $threshold) {
+            $product = new ProductsPrivatePerson();
+            $product->setProductNameWS($multiProducts ? $params['productCrefoName'][$productRow] : $params['productCrefoName']);
+            $keyWS = $multiProducts ? $params['productCrefo'][$productRow] : $params['productCrefo'];
+            $allowedProducts = PrivatePersonProductsType::AllowedProducts();
+            if ($keyWS === $allowedProducts[PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT]) {
+                $keyWSId = PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT;
+                if (isset($subProductsIndexes['finish'])) {
+                    $subProductsIndexes['start'] = $subProductsIndexes['finish'];
+                }
+                $subProductsIndexes['finish'] = $subProductsIndexes['start'] + 2;
+            } else {
+                $keyWSId = PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT_PREMIUM;
+                if (isset($subProductsIndexes['finish'])) {
+                    $subProductsIndexes['start'] = $subProductsIndexes['finish'];
+                }
+                $subProductsIndexes['finish'] = $subProductsIndexes['start'] + 4;
+            }
+            $product->setProductKeyWS($keyWSId);
+            $product->setThresholdMin(floatval($threshold));
+            if ($productRow + 1 === $productsNumber) {
+                $product->setLastThresholdMax(true);
+                $product->setThresholdMax($thresholdMax);
+            } else {
+                if ($productRow + 1 < $productsNumber) {
+                    $product->setLastThresholdMax(false);
+                    $product->setThresholdMax($basketThresholds[$productRow + 1]);
+                }
+            }
+            $product->setProductAvailability(true);
+            $product->setConfigId($reportPrivatePersonConfig);
+            $product->setVisualSequence($productRow);
+            $shopwareModels->persist($product);
+            $this->saveBonimaScoreProducts($params, $subProductsIndexes, $product);
+        }
+    }
+
+    /**
+     * @param array                 $params
+     * @param array                 $subProductsIndexes
+     * @param ProductsPrivatePerson $product
+     */
+    private function saveBonimaScoreProducts(array $params, array $subProductsIndexes, ProductsPrivatePerson $product)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==saveBonimaScoreProducts==',
+            [$params, $subProductsIndexes, $product]);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $subProductsCount = $subProductsIndexes['finish'] - $subProductsIndexes['start'];
+        $indexIndent = $product->getProductKeyWS() === PrivatePersonProductsType::BONIMA_SCORE_POOL_IDENT ? 0 : 2;
+        for ($i = 0; $i < $subProductsCount; ++$i) {
+            $productFromScore = $params['bonimaScoreFrom'][$i + $subProductsIndexes['start']];
+            $productFromScore = null === $productFromScore || $productFromScore === '' ? null : intval($productFromScore);
+            $productToScore = $params['bonimaScoreTo'][$i + $subProductsIndexes['start']];
+            $productToScore = null === $productToScore || $productToScore === '' ? null : intval($productToScore);
+            $scoreProductConfig = new ProductScoreConfig();
+            $scoreProductConfig->setVisualSequence($i);
+            $scoreProductConfig->setIdentificationResult($i + $indexIndent);
+            $scoreProductConfig->setAddressValidationResult(AddressValidationResultType::IDENTIFIED);
+            $scoreProductConfig->setProductId($product);
+            $scoreProductConfig->setProductScoreFrom($productFromScore);
+            $scoreProductConfig->setProductScoreTo($productToScore);
+            $shopwareModels->persist($scoreProductConfig);
+        }
+    }
+
+    /**
+     * @param CountriesForCompanies $country
+     */
+    private function removeCompanyConfigForCountry(CountriesForCompanies $country)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==removeCompanyConfigForCountry==',
+            [$country]);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        /**
+         * @var ProductsConfig $product
+         */
+        foreach ($country->getProducts() as $product) {
+            $shopwareModels->remove($product);
+        }
+        $shopwareModels->remove($country);
+    }
+
+    private function updateCountryConfigForCompanies(CountriesForCompanies $country, array $params)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==updateCountryConfigForCompanies==',
+            [$country]);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        /**
+         * @var ProductsConfig $product
+         */
+        foreach ($country->getProducts() as $product) {
+            $shopwareModels->remove($product);
+        }
+        $this->insertCompanyProduct($country, $params);
+    }
+
+    /**
+     * @param ReportCompanyConfig $companyConfig
+     * @param int                 $countryID
+     * @param array               $params
+     */
+    private function insertCountryConfigForCompanies(ReportCompanyConfig $companyConfig, $countryID, array $params)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==insertCountryConfigForCompanies==',
+            [$countryID]);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $country = new CountriesForCompanies();
+        $country->setConfigId($companyConfig);
+        $country->setCountry($countryID);
+        $this->insertCompanyProduct($country, $params);
+        $shopwareModels->persist($country);
+    }
+
+    /**
+     * @param CountriesForCompanies $country
+     * @param array                 $params
+     */
+    private function insertCompanyProduct(CountriesForCompanies $country, array $params)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==insertCompanyProduct==', [$country]);
+        $countryID = $country->getCountry();
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $basketMinValue = $params['basketThresholdMin_' . $countryID];
+        if (is_array($basketMinValue)) {
+            $countSolvencyIndex = 0;
+            foreach ($basketMinValue as $sequence => $minVal) {
+                $productConfig = new ProductsConfig();
+                $productConfig->setCountry($country);
+                $productConfig->setThresholdMin(filter_var($minVal, FILTER_VALIDATE_FLOAT));
+                if (isset($basketMinValue[$sequence + 1])) {
+                    $productConfig->setThresholdMax(filter_var($basketMinValue[$sequence + 1], FILTER_VALIDATE_FLOAT));
+                    $productConfig->setLastThresholdMax(false);
+                } else {
+                    filter_var($params['thresholdMax_' . $countryID], FILTER_VALIDATE_FLOAT) === false ? $productConfig->setThresholdMax(null) : $productConfig->setThresholdMax(filter_var($params['thresholdMax_' . $countryID], FILTER_VALIDATE_FLOAT));
+                    $productConfig->setLastThresholdMax(true);
+                }
+                $productConfig->setProductKeyWS(filter_var($params['productCrefo_' . $countryID][$sequence], FILTER_SANITIZE_STRING));
+                $productConfig->setProductTextWS(filter_var($params['productCrefoName_' . $countryID][$sequence], FILTER_SANITIZE_STRING));
+                $productConfig->setSequence($sequence);
+                if ($productConfig->getProductKeyWS() === CompanyProductsType::AllowedProducts()[CompanyProductsType::ECREFO]) {
+                    $productConfig->setHasSolvencyIndex(true);
+                    if (count($params['solvencyIndex_' . $countryID]) > 1) {
+                        $productConfig->setThresholdIndex(filter_var($params['solvencyIndex_' . $countryID][$countSolvencyIndex], FILTER_VALIDATE_INT));
+                        ++$countSolvencyIndex;
+                    } else {
+                        $productConfig->setThresholdIndex(filter_var($params['solvencyIndex_' . $countryID], FILTER_VALIDATE_INT));
+                    }
+                } else {
+                    $productConfig->setHasSolvencyIndex(false);
+                }
+                $shopwareModels->persist($productConfig);
+            }
+        } else {
+            $productConfig = new ProductsConfig();
+            $productConfig->setCountry($country);
+            $productConfig->setThresholdMin(filter_var($basketMinValue, FILTER_VALIDATE_FLOAT));
+            filter_var($params['thresholdMax_' . $countryID], FILTER_VALIDATE_FLOAT) === false ? $productConfig->setThresholdMax(null) : $productConfig->setThresholdMax(filter_var($params['thresholdMax_' . $countryID], FILTER_VALIDATE_FLOAT));
+            $productConfig->setLastThresholdMax(true);
+            $productConfig->setProductKeyWS(filter_var($params['productCrefo_' . $countryID], FILTER_SANITIZE_STRING));
+            $productConfig->setProductTextWS(filter_var($params['productCrefoName_' . $countryID], FILTER_SANITIZE_STRING));
+            $productConfig->setSequence(0);
+            if ($productConfig->getProductKeyWS() === CompanyProductsType::AllowedProducts()[CompanyProductsType::ECREFO]) {
+                $productConfig->setHasSolvencyIndex(true);
+                $productConfig->setThresholdIndex(filter_var($params['solvencyIndex_' . $countryID], FILTER_VALIDATE_INT));
+            } else {
+                $productConfig->setHasSolvencyIndex(false);
+            }
+            $shopwareModels->persist($productConfig);
+        }
+    }
+
+    /**
+     * @param PluginSettings $settings
+     * @param array          $params
+     *
+     * @return PluginSettings
+     */
+    private function checkForChangesInNotificationArea(PluginSettings $settings, array $params)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==checkForChangesInNotificationArea==', ['settingsId' => $settings->getId()]);
+        if ($settings->getEmailAddress() !== $params['emailAddress'] ||
+            $settings->getErrorTolerance() !== intval($params['errorTolerance']) ||
+            $settings->getRequestCheckAtValue() !== intval($params['requestCheckAtValue'])
+        ) {
+            $settings->setErrorTolerance(intval($params['errorTolerance']));
+            $settings->setEmailAddress($params['emailAddress']);
+            $settings->setRequestCheckAtValue(intval($params['requestCheckAtValue']));
+            $this->resetNotificationCounters();
+        }
+
+        return $settings;
+    }
+
+    private function resetNotificationCounters()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==resetNotificationCounters==', ['reset count of the email notification']);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(ErrorRequests::class);
+        /**
+         * @var \CrefoShopwarePlugIn\Models\CrefoErrorRequests\ErrorRequests $errorRequestObj
+         */
+        $errorRequestObj = $shopwareModels->find(ErrorRequests::class, $configId);
+        $errorRequestObj->resetCounters();
+        $shopwareModels->persist($errorRequestObj);
     }
 }

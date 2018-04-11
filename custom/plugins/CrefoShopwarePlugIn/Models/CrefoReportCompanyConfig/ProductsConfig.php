@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,20 +12,18 @@
 
 namespace CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig;
 
-use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\DBAL\Types\Type;
-use \Doctrine\ORM\Mapping as ORM;
-use \Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping as ORM;
+use Shopware\Components\Model\ModelEntity;
 
 /**
- * @ORM\Entity(repositoryClass="ReportCompanyRepository")
- * @ORM\Table(name="crefo_products_config")
+ * @ORM\Entity
+ * @ORM\Table(name="crefo_products_company")
  */
 class ProductsConfig extends ModelEntity
 {
-
     /**
-     * @var integer $id
+     * @var int $id
      *
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -34,61 +32,68 @@ class ProductsConfig extends ModelEntity
     private $id;
 
     /**
-     * @var integer $configsId
-     *
-     * @ORM\Column(type="integer", nullable=false)
-     */
-    private $configsId;
-
-    /**
      * @var string $productKeyWS
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", nullable=false)
      */
     private $productKeyWS;
 
     /**
      * @var string $productTextWS
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string", nullable=false)
      */
     private $productTextWS;
 
     /**
-     * @var string $solvencyIndexWS
+     * @var string $hasSolvencyIndex
      *
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $solvencyIndexWS;
+    private $hasSolvencyIndex;
 
     /**
-     * @var integer $sequence
+     * @var int $sequence
      *
      * @ORM\Column(type="integer", nullable=false)
      */
     private $sequence;
 
     /**
-     * @var Type::DECIMAL $threshold
+     * @var Type::DECIMAL $thresholdMin
      *
      * @ORM\Column(type="decimal", precision=7, scale=2, nullable=false)
      */
-    private $threshold;
+    private $thresholdMin;
 
     /**
-     * @var integer $threshold_index
+     * @var Type::DECIMAL $thresholdMax
+     *
+     * @ORM\Column(type="decimal", precision=7, scale=2, nullable=true)
+     */
+    private $thresholdMax;
+
+    /**
+     * @var bool $isLastThresholdMax
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     */
+    private $isLastThresholdMax = false;
+
+    /**
+     * @var int $thresholdIndex
      *
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $threshold_index;
+    private $thresholdIndex;
 
     /**
-     * @var string $land
+     * @var \CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\CountriesForCompanies $country
      *
-     * @ORM\Column(type="text", nullable=false)
+     * @ORM\ManyToOne(targetEntity="CrefoShopwarePlugIn\Models\CrefoReportCompanyConfig\CountriesForCompanies", inversedBy="products")
+     * @ORM\JoinColumn(name="country", referencedColumnName="id")
      */
-    private $land;
-
+    private $country;
 
     /**
      * @return int
@@ -96,14 +101,6 @@ class ProductsConfig extends ModelEntity
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getConfigId()
-    {
-        return $this->configsId;
     }
 
     /**
@@ -125,9 +122,9 @@ class ProductsConfig extends ModelEntity
     /**
      * @return boolean
      */
-    public function getSolvencyIndexWS()
+    public function getHasSolvencyIndex()
     {
-        return $this->solvencyIndexWS;
+        return $this->hasSolvencyIndex;
     }
 
     /**
@@ -138,13 +135,28 @@ class ProductsConfig extends ModelEntity
         return $this->sequence;
     }
 
+    /**
+     * @return Type::DECIMAL
+     */
+    public function getThresholdMin()
+    {
+        return $this->thresholdMin;
+    }
 
     /**
      * @return Type::DECIMAL
      */
-    public function getThreshold()
+    public function getThresholdMax()
     {
-        return $this->threshold;
+        return $this->thresholdMax;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLastThresholdMax()
+    {
+        return (bool) $this->isLastThresholdMax;
     }
 
     /**
@@ -152,32 +164,23 @@ class ProductsConfig extends ModelEntity
      */
     public function getThresholdIndex()
     {
-        return $this->threshold_index;
+        return $this->thresholdIndex;
     }
 
     /**
-     * @return string
+     * @return CountriesForCompanies
      */
-    public function getLand()
+    public function getCountry()
     {
-        return $this->land;
+        return $this->country;
     }
 
-
     /**
-     * @param integer $sequence
+     * @param int $sequence
      */
     public function setSequence($sequence)
     {
         $this->sequence = $sequence;
-    }
-
-    /**
-     * @param integer $id
-     */
-    public function setConfigId($id)
-    {
-        $this->configsId = $id;
     }
 
     /**
@@ -197,36 +200,50 @@ class ProductsConfig extends ModelEntity
     }
 
     /**
-     * @param boolean $index
+     * @param bool $index
      */
-    public function setSolvencyIndexWS($index)
+    public function setHasSolvencyIndex($index)
     {
-        $this->solvencyIndexWS = $index;
-    }
-
-
-    /**
-     * @param Type ::DECIMAL $threshold
-     */
-    public function setThreshold($threshold)
-    {
-        $this->threshold = $threshold;
+        $this->hasSolvencyIndex = $index;
     }
 
     /**
-     * @param integer $thresholdIndex
+     * @param Type::DECIMAL $threshold
+     */
+    public function setThresholdMin($thresholdMin)
+    {
+        $this->thresholdMin = $thresholdMin;
+    }
+
+    /**
+     * @param Type::DECIMAL $thresholdMax
+     */
+    public function setThresholdMax($thresholdMax)
+    {
+        $this->thresholdMax = $thresholdMax;
+    }
+
+    /**
+     * @param bool $isLastThresholdMax
+     */
+    public function setLastThresholdMax($isLastThresholdMax)
+    {
+        $this->isLastThresholdMax = $isLastThresholdMax;
+    }
+
+    /**
+     * @param int $thresholdIndex
      */
     public function setThresholdIndex($thresholdIndex)
     {
-        $this->threshold_index = $thresholdIndex;
+        $this->thresholdIndex = $thresholdIndex;
     }
 
     /**
-     * @param string $land
+     * @param CountriesForCompanies $country
      */
-    public function setLand($land)
+    public function setCountry($country)
     {
-        $this->land = $land;
+        $this->country = $country;
     }
-
 }

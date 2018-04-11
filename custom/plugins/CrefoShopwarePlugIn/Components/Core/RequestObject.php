@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,26 +12,19 @@
 
 namespace CrefoShopwarePlugIn\Components\Core;
 
-use \CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient;
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\ConfigHeaderRequest;
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
-use \CrefoShopwarePlugIn\Components\Soap\CrefoMapper;
-use \CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser;
-use \CrefoShopwarePlugIn\Components\Core\Enums\LogStatusType;
-use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use CrefoShopwarePlugIn\Components\Core\Enums\LogStatusType;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use CrefoShopwarePlugIn\Components\Soap\CrefoMapper;
+use CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient;
+use CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser;
+use CrefoShopwarePlugIn\Components\Swag\Middleware\ConfigHeaderRequest;
 
 /**
  * Class RequestObject
- * @package CrefoShopwarePlugIn\Components\Core
  */
 abstract class RequestObject
 {
     protected $header;
-
-    /**
-     * @var null|\CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient $crefoSoapCl
-     */
-    private $crefoSoapCl = null;
 
     /**
      * @var null|\CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser
@@ -39,9 +32,9 @@ abstract class RequestObject
     protected $crefoParser = null;
 
     /**
-     * @var null|\CrefoShopwarePlugIn\Components\Logger\CrefoLogger $crefoLogger
+     * @var null|\CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient $crefoSoapCl
      */
-    private $crefoLogger = null;
+    private $crefoSoapCl = null;
 
     /**
      * @var null| ConfigHeaderRequest $config
@@ -49,22 +42,14 @@ abstract class RequestObject
     private $config = null;
 
     /**
-     * @return null|\CrefoShopwarePlugIn\Components\Logger\CrefoLogger
-     */
-    protected function getCrefoLogger()
-    {
-        if ($this->crefoLogger === null) {
-            $this->crefoLogger = new CrefoLogger();
-        }
-        return $this->crefoLogger;
-    }
-
-    /**
      * RequestObject constructor.
+     * @codeCoverageIgnore
      * @param ConfigHeaderRequest $config
      */
     public function __construct(ConfigHeaderRequest $config)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::construct==',
+            ['create a request object', 'config' => $config]);
         date_default_timezone_set('Europe/Berlin');
         $this->config = $config;
         $this->header = new RequestHeaderImpl($config);
@@ -73,63 +58,54 @@ abstract class RequestObject
     }
 
     /**
+     * @codeCoverageIgnore
      * @return mixed|\CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser
      */
     public function getCrefoParser()
     {
-        if (is_null($this->crefoParser)) {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::getCrefoParser==',
+            ['get crefo parser']);
+        if (null === $this->crefoParser) {
             $mapper = new CrefoMapper();
             $this->crefoParser = new CrefoSoapParser($mapper);
         }
+
         return $this->crefoParser;
     }
 
     /**
-     * Sets the header
-     *
-     * @param RequestHeaderImpl $req
-     */
-    private function setHeader(RequestHeaderImpl $req)
-    {
-        $this->header = $req;
-        $this->header->performSanitization();
-    }
-
-    /**
+     * @codeCoverageIgnore
      * @param null|array $account
      */
-    public function setHeaderAccount(array $account)
+    public function setHeaderAccount(array $account = null)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::setHeaderAccount==',
+            ['set account header request']);
         $this->setHeader(new RequestHeaderImpl($this->config, $account));
     }
 
     /**
+     * @codeCoverageIgnore
      * @param ConfigHeaderRequest $config
      */
     public function setConfigHeaderRequest(ConfigHeaderRequest $config)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::setConfigHeaderRequest==',
+            ['set config header request']);
         $this->config = $config;
     }
 
     /**
      * Gets the header
-     *
+     * @codeCoverageIgnore
      * @return RequestHeaderImpl
      */
     public function getHeader()
     {
-        return $this->header;
-    }
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::getHeader==',
+            ['get header request']);
 
-    /**
-     * @return null|\CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient
-     */
-    protected function getCrefoSoapCl()
-    {
-        if (is_null($this->crefoSoapCl)) {
-            $this->crefoSoapCl = new CrefoSoapClient();
-        }
-        return $this->crefoSoapCl;
+        return $this->header;
     }
 
     /**
@@ -137,7 +113,10 @@ abstract class RequestObject
      */
     public function getLastSoapCallRequest()
     {
-        return is_null($this->getCrefoSoapCl()) ? null : $this->getCrefoSoapCl()->getLastSoapCallRequest();
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::getLastSoapCallRequest==',
+            ['get last soap call request']);
+
+        return null === $this->getCrefoSoapCl() ? null : $this->getCrefoSoapCl()->getLastSoapCallRequest();
     }
 
     /**
@@ -145,15 +124,21 @@ abstract class RequestObject
      */
     public function getLastSoapCallResponse()
     {
-        return is_null($this->getCrefoSoapCl()) ? null : $this->getCrefoSoapCl()->getLastSoapCallResponse();
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::getLastSoapCallResponse==',
+            ['get last soap call response']);
+
+        return null === $this->getCrefoSoapCl() ? null : $this->getCrefoSoapCl()->getLastSoapCallResponse();
     }
 
     /**
-     * @param String $format
+     * @param string $format
+     *
      * @return array
      */
     public function handleSoapResponse($format = 'Y-m-d\TH:i:s')
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::handleSoapResponse==',
+            ['handle soap response', 'format' => $format]);
         $lastRequest = $this->getLastSoapCallRequest();
         $lastResponse = $this->getLastSoapCallResponse();
         $dateReport = new \DateTime($this->getCrefoParser()->getServiceTimeStamp());
@@ -168,8 +153,37 @@ abstract class RequestObject
             'requestXML' => addslashes($lastRequestWithoutPassword),
             'requestXMLDescription' => $reqDesc,
             'responseXML' => addslashes($lastResponse),
-            'responseXMLDescription' => $respDesc
+            'responseXMLDescription' => $respDesc,
         ];
+
         return $logArray;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|\CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient
+     */
+    protected function getCrefoSoapCl()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::getCrefoSoapCl==',
+            ['get crefo soap client']);
+        if (null === $this->crefoSoapCl) {
+            $this->crefoSoapCl = new CrefoSoapClient();
+        }
+
+        return $this->crefoSoapCl;
+    }
+
+    /**
+     * Sets the header
+     * @codeCoverageIgnore
+     * @param RequestHeaderImpl $header
+     */
+    private function setHeader(RequestHeaderImpl $header)
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==RequestObject::setHeader==',
+            ['set header request']);
+        $this->header = $header;
+        $this->header->performSanitization();
     }
 }

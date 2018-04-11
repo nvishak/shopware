@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,78 +10,96 @@
  * Diese Datei ist Teil des CrefoShopwarePlugIn.
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
+
 namespace CrefoShopwarePlugIn\Components\API\Request;
 
-use \CrefoShopwarePlugIn\Components\API\Body\IdentificationReportBody;
-use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
-use \CrefoShopwarePlugIn\Components\Core\RequestObject;
-use \CrefoShopwarePlugIn\Components\Soap\Parsers\IdentificationReportParser;
-use \CrefoShopwarePlugIn\Components\Soap\Mappers\IdentificationReportMapper;
-use \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException;
+use CrefoShopwarePlugIn\Components\API\Body\IdentificationReportBody;
+use CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException;
+use CrefoShopwarePlugIn\Components\Core\RequestObject;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use CrefoShopwarePlugIn\Components\Soap\Mappers\IdentificationReportMapper;
+use CrefoShopwarePlugIn\Components\Soap\Parsers\IdentificationReportParser;
 
 /**
  * Class IdentificationReportRequest
- * @package CrefoShopwarePlugIn\Components\API\Request
  */
 class IdentificationReportRequest extends RequestObject
 {
     protected $body;
 
     /**
+     * @codeCoverageIgnore
      * IdentificationReportRequest constructor.
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function __construct($config)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequest::construct==',
+            ['create identification report request']);
         parent::__construct($config);
         $this->body = new IdentificationReportBody();
         $this->body->performSanitization();
     }
 
     /**
+     * @codeCoverageIgnore
      * @param IdentificationReportBody $body
      */
     public function setBody(IdentificationReportBody $body)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequest::setBody==',
+            ['set identification report body request', 'body' => $body]);
         $this->body = $body;
         $this->body->performSanitization();
     }
 
     /**
+     * @codeCoverageIgnore
      * @return IdentificationReportBody
      */
     public function getBody()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequest::getBody==',
+            ['get identification report body request']);
+
         return $this->body;
     }
 
     /**
+     * @codeCoverageIgnore
      * @return mixed|\CrefoShopwarePlugIn\Components\Soap\Parsers\IdentificationReportParser
      */
     public function getCrefoParser()
     {
-        if (is_null($this->crefoParser) || !($this->crefoParser instanceof IdentificationReportParser)) {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==IdentificationReportRequest::getCrefoParser==',
+            ['get crefo parser for identification report request']);
+        if (null === $this->crefoParser || !($this->crefoParser instanceof IdentificationReportParser)) {
             $mapper = new IdentificationReportMapper();
             $this->crefoParser = new IdentificationReportParser($mapper);
         }
+
         return $this->crefoParser;
     }
 
     /**
+     * @throws CrefoCommunicationException
+     *
      * @return mixed
-     * @throws CrefoCommunicationException|\SoapFault
      */
     public function performIdentificationReport()
     {
-        $this->getCrefoLogger()->log(CrefoLogger::DEBUG, "==performIdentificationReport==",
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Call identification report service.',
             ['Start the identification report action.']);
         /**
          * @var \SoapClient $soapClient
          */
         $soapClient = $this->getCrefoSoapCl()->getSoapClient();
-        if (is_null($soapClient)) {
+        // @codeCoverageIgnoreStart
+        if (null === $soapClient) {
             throw new CrefoCommunicationException($this->getCrefoSoapCl()->getSoapError());
         }
+        // @codeCoverageIgnoreStop
+
         return $soapClient->identificationreport($this);
     }
 }

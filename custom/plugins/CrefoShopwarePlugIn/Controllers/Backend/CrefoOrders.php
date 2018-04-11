@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,24 +10,27 @@
  * Informationen zur Lizenzierung sind in der Datei “license” verfügbar.
  */
 
-use \CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
-use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
-use \CrefoShopwarePlugIn\Components\Core\Enums\CrefoOrderTypes;
-use \CrefoShopwarePlugIn\Components\Core\Enums\ProposalStatus;
-use \CrefoShopwarePlugIn\Components\Core\Enums\CollectionOrderActions;
-use \CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionOrderParser;
-use \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal;
-use \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrders;
-use \CrefoShopwarePlugIn\Models\CrefoOrders\OrderListing;
-use \Shopware\Components\CSRFWhitelistAware;
-use \CrefoShopwarePlugIn\Components\Core\Enums\AddressValidationResultType;
-use \CrefoShopwarePlugIn\Components\Core\Enums\IdentificationResultType;
+use CrefoShopwarePlugIn\Components\Core\Enums\AddressValidationResultType;
+use CrefoShopwarePlugIn\Components\Core\Enums\CollectionOrderActions;
+use CrefoShopwarePlugIn\Components\Core\Enums\CrefoOrderTypes;
+use CrefoShopwarePlugIn\Components\Core\Enums\IdentificationResultType;
+use CrefoShopwarePlugIn\Components\Core\Enums\ProposalStatus;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
+use CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionOrderParser;
+use CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
+use CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig;
+use CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal;
+use CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrders;
+use CrefoShopwarePlugIn\Models\CrefoOrders\OrderListing;
+use Shopware\Components\CSRFWhitelistAware;
 
 /**
- * Class Shopware_Controllers_Backend_CrefoOrders
+ * Class Shopware_Controllers_Backend_CrefoOrders.
  */
 class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Backend_Application implements CSRFWhitelistAware
 {
+    const NO_CUST_NUM = 'no cust num';
+    const NO_ORDER_NUM = 'no order num';
     protected $model = 'CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrders';
     protected $alias = 'crefoOrders';
 
@@ -62,88 +65,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
     private $inkassoConfigRepository = null;
 
     /**
-     * @var null|CrefoLogger $crefoLogger
-     */
-    private $crefoLogger = null;
-
-    /**
-     * @return null|CrefoLogger
-     */
-    private function getCrefoLogger()
-    {
-        if ($this->crefoLogger === null) {
-            $this->crefoLogger = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.logger');
-        }
-        return $this->crefoLogger;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfigRepository
-     */
-    private function getInkassoConfigRepository()
-    {
-        if ($this->inkassoConfigRepository === null) {
-            $this->inkassoConfigRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig');
-        }
-        return $this->inkassoConfigRepository;
-    }
-
-    /**
-     * @return null|Shopware\Models\Order\Repository
-     */
-    protected function getOrderRepository()
-    {
-        if ($this->orderRepository === null) {
-            $this->orderRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('Shopware\Models\Order\Order');
-        }
-        return $this->orderRepository;
-    }
-
-    /**
-     * @return null|Shopware\Models\Country\Repository
-     */
-    protected function getCountryRepository()
-    {
-        if ($this->countryRepository === null) {
-            $this->countryRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('Shopware\Models\Country\Country');
-        }
-        return $this->countryRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoReports\Repository
-     */
-    private function getReportResultsRepository()
-    {
-        if ($this->reportResultsRepository === null) {
-            $this->reportResultsRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoReports\CrefoReportResults');
-        }
-        return $this->reportResultsRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoOrders\Repository
-     */
-    private function getCrefoOrdersRepository()
-    {
-        if ($this->crefoOrderRepository === null) {
-            $this->crefoOrderRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrders');
-        }
-        return $this->crefoOrderRepository;
-    }
-
-    /**
-     * @return null|\CrefoShopwarePlugIn\Models\CrefoLogs\Repository
-     */
-    private function getCrefoLogsRepository()
-    {
-        if ($this->crefoLogsRepository === null) {
-            $this->crefoLogsRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoLogs\CrefoLogs');
-        }
-        return $this->crefoLogsRepository;
-    }
-
-    /**
+     * @codeCoverageIgnore
      * @method getCrefoProposalListAction
      */
     public function getCrefoProposalAction()
@@ -159,18 +81,18 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
             }
             $this->View()->assign([
                 'success' => true,
-                'data' => $proposalData
+                'data' => $proposalData,
             ]);
         } catch (\Exception $e) {
             $this->View()->assign([
                 'success' => false,
-                'data' => $proposalData
+                'data' => $proposalData,
             ]);
         }
     }
 
     /**
-     * @param integer $orderId
+     * @param int $orderId
      * @return array
      */
     public function getOrderDataForProposal($orderId)
@@ -190,16 +112,16 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $collectionBody = $orderRequest->getBody();
 
         /**
-         * @var \Shopware\Models\Order\Order $order
+         * @var \Shopware\Models\Order\Order
          */
         $order = $shopwareModels->find(\Shopware\Models\Order\Order::class, $orderId);
         try {
             $collectionBody->getDebtor()->getCommunicationData()->setEmail($order->getCustomer()->getEmail());
         } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==getOrderDataForProposal==", (array)$e);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==getOrderDataForProposal==', (array) $e);
             $collectionBody->getDebtor()->getCommunicationData()->setEmail('');
         }
-        if (!is_null($order->getBilling()->getCompany()) && $order->getBilling()->getCompany() !== '') {
+        if (null !== $order->getBilling()->getCompany() && $order->getBilling()->getCompany() !== '') {
             $collectionBody->getDebtor()->disablePrivatePerson();
             $collectionBody->getDebtor()->enableCompany();
             $collectionBody->getDebtor()->getCompany()->setCompanyname($order->getBilling()->getCompany());
@@ -228,9 +150,13 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
             $collectionBody->getDebtor()->getAddressdata()->getAddressForService()->setHousenumberaffix(null);
         }
         $collectionBody->performSanitization();
+
         return array_merge($proposalOrder, $collectionBody->getBodyAsArray());
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function updateCrefoProposalAction()
     {
         /**
@@ -296,7 +222,8 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
     }
 
     /**
-     * deletes a crefo proposal from a proposal ID
+     * deletes a crefo proposal from a proposal ID.
+     * @codeCoverageIgnore
      */
     public function deleteCrefoProposalAction()
     {
@@ -312,6 +239,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $proposal = $this->getCrefoOrdersRepository()->findCrefoObject(CrefoOrderProposal::class, $proposalId);
         if ($proposal->getCrefoOrderType() === CrefoOrderTypes::Document) {
             $this->View()->assign(['success' => false]);
+
             return;
         }
 
@@ -332,7 +260,9 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $this->View()->assign(['success' => true]);
     }
 
-
+    /**
+     * @codeCoverageIgnore
+     */
     public function getCrefoOrderDocumentAction()
     {
         $query = $this->getCrefoOrdersRepository()->getCrefoOrdersQueryBuilder()->getQuery();
@@ -340,10 +270,13 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $orderData = $query->getArrayResult();
         $this->View()->assign([
             'success' => true,
-            'data' => $orderData
+            'data' => $orderData,
         ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function hasInkassoConfigAction()
     {
         $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig::class);
@@ -352,10 +285,13 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
          */
         $configInkasso = $this->getInkassoConfigRepository()->find($configId);
         $this->View()->assign([
-            'success' => !is_null($configInkasso->getUserAccountId())
+            'success' => null !== $configInkasso->getUserAccountId(),
         ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getCrefoOrderListAction()
     {
         $query = $this->getCrefoOrdersRepository()->getCrefoOrderListingQueryBuilder()->getQuery();
@@ -363,11 +299,12 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $listingData = $query->getArrayResult();
         $this->View()->assign([
             'success' => true,
-            'data' => $listingData
+            'data' => $listingData,
         ]);
     }
 
     /**
+     * @codeCoverageIgnore
      * @method getReportResultsList
      */
     public function getReportResultsListAction()
@@ -388,10 +325,13 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         }
         $this->View()->assign([
             'success' => true,
-            'data' => $reportResult
+            'data' => $reportResult,
         ]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function openSolvencyErrorAction()
     {
         $solvencyId = intval($this->Request()->getParam('solvencyId', 0));
@@ -407,11 +347,11 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
             $oneLogsResultArray = $builderLogs->getQuery()->getArrayResult();
             $query = $this->getCrefoLogsRepository()->getCrefoLogsXmlsQuery($oneLogsResultArray[0]['id']);
             $oneLogsResultArray = $query->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-            if (is_null($oneLogsResultArray)) {
+            if (null === $oneLogsResultArray) {
                 throw new \Exception('Error-Xml not found.');
             }
             $xml = $oneLogsResultArray['responseXML'];
-            if (is_null($xml) || empty($xml)) {
+            if (null === $xml || empty($xml)) {
                 throw new \Exception('Null/Empty Error-Xml.');
             }
             /**
@@ -423,34 +363,40 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
              */
             $crefoParser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.identification_report_parser');
             $displayErrors = $crefoParser->getSoapErrorsFromXml(stripslashes($xml));
-            $displayErrors['timestamp'] = $responseTime->format("Y-m-d H:i:s");
+            $displayErrors['timestamp'] = $responseTime->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==openSolvencyErrorAction==", (array)$e);
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==openSolvencyErrorAction==', (array) $e);
             $success = false;
         }
         $this->View()->assign(['success' => $success, 'displayError' => $displayErrors]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function openXmlAction()
     {
         $solvencyId = intval($this->Request()->getParam('solvencyId', null));
-        if (is_null($solvencyId)) {
+        if (null === $solvencyId) {
             $this->View()->assign(['success' => false]);
+
             return;
         }
         $logBuilder = $this->getCrefoLogsRepository()->getCrefoLogsQueryBuilder();
-        $logBuilder->andWhere("clog.reportResultId = ?1");
+        $logBuilder->andWhere('clog.reportResultId = ?1');
         $logBuilder->setParameter(1, $solvencyId);
         $logArray = $logBuilder->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-        if (is_null($logArray)) {
+        if (null === $logArray) {
             $this->View()->assign(['success' => false]);
+
             return;
         }
-        $title = "response_xmlreport_" . $logArray['id'] . ".xml";
+        $title = 'response_xmlreport_' . $logArray['id'] . '.xml';
         $query = $this->getCrefoLogsRepository()->getCrefoLogsXmlsQuery($logArray['id']);
         $xmlArray = $query->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-        if (is_null($xmlArray['responseXML'])) {
+        if (null === $xmlArray['responseXML']) {
             $this->View()->assign(['success' => false]);
+
             return;
         }
         $data = $xmlArray['responseXML'];
@@ -462,17 +408,18 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $this->View()->assign([
             'success' => true,
             'title' => $title,
-            'dataXml' => $manager->formatXmlPretty($data)
+            'dataXml' => $manager->formatXmlPretty($data),
         ]);
     }
 
     /**
-     * Opens the report Pdf
+     * Opens the report Pdf.
+     * @codeCoverageIgnore
      * @method openSolvencyPdf
      */
     public function openSolvencyPdfAction()
     {
-        $this->getCrefoLogger()->log(CrefoLogger::DEBUG, "==openPDF==", ["Open solvency PDF."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==openPDF==', ['Open solvency PDF.']);
         $params = $this->Request()->getParams();
         /**
          * @var Enlight_Controller_Plugins_Json_Bootstrap $json
@@ -486,7 +433,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         }
         @mkdir($tempfile);
         if (is_dir($tempfile)) {
-            $namePDF = $tempfile . DIRECTORY_SEPARATOR . "response_textreport_" . $params['orderNumber'] . ".pdf";
+            $namePDF = $tempfile . DIRECTORY_SEPARATOR . 'response_textreport_' . $params['orderNumber'] . '.pdf';
             $queryPdf = $this->getReportResultsRepository()->getCompanyReportResultsPdfQuery($params['orderNumber']);
             $pdf = $queryPdf->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
 
@@ -501,6 +448,9 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getListOrdersAction()
     {
         //read store parameter to filter and paginate the data.
@@ -510,7 +460,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $filter = $this->Request()->getParam('filter', null);
         $orderId = $this->Request()->getParam('orderID');
 
-        if (!is_null($orderId)) {
+        if (null !== $orderId) {
             $orderIdFilter = ['property' => 'orders.id', 'value' => $orderId];
             if (!is_array($filter)) {
                 $filter = [];
@@ -522,23 +472,465 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
     }
 
     /**
+     * @codeCoverageIgnore
+     * @method createProposalAction
+     */
+    public function createProposalAction()
+    {
+        try {
+            $orderId = $this->Request()->getParam('orderId');
+            /**
+             * @var \Shopware\Models\Order\Order $order
+             */
+            $order = $this->getOrderRepository()->find($orderId);
+            if ($order->getCurrency() !== 'EUR') {
+                throw new \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoUnsupportedCurrencyException('The currency is different from EUR (' . $order->getCurrency() . ')');
+            }
+            $listing = $this->createProposal($order);
+            $this->View()->assign(['success' => null !== $listing, 'error' => false]);
+        } catch (\CrefoShopwarePlugIn\Components\API\Exceptions\CrefoUnsupportedCurrencyException $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==createProposalAction::UnsupportedCurrency==',
+                (array) $e);
+            $this->View()->assign(['success' => true, 'error' => true]);
+        } catch (\Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==createProposalAction==', (array) $e);
+            $this->View()->assign(['success' => false, 'error' => true]);
+        }
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @method createProposalAction
+     */
+    public function openProposalWithErrorsAction()
+    {
+        $proposalId = $this->Request()->getParam('proposalId', 0);
+        if ($proposalId === 0) {
+            $this->View()->assign(['success' => false]);
+
+            return;
+        }
+
+        /**
+         * @var CrefoOrderProposal
+         */
+        $proposal = $this->getCrefoOrdersRepository()->findCrefoObject(CrefoOrderProposal::class, $proposalId);
+        /**
+         * @var CollectionOrderParser
+         */
+        $crefoParser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.collection_order_parser');
+        $displayErrors = null;
+        if (null !== $proposal->getErrorXML()) {
+            $displayErrors = $crefoParser->getSoapErrorsFromXml($proposal->getErrorXML());
+        }
+        $this->View()->assign(['success' => true, 'displayErrors' => $displayErrors]);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function loadCollectionCreditorsAction()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==loadCollectionCreditorsAction==', ['Load Creditors.']);
+        $creditors = $this->getInkassoConfigRepository()->getInkassoCreditorsQueryBuilder()->getQuery()->getArrayResult();
+        $creditors[] = ['id' => 0, 'useraccount' => '', 'name' => '', 'address'];
+        $this->View()->assign(['success' => true, 'data' => $creditors]);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function loadCollectionValuesAction()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==loadCollectionValuesAction==', ['Load Collection Values.']);
+        $values = $this->getInkassoConfigRepository()->getInkassoValuesQueryBuilder()->getQuery()->getArrayResult();
+        $this->View()->assign(['success' => true, 'data' => $values]);
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @method sendProposalAction
+     */
+    public function sendProposalAction()
+    {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Send collection order.',
+            ['Send Proposal - ' . $this->Request()->getParam('listingId', -1)]);
+        $orderListingId = $this->Request()->getParam('listingId');
+        $errors = null;
+        $successful = false;
+        try {
+            /**
+             * @var \CrefoShopwarePlugIn\Models\CrefoOrders\OrderListing $orderListing
+             */
+            $orderListing = $this->getCrefoOrdersRepository()->findCrefoObject(OrderListing::class, $orderListingId);
+            $this->sendCrefoProposalFromOrder($orderListing, $successful, $errors);
+        } catch (\Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==sendProposalAction==', ['Exception sending Proposal']);
+        } finally {
+            $this->View()->assign(['success' => $successful, 'errors' => $errors]);
+        }
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function batchProcessAction()
+    {
+        /**
+         * @var \Shopware\Components\Model\ModelManager $shopwareModels
+         */
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        $actionCollection = $this->Request()->getParam('actionCollection', 0);
+        $orders = $this->Request()->getParam('orders', [0 => $this->Request()->getParams()]);
+        $errors = null;
+        $successful = true;
+
+        if (empty($orders)) {
+            $successful = false;
+            $this->View()->assign([
+                    'success' => $successful,
+                    'data' => $this->Request()->getParams(),
+                    'errors' => $errors,
+                ]
+            );
+
+            return;
+        }
+
+        foreach ($orders as $key => $data) {
+            if (empty($data) || empty($data['id'])) {
+                continue;
+            }
+
+            /**
+             * @var \Shopware\Models\Order\Order $order
+             */
+            $order = $this->getOrderRepository()->find($data['id']);
+            if (!$order) {
+                continue;
+            }
+
+            $builderListing = $this->getCrefoOrdersRepository()->getCrefoOrderListingQueryBuilder();
+            $builderListing->andWhere('ol.orderId = ?1');
+            $builderListing->setParameter(1, $data['id']);
+            $arrayOrderListing = $builderListing->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+            /**
+             * @var OrderListing|null $orderListing
+             */
+            $orderListing = null;
+            if (null !== $arrayOrderListing) {
+                $orderListing = $this->getCrefoOrdersRepository()->findCrefoObject(OrderListing::class,
+                    $arrayOrderListing['id']);
+            }
+
+            switch ($actionCollection) {
+                case CollectionOrderActions::CREATE:
+                    if (isset($data['collectionId']) || null !== $orderListing || $order->getCurrency() !== 'EUR') {
+                        continue;
+                    }
+                        $orderListing = $this->createProposal($order);
+
+                    break;
+                case CollectionOrderActions::SEND:
+                    if (!isset($data['collectionId'])
+                        || null === $orderListing
+                        || (null !== $orderListing && $orderListing->getCrefoOrderId()->getCrefoOrderType() === CrefoOrderTypes::Document)
+                        || (null !== $orderListing && $orderListing->getCrefoOrderId()->getProposalStatus() !== ProposalStatus::ReadyToSend)
+                    ) {
+                        continue;
+                    }
+                        $orderListing = $this->sendCrefoProposalFromOrder($orderListing, $successful, $errors);
+
+                    break;
+                case CollectionOrderActions::DELETE:
+                    if (null === $orderListing) {
+                        continue;
+                    }
+                    $orderListing = $this->deleteCrefoProposalFromOrder($orderListing);
+                    break;
+                default:
+                    continue;
+            }
+
+            if (null !== $orderListing) {
+                $data['crefoOrderListing'] = $shopwareModels->toArray($orderListing);
+                /**
+                 * @var CrefoOrderProposal
+                 */
+                $proposalOrder = $orderListing->getCrefoOrderId();
+                $data['crefoOrderListing']['crefoOrderProposal'] = $shopwareModels->toArray($proposalOrder);
+                $data['collectionId'] = $orderListing->getId();
+            } else {
+                $data['crefoOrderListing'] = [];
+                $data['collectionId'] = null;
+            }
+
+            if (null !== $data['solvencyId']) {
+                $reportBuilder = $this->getReportResultsRepository()->getCompanyReportResultsQueryBuilder();
+                $reportBuilder->andWhere('crefo_rr.id = ?1');
+                $reportBuilder->setParameter(1, $data['solvencyId']);
+                $reportResultArray = $reportBuilder->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+                if (null === $reportResultArray) {
+                    $reportBuilder = $this->getReportResultsRepository()->getPrivatePersonReportResultsQueryBuilder();
+                    $reportBuilder->andWhere('pprr.id = ?1');
+                    $reportBuilder->setParameter(1, $data['solvencyId']);
+                    $reportResultPrivatePerson = $reportBuilder->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+                    if (null !== $reportResultPrivatePerson) {
+                        $reportResultPrivatePerson['privatePersonResult'] = $this->renderBonimaPrivatePersonText($reportResultPrivatePerson);
+                        unset($reportResultPrivatePerson['addressValidationResult']);
+                        unset($reportResultPrivatePerson['identificationResult']);
+                        unset($reportResultPrivatePerson['scoreType']);
+                        unset($reportResultPrivatePerson['scoreValue']);
+                    }
+                    $data['crefoReportResults'] = $reportResultPrivatePerson;
+                } else {
+                    $data['crefoReportResults'] = $reportResultArray;
+                }
+            }
+
+            //return the modified data array.
+            $orders[$key] = $data;
+        }
+
+        $this->View()->assign([
+            'success' => true,
+            'data' => $orders,
+            'errors' => $errors,
+        ]);
+    }
+
+    /**
+     * @param OrderListing $orderListing
+     *
+     * @return OrderListing|null
+     */
+    public function deleteCrefoProposalFromOrder($orderListing)
+    {
+        /**
+         * @var \Shopware\Components\Model\ModelManager
+         */
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        /**
+         * @var \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal
+         */
+        $proposal = $orderListing->getCrefoOrderId();
+
+        if ($proposal->getCrefoOrderType() === CrefoOrderTypes::Document) {
+            return $orderListing;
+        }
+        try {
+            $shopwareModels->remove($proposal);
+            $shopwareModels->remove($orderListing);
+            $shopwareModels->flush();
+        } catch (Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==deleteCrefoProposalFromOrder==', [$e->getMessage()]);
+
+            return $orderListing;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param OrderListing $orderListing
+     * @param bool         $successful
+     * @param array|null   $errors
+     *
+     * @return OrderListing
+     */
+    public function sendCrefoProposalFromOrder($orderListing, &$successful = false, &$errors = null)
+    {
+        /**
+         * @var \Shopware\Components\Model\ModelManager
+         */
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
+        /**
+         * @var Enlight_Components_Snippet_Namespace
+         */
+        $snippets = CrefoCrossCuttingComponent::getShopwareInstance()->Snippets()->getNamespace('backend/creditreform/translation');
+        $generalErrorXML = '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/validation/generalError') . '</Error>';
+        /**
+         * @var \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal
+         */
+        $proposal = $orderListing->getCrefoOrderId();
+        /**
+         * @var \Shopware\Models\Order\Order
+         */
+        $order = $orderListing->getOrderId();
+        /**
+         * @var \Shopware\Models\Order\Billing $billing
+         */
+        $billing = $shopwareModels->find('Shopware\Models\Order\Billing', $order->getBilling());
+        /**
+         * @var \Shopware\Models\Country\Country $country
+         */
+        $country = $shopwareModels->find('Shopware\Models\Country\Country', $billing->getCountry());
+        /**
+         * @var null|\CrefoShopwarePlugIn\Components\API\Request\CollectionOrderRequest $collectionOrderRequest
+         */
+        $collectionOrderRequest = null;
+        $response = null;
+        try {
+            $collectionOrderRequest = $this->fillOrderRequest($proposal, $order, $billing, $country);
+            $result = $collectionOrderRequest->sendOrder();
+            $collectionOrderRequest->getCrefoParser()->setRawResponse($result);
+            CrefoCrossCuttingComponent::saveCrefoLogs($collectionOrderRequest->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
+            $successful = true;
+        } catch (\SoapFault $fault) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                '==sendCrefoProposalFromOrder>>SoapFault ' . date(CrefoCrossCuttingComponent::DATE_FORMAT) . '==',
+                (array) $fault);
+            $result = $fault;
+            $collectionOrderRequest->getCrefoParser()->setRawResponse($result);
+            CrefoCrossCuttingComponent::saveCrefoLogs($collectionOrderRequest->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
+            $errors[$order->getId()] = $collectionOrderRequest->getCrefoParser()->getSoapErrors();
+            $successful = false;
+            $response = $collectionOrderRequest->getLastSoapCallResponse();
+        } catch (\CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR,
+                '==sendCrefoProposalFromOrder>>CrefoCommunicationException ' . date(CrefoCrossCuttingComponent::DATE_FORMAT) . '==',
+                (array) $e);
+            $result = new \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException($snippets->get('crefo/messages/error_in_communication'),
+                $e->getCode());
+            $collectionOrderRequest->getCrefoParser()->setRawResponse($result);
+            $xmlText = '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/messages/error_in_communication') . '</Error>';
+            CrefoCrossCuttingComponent::saveUnsuccessfulRequestLog($collectionOrderRequest, $xmlText,
+                CrefoCrossCuttingComponent::ERROR);
+            $errors[$order->getId()] = $collectionOrderRequest->getCrefoParser()->getSoapErrors();
+            $successful = false;
+            $response = $xmlText;
+        } catch (\Exception $e) {
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, '==sendCrefoProposalFromOrder>>Error==', (array) $e);
+            if (null === $collectionOrderRequest) {
+                $tempCollectionOrderRequest = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.collection_order_request');
+            } else {
+                $tempCollectionOrderRequest = $collectionOrderRequest;
+            }
+            $tempCollectionOrderRequest->getCrefoParser()->setRawResponse($e);
+            $dateProcessEnd = new \DateTime('now');
+            CrefoCrossCuttingComponent::saveCrefoLogs(
+                [
+                    'log_status' => \CrefoShopwarePlugIn\Components\Core\Enums\LogStatusType::NOT_SAVED,
+                    'ts_response' => $dateProcessEnd->format(CrefoCrossCuttingComponent::DATE_FORMAT),
+                    'tsProcessEnd' => $dateProcessEnd->format(CrefoCrossCuttingComponent::DATE_FORMAT),
+                    'requestXML' => $generalErrorXML,
+                    'requestXMLDescription' => 'Error',
+                    'responseXML' => $generalErrorXML,
+                    'responseXMLDescription' => 'Error',
+                ]
+            );
+            $tempError = $tempCollectionOrderRequest->getCrefoParser()->getSoapErrors();
+            empty($tempError) ?: $errors[$order->getId()] = $tempError;
+            $successful = false;
+            $response = $generalErrorXML;
+        } finally {
+            if ($successful) {
+                /**
+                 * @var CrefoOrders
+                 */
+                $crefoOrders = $this->saveCrefoOrder($collectionOrderRequest, $proposal);
+                $shopwareModels->persist($crefoOrders);
+                $shopwareModels->flush();
+
+                $orderListing->setCrefoOrderId($crefoOrders);
+                $shopwareModels->persist($orderListing);
+                $shopwareModels->remove($proposal);
+                $shopwareModels->flush();
+            } else {
+                $proposal->setProposalStatus(ProposalStatus::Error);
+                if (null === $response) {
+                    $response = $generalErrorXML;
+                }
+                $proposal->setErrorXML($response);
+                $shopwareModels->persist($proposal);
+                $shopwareModels->flush();
+            }
+
+            return $orderListing;
+        }
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function loadListAction()
+    {
+        $filters = [['property' => 'status.id', 'expression' => '!=', 'value' => '-1']];
+        $orderStatus = $this->getOrderRepository()->getOrderStatusQuery($filters)->getArrayResult();
+        $paymentStatus = $this->getOrderRepository()->getPaymentStatusQuery()->getArrayResult();
+        $positionStatus = $this->getOrderRepository()->getDetailStatusQuery()->getArrayResult();
+        $crefoOrderListing = $this->getCrefoOrdersRepository()->getCrefoOrderListingQuery()->getArrayResult();
+        $crefoReportResults = $this->getReportResultsRepository()->getCompanyReportResultsQuery()->getArrayResult();
+
+        $this->View()->assign([
+            'success' => true,
+            'data' => [
+                'orderStatus' => $orderStatus,
+                'paymentStatus' => $paymentStatus,
+                'positionStatus' => $positionStatus,
+                'crefoOrderListing' => $crefoOrderListing,
+                'crefoReportResults' => $crefoReportResults,
+            ],
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @codeCoverageIgnore
+     */
+    public function getWhitelistedCSRFActions()
+    {
+        return [
+            'openSolvencyPdf',
+            'openXml',
+        ];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|Shopware\Models\Order\Repository
+     */
+    protected function getOrderRepository()
+    {
+        if ($this->orderRepository === null) {
+            $this->orderRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('Shopware\Models\Order\Order');
+        }
+
+        return $this->orderRepository;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|Shopware\Models\Country\Repository
+     */
+    protected function getCountryRepository()
+    {
+        if ($this->countryRepository === null) {
+            $this->countryRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('Shopware\Models\Country\Country');
+        }
+
+        return $this->countryRepository;
+    }
+
+    /**
      * @param $filter
      * @param $sort
      * @param $offset
      * @param $limit
+     *
      * @return array
      */
     protected function getListOfOrders($filter, $sort, $offset, $limit)
     {
-        $this->getCrefoLogger()->log(CrefoLogger::DEBUG, "==getListOrders==",
-            ["Get the Orders list to display it."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==getListOrders==',
+            ['Get the Orders list to display it.']);
         if (empty($sort)) {
             $sort = [['property' => 'orders.orderTime', 'direction' => 'DESC']];
         } else {
-            if (strcmp(strtolower($sort[0]['property']), "solvencyid") == 0) {
+            if (strcmp(strtolower($sort[0]['property']), 'solvencyid') == 0) {
                 $sort[0]['property'] = 'crr.id';
             } else {
-                if (strcmp(strtolower($sort[0]['property']), "collectionid") == 0) {
+                if (strcmp(strtolower($sort[0]['property']), 'collectionid') == 0) {
                     $sort[0]['property'] = 'ol.id';
                 } else {
                     $sort[0]['property'] = 'orders.' . $sort[0]['property'];
@@ -560,12 +952,65 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         return [
             'success' => true,
             'data' => $this->processOrders($orders),
-            'total' => $total
+            'total' => $total,
         ];
     }
 
     /**
+     * @codeCoverageIgnore
+     * @return null|\CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfigRepository
+     */
+    private function getInkassoConfigRepository()
+    {
+        if ($this->inkassoConfigRepository === null) {
+            $this->inkassoConfigRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig');
+        }
+
+        return $this->inkassoConfigRepository;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|\CrefoShopwarePlugIn\Models\CrefoReports\Repository
+     */
+    private function getReportResultsRepository()
+    {
+        if ($this->reportResultsRepository === null) {
+            $this->reportResultsRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoReports\CrefoReportResults');
+        }
+
+        return $this->reportResultsRepository;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|\CrefoShopwarePlugIn\Models\CrefoOrders\Repository
+     */
+    private function getCrefoOrdersRepository()
+    {
+        if ($this->crefoOrderRepository === null) {
+            $this->crefoOrderRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrders');
+        }
+
+        return $this->crefoOrderRepository;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     * @return null|\CrefoShopwarePlugIn\Models\CrefoLogs\Repository
+     */
+    private function getCrefoLogsRepository()
+    {
+        if ($this->crefoLogsRepository === null) {
+            $this->crefoLogsRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoLogs\CrefoLogs');
+        }
+
+        return $this->crefoLogsRepository;
+    }
+
+    /**
      * @param array $orders
+     *
      * @return array
      */
     private function processOrders($orders)
@@ -578,12 +1023,12 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         foreach ($orders as $key => $orderArray) {
             $order = $orderArray[0];
 
-            if (!is_null($orderArray['solvencyId'])) {
+            if (null !== $orderArray['solvencyId']) {
                 $crefoReportResult = $this->getReportResultsRepository()->findCrefoObject(\CrefoShopwarePlugIn\Models\CrefoReports\CrefoReportResults::class,
                     $orderArray['solvencyId']);
                 if ($crefoReportResult instanceof \CrefoShopwarePlugIn\Models\CrefoReports\CompanyReportResults) {
                     $reportResultArray = $shopwareModels->toArray($crefoReportResult);
-                    /**
+                    /*
                      * PDFs are too large to be handled by the ajax call
                      */
                     unset($reportResultArray['textReportPdf']);
@@ -625,11 +1070,11 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
             $order['crefoOrderListing'] = $data;
             $order['crefoReportResults'] = isset($reportResultArray) ? $reportResultArray : null;
             $order['solvencyId'] = isset($reportResultArray) ? $reportResultArray['id'] : null;
-            $order['collectionId'] = !is_null($collectionResultArray) ? $collectionResultArray['id'] : null;
+            $order['collectionId'] = null !== $collectionResultArray ? $collectionResultArray['id'] : null;
             /**
-             * @var \Doctrine\ORM\Query $additionalOrderDataQuery
+             * @var \Doctrine\ORM\Query
              */
-            $additionalOrderDataQuery = $this->getOrderRepository()->getBackendAdditionalOrderDataQuery($order['number']);
+            $additionalOrderDataQuery = $this->getOrderRepository()->getOrdersQuery([0 => ['property' => 'orders.number', 'value' => $order['number']]]);
             $additionalOrderData = $additionalOrderDataQuery->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
             $order = array_merge($order, $additionalOrderData);
             //we need to set the billing and shipping attributes to the first array level to load the data into a form panel
@@ -647,78 +1092,28 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
             unset($order['shipping']['attribute']);
 
             //find the instock of the article
-            foreach ($order["details"] as &$orderDetail) {
+            foreach ($order['details'] as &$orderDetail) {
                 $articleRepository = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('Shopware\Models\Article\Detail');
-                $article = $articleRepository->findOneBy(['number' => $orderDetail["articleNumber"]]);
+                $article = $articleRepository->findOneBy(['number' => $orderDetail['articleNumber']]);
                 if ($article instanceof \Shopware\Models\Article\Detail) {
                     $orderDetail['inStock'] = $article->getInStock();
                 }
             }
             $newOrders[$key] = $order;
         }
+
         return $newOrders;
     }
 
     /**
-     * @method createProposalAction
-     */
-    public function createProposalAction()
-    {
-        try {
-            $orderId = $this->Request()->getParam('orderId');
-            /**
-             * @var \Shopware\Models\Order\Order $order
-             */
-            $order = $this->getOrderRepository()->find($orderId);
-            if ($order->getCurrency() !== 'EUR') {
-                throw new \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoUnsupportedCurrencyException("The currency is different from EUR (" . $order->getCurrency() . ")");
-            }
-            $listing = $this->createProposal($order);
-            $this->View()->assign(['success' => !is_null($listing), 'error' => false]);
-        } catch (\CrefoShopwarePlugIn\Components\API\Exceptions\CrefoUnsupportedCurrencyException $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==createProposalAction::UnsupportedCurrency==",
-                (array)$e);
-            $this->View()->assign(['success' => true, 'error' => true]);
-        } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==createProposalAction==", (array)$e);
-            $this->View()->assign(['success' => false, 'error' => true]);
-        }
-    }
-
-    /**
-     * @method createProposalAction
-     */
-    public function openProposalWithErrorsAction()
-    {
-        $proposalId = $this->Request()->getParam('proposalId', 0);
-        if ($proposalId === 0) {
-            $this->View()->assign(['success' => false]);
-            return;
-        }
-
-        /**
-         * @var CrefoOrderProposal $proposal
-         */
-        $proposal = $this->getCrefoOrdersRepository()->findCrefoObject(CrefoOrderProposal::class, $proposalId);
-        /**
-         * @var CollectionOrderParser $crefoParser
-         */
-        $crefoParser = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.collection_order_parser');
-        $displayErrors = null;
-        if (!is_null($proposal->getErrorXML())) {
-            $displayErrors = $crefoParser->getSoapErrorsFromXml($proposal->getErrorXML());
-        }
-        $this->View()->assign(['success' => true, 'displayErrors' => $displayErrors]);
-    }
-
-    /**
      * @param \Shopware\Models\Order\Order $order
+     *
      * @return OrderListing
      */
     private function createProposal($order)
     {
-        $this->getCrefoLogger()->log(CrefoLogger::INFO, "==createProposal==",
-            ["Start creating the proposal."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, 'Creat proposal order.',
+            ['Start creating the proposal.']);
         /**
          * @var \Shopware\Components\Model\ModelManager $shopwareModels
          */
@@ -728,7 +1123,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoInkassoConfig\InkassoConfig $configInkasso
          */
-        $configInkasso = $this->getInkassoConfigRepository()->find($configId);
+        $configInkasso = $shopwareModels->find(InkassoConfig::class, $configId);
 
         $proposal->setOrderId($order);
         $proposal->setDocumentNumber(ProposalStatus::ReadyToSend);
@@ -736,14 +1131,19 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $proposal->setCrefoOrderType(CrefoOrderTypes::Proposal);
 
         $proposal->setCreditor($configInkasso->getCreditor());
-        if (!is_null($configInkasso->getCustomerReference())) {
-            try {
-                $proposal->setCustomerReference($order->getCustomer()->getNumber() . "-" . $order->getNumber());
-            } catch (\Exception $e) {
-                $this->getCrefoLogger()->log(CrefoLogger::DEBUG, "==createProposal==",
-                    ["Assuming something went wrong trying to get the customer from order."]);
-                $proposal->setCustomerReference($order->getNumber());
+        if (null !== $configInkasso->getCustomerReference()) {
+            if ($order->getCustomer() !== null && $order->getCustomer()->getNumber() !== null && $order->getCustomer()->getNumber() !== '') {
+                $proposalCustomer = $order->getCustomer()->getNumber();
+            } else {
+                $proposalCustomer = self::NO_CUST_NUM;
             }
+            $proposalCustomer .= ' - ';
+            if ($order->getNumber() !== null && $order->getNumber() !== '') {
+                $proposalCustomer .= $order->getNumber();
+            } else {
+                $proposalCustomer .= self::NO_ORDER_NUM;
+            }
+            $proposal->setCustomerReference($proposalCustomer);
         } else {
             $proposal->setCustomerReference(null);
         }
@@ -760,37 +1160,16 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $listing->setCrefoOrderId($proposal);
         $shopwareModels->persist($listing);
         $shopwareModels->flush();
+
         return $listing;
     }
 
     /**
-     * @method sendProposalAction
-     */
-    public function sendProposalAction()
-    {
-        $this->getCrefoLogger()->log(CrefoLogger::INFO, "==sendProposalAction==",
-            ["Send Proposal - " . $this->Request()->getParam('listingId', -1)]);
-        $orderListingId = $this->Request()->getParam('listingId');
-        $errors = null;
-        $successful = false;
-        try {
-            /**
-             * @var \CrefoShopwarePlugIn\Models\CrefoOrders\OrderListing $orderListing
-             */
-            $orderListing = $this->getCrefoOrdersRepository()->findCrefoObject(OrderListing::class, $orderListingId);
-            $this->sendCrefoProposalFromOrder($orderListing, $successful, $errors);
-        } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==sendProposalAction==", ["Exception sending Proposal"]);
-        } finally {
-            $this->View()->assign(['success' => $successful, 'errors' => $errors]);
-        }
-    }
-
-    /**
      * @param \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal $proposal
-     * @param \Shopware\Models\Order\Order $order
-     * @param \Shopware\Models\Order\Billing $billing
-     * @param \Shopware\Models\Country\Country $country
+     * @param \Shopware\Models\Order\Order                               $order
+     * @param \Shopware\Models\Order\Billing                             $billing
+     * @param \Shopware\Models\Country\Country                           $country
+     *
      * @return \CrefoShopwarePlugIn\Components\API\Request\CollectionOrderRequest
      */
     private function fillOrderRequest($proposal, $order, $billing, $country)
@@ -811,7 +1190,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $config = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.config_header_request');
         $collectionOrderRequest->setConfigHeaderRequest($config);
         $account = $configInkasso->getUserAccountId();
-        if (!is_null($account)) {
+        if (null !== $account) {
             /**
              * @var \CrefoShopwarePlugIn\Components\Core\PasswordEncoder $passwordEncoder
              */
@@ -821,7 +1200,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
                 'generalPassword' => $passwordEncoder->decrypt($account->getGeneralPassword(),
                     $config->getEncryptionKey()),
                 'individualPassword' => $passwordEncoder->decrypt($account->getIndividualPassword(),
-                    $config->getEncryptionKey())
+                    $config->getEncryptionKey()),
             ];
             $collectionOrderRequest->setHeaderAccount($accountArray);
         }
@@ -829,7 +1208,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
          * @var \CrefoShopwarePlugIn\Components\API\Body\CollectionOrderBody $collectionOrderBody
          */
         $collectionOrderBody = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.collection_order_body');
-        if (!is_null($billing->getCompany()) && strcmp(trim($billing->getCompany()), '') != 0) {
+        if (null !== $billing->getCompany() && strcmp(trim($billing->getCompany()), '') != 0) {
             $collectionOrderBody->getDebtor()->enableCompany();
             $collectionOrderBody->getDebtor()->getCompany()->setCompanyname($billing->getCompany());
         } else {
@@ -864,13 +1243,13 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
             $proposal->getInterestRateValue());
 
         /**
-         * make sure that the creditor exists in the inkasso configuration
+         * make sure that the creditor exists in the inkasso configuration.
          */
         $creditors = $this->getInkassoConfigRepository()->getInkassoCreditorsQueryBuilder();
         $creditors->andWhere('creditor.useraccount = ?1');
         $creditors->setParameter(1, $proposal->getCreditor());
         $arrayCreditor = $creditors->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-        if(!is_null($arrayCreditor)) {
+        if (null !== $arrayCreditor) {
             $collectionOrderBody->setUser($proposal->getCreditor());
         }
         $collectionOrderBody->getReceivable()->setRemarks($proposal->getRemarks());
@@ -887,19 +1266,21 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $collectionOrderBody->getReceivable()->setCurrency($order->getCurrency());
 
         $collectionOrderRequest->setBody($collectionOrderBody);
+
         return $collectionOrderRequest;
     }
 
     /**
      * @param \CrefoShopwarePlugIn\Components\API\Request\CollectionOrderRequest $collectionOrderRequest
-     * @param \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal $proposal
+     * @param \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal         $proposal
+     *
      * @return CrefoOrders
      */
     private function saveCrefoOrder($collectionOrderRequest, $proposal)
     {
         $arrayWsValues = $this->getInkassoConfigRepository()->getInkassoValuesQueryBuilder()->getQuery()->getArrayResult();
         $crefoOrders = new CrefoOrders();
-        /**
+        /*
          * values from \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal
          */
         $crefoOrders->setOrderId($proposal->getOrderId());
@@ -911,7 +1292,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $crefoOrders->setTurnoverTypeKey($proposal->getTurnoverTypeKey());
         $crefoOrders->setInterestRateRadio($proposal->getInterestRateRadio());
         $crefoOrders->setInterestRateValue($proposal->getInterestRateValue());
-        /**
+        /*
          * values from \CrefoShopwarePlugIn\Components\API\Request\CollectionOrderRequest
          */
         $crefoOrders->setUserAccountNumber($collectionOrderRequest->getHeader()->getUserAccount());
@@ -919,15 +1300,15 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $crefoOrders->setSentDate(new \Datetime($collectionOrderRequest->getHeader()->getTransmissionTimestamp()));
         $crefoOrders->setLanguageIso($collectionOrderRequest->getHeader()->getCommunicationLanguage());
 
-        if (!is_null($collectionOrderRequest->getBody()->getDebtor()->getCompany()) &&
+        if (null !== $collectionOrderRequest->getBody()->getDebtor()->getCompany() &&
             $this->notNullOrEmpty($collectionOrderRequest->getBody()->getDebtor()->getCompany()->getCompanyname())
         ) {
             $crefoOrders->setCompanyName($collectionOrderRequest->getBody()->getDebtor()->getCompany()->getCompanyname());
         } else {
             $salutation = strcmp($collectionOrderRequest->getBody()->getDebtor()->getPrivateperson()->getSalutation(),
-                "SA-1") == 0 ?
-                $this->getSalutationText("mr",
-                    $collectionOrderRequest->getHeader()->getCommunicationLanguage()) : $this->getSalutationText("ms",
+                'SA-1') == 0 ?
+                $this->getSalutationText('mr',
+                    $collectionOrderRequest->getHeader()->getCommunicationLanguage()) : $this->getSalutationText('ms',
                     $collectionOrderRequest->getHeader()->getCommunicationLanguage());
             $crefoOrders->setSalutation($salutation);
             $crefoOrders->setFirstName($collectionOrderRequest->getBody()->getDebtor()->getPrivateperson()->getFirstname());
@@ -977,16 +1358,18 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
 
     /**
      * @param string|array $value
+     *
      * @return bool
      */
     private function notNullOrEmpty($value)
     {
-        return !is_null($value) && !empty($value) && (is_object($value) || (is_array($value) ? true : strcmp($value,
+        return null !== $value && !empty($value) && (is_object($value) || (is_array($value) ? true : strcmp($value,
                         '') != 0));
     }
 
     /**
      * @param string $countryIso
+     *
      * @return string
      */
     private function getCountryName($countryIso)
@@ -995,35 +1378,39 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $countryBuilder->andWhere('countries.iso = ?1');
         $countryBuilder->setParameter(1, strtoupper($countryIso));
         $arrayCountry = $countryBuilder->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+
         return isset($arrayCountry['name']) ? $arrayCountry['name'] : $countryIso;
     }
 
     /**
      * @param string $gender
      * @param string $lang
+     *
      * @return string
      */
-    private function getSalutationText($gender, $lang = "de")
+    private function getSalutationText($gender, $lang = 'de')
     {
         $lexicon = [
             'de' => [
                 'mr' => 'Herr',
-                'ms' => 'Frau'
+                'ms' => 'Frau',
             ],
             'en' => [
                 'mr' => 'Mr.',
-                'ms' => 'Mrs.'
-            ]
+                'ms' => 'Mrs.',
+            ],
         ];
         if (!in_array(strtolower($lang), array_keys($lexicon))) {
             $lang = 'de';
         }
+
         return $lexicon[strtolower($lang)][$gender];
     }
 
     /**
      * @param $array
      * @param string $key
+     *
      * @return mixed
      */
     private function getTextValue($array, $key)
@@ -1033,324 +1420,31 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
                 return $values['textWS'];
             }
         }
+
         return $key;
     }
 
     /**
      * @param $lang
      * @param $interestArray
+     *
      * @return string
      */
     private function getInterestRate($lang, $interestArray)
     {
         if (isset($interestArray['fix'])) {
-            return strcmp(mb_strtolower($lang), "de") == 0 ? "Fest" : "Fix";
-        } else {
-            if (isset($interestArray['variable'])) {
-                return strcmp(mb_strtolower($lang), "de") == 0 ? "Variabel-Aufschlag" : "Variable-Spread";
-            } else {
-                return strcmp(mb_strtolower($lang), "de") == 0 ? "Gesetzlich" : "Legal";
-            }
+            return strcmp(mb_strtolower($lang), 'de') == 0 ? 'Fest' : 'Fix';
         }
-    }
-
-    public function batchProcessAction()
-    {
-        /**
-         * @var \Shopware\Components\Model\ModelManager $shopwareModels
-         */
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        $actionCollection = $this->Request()->getParam('actionCollection', 0);
-        $orders = $this->Request()->getParam('orders', [0 => $this->Request()->getParams()]);
-        $errors = null;
-        $successful = true;
-
-        if (empty($orders)) {
-            $successful = false;
-            $this->View()->assign([
-                    'success' => $successful,
-                    'data' => $this->Request()->getParams(),
-                    'errors' => $errors
-                ]
-            );
-            return;
+        if (isset($interestArray['variable'])) {
+            return strcmp(mb_strtolower($lang), 'de') == 0 ? 'Variabel-Aufschlag' : 'Variable-Spread';
         }
 
-        foreach ($orders as $key => $data) {
-            if (empty($data) || empty($data['id'])) {
-                continue;
-            }
-
-            /**
-             * @var \Shopware\Models\Order\Order $order
-             */
-            $order = $this->getOrderRepository()->find($data['id']);
-            if (!$order) {
-                continue;
-            }
-
-            $builderListing = $this->getCrefoOrdersRepository()->getCrefoOrderListingQueryBuilder();
-            $builderListing->andWhere('ol.orderId = ?1');
-            $builderListing->setParameter(1, $data['id']);
-            $arrayOrderListing = $builderListing->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-            /**
-             * @var OrderListing|null $orderListing
-             */
-            $orderListing = null;
-            if (!is_null($arrayOrderListing)) {
-                $orderListing = $this->getCrefoOrdersRepository()->findCrefoObject(OrderListing::class,
-                    $arrayOrderListing['id']);
-            }
-
-
-            switch ($actionCollection) {
-                case CollectionOrderActions::CREATE:
-                    if (isset($data['collectionId']) || !is_null($orderListing) || $order->getCurrency() !== 'EUR') {
-                        continue;
-                    } else {
-                        $orderListing = $this->createProposal($order);
-                    }
-                    break;
-                case CollectionOrderActions::SEND:
-                    if (!isset($data['collectionId'])
-                        || is_null($orderListing)
-                        || (!is_null($orderListing) && $orderListing->getCrefoOrderId()->getCrefoOrderType() === CrefoOrderTypes::Document)
-                        || (!is_null($orderListing) && $orderListing->getCrefoOrderId()->getProposalStatus() !== ProposalStatus::ReadyToSend)
-                    ) {
-                        continue;
-                    } else {
-                        $orderListing = $this->sendCrefoProposalFromOrder($orderListing, $successful, $errors);
-                    }
-                    break;
-                case CollectionOrderActions::DELETE:
-                    if (is_null($orderListing)) {
-                        continue;
-                    }
-                    $orderListing = $this->deleteCrefoProposalFromOrder($orderListing);
-                    break;
-                default:
-                    continue;
-            }
-
-            if (!is_null($orderListing)) {
-                $data['crefoOrderListing'] = $shopwareModels->toArray($orderListing);
-                /**
-                 * @var CrefoOrderProposal $proposalOrder
-                 */
-                $proposalOrder = $orderListing->getCrefoOrderId();
-                $data['crefoOrderListing']['crefoOrderProposal'] = $shopwareModels->toArray($proposalOrder);
-                $data['collectionId'] = $orderListing->getId();
-            } else {
-                $data['crefoOrderListing'] = [];
-                $data['collectionId'] = null;
-            }
-
-            if (!is_null($data['solvencyId'])) {
-                $reportBuilder = $this->getReportResultsRepository()->getCompanyReportResultsQueryBuilder();
-                $reportBuilder->andWhere('crefo_rr.id = ?1');
-                $reportBuilder->setParameter(1, $data['solvencyId']);
-                $reportResultArray = $reportBuilder->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-                if (is_null($reportResultArray)) {
-                    $reportBuilder = $this->getReportResultsRepository()->getPrivatePersonReportResultsQueryBuilder();
-                    $reportBuilder->andWhere('pprr.id = ?1');
-                    $reportBuilder->setParameter(1, $data['solvencyId']);
-                    $reportResultPrivatePerson = $reportBuilder->getQuery()->getOneOrNullResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-                    if (!is_null($reportResultPrivatePerson)) {
-                        $reportResultPrivatePerson['privatePersonResult'] = $this->renderBonimaPrivatePersonText($reportResultPrivatePerson);
-                        unset($reportResultPrivatePerson['addressValidationResult']);
-                        unset($reportResultPrivatePerson['identificationResult']);
-                        unset($reportResultPrivatePerson['scoreType']);
-                        unset($reportResultPrivatePerson['scoreValue']);
-                    }
-                    $data['crefoReportResults'] = $reportResultPrivatePerson;
-                } else {
-                    $data['crefoReportResults'] = $reportResultArray;
-                }
-            }
-
-            //return the modified data array.
-            $orders[$key] = $data;
-        }
-
-        $this->View()->assign([
-            'success' => true,
-            'data' => $orders,
-            'errors' => $errors
-        ]);
-    }
-
-    /**
-     * @param OrderListing $orderListing
-     * @return OrderListing|null
-     */
-    public function deleteCrefoProposalFromOrder($orderListing)
-    {
-        /**
-         * @var \Shopware\Components\Model\ModelManager $shopwareModels
-         */
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal $proposal
-         */
-        $proposal = $orderListing->getCrefoOrderId();
-
-        if ($proposal->getCrefoOrderType() === CrefoOrderTypes::Document) {
-            return $orderListing;
-        }
-        try {
-            $shopwareModels->remove($proposal);
-            $shopwareModels->remove($orderListing);
-            $shopwareModels->flush();
-        } catch (Exception $e) {
-            $this->crefoLogger->log(CrefoLogger::ERROR, "==deleteCrefoProposalFromOrder==", [$e->getMessage()]);
-            return $orderListing;
-        }
-        return null;
-    }
-
-    /**
-     * @param OrderListing $orderListing
-     * @param boolean $successful
-     * @param array|null $errors
-     * @return OrderListing
-     */
-    public function sendCrefoProposalFromOrder($orderListing, &$successful = false, &$errors = null)
-    {
-        /**
-         * @var \Shopware\Components\Model\ModelManager $shopwareModels
-         */
-        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
-        /**
-         * @var Enlight_Components_Snippet_Namespace $snippets
-         */
-        $snippets = CrefoCrossCuttingComponent::getShopwareInstance()->Snippets()->getNamespace('backend/creditreform/translation');
-        $generalErrorXML = '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/validation/generalError') . '</Error>';
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoOrders\CrefoOrderProposal $proposal
-         */
-        $proposal = $orderListing->getCrefoOrderId();
-        /**
-         * @var \Shopware\Models\Order\Order $order
-         */
-        $order = $orderListing->getOrderId();
-        /**
-         * @var \Shopware\Models\Order\Billing $billing
-         */
-        $billing = $shopwareModels->find('Shopware\Models\Order\Billing', $order->getBilling());
-        /**
-         * @var \Shopware\Models\Country\Country $country
-         */
-        $country = $shopwareModels->find('Shopware\Models\Country\Country', $billing->getCountry());
-        /**
-         * @var null|\CrefoShopwarePlugIn\Components\API\Request\CollectionOrderRequest $collectionOrderRequest
-         */
-        $collectionOrderRequest = null;
-        $response = null;
-        try {
-            $collectionOrderRequest = $this->fillOrderRequest($proposal, $order, $billing, $country);
-            $result = $collectionOrderRequest->sendOrder();
-            $collectionOrderRequest->getCrefoParser()->setRawResponse($result);
-            CrefoCrossCuttingComponent::saveCrefoLogs($collectionOrderRequest->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
-            $successful = true;
-        } catch (\SoapFault $fault) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==sendCrefoProposalFromOrder>>SoapFault " . date(CrefoCrossCuttingComponent::DATE_FORMAT) . "==",
-                (array)$fault);
-            $result = $fault;
-            $collectionOrderRequest->getCrefoParser()->setRawResponse($result);
-            CrefoCrossCuttingComponent::saveCrefoLogs($collectionOrderRequest->handleSoapResponse(CrefoCrossCuttingComponent::DATE_FORMAT));
-            $errors[$order->getId()] = $collectionOrderRequest->getCrefoParser()->getSoapErrors();
-            $successful = false;
-            $response = $collectionOrderRequest->getLastSoapCallResponse();
-        } catch (\CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR,
-                "==sendCrefoProposalFromOrder>>CrefoCommunicationException " . date(CrefoCrossCuttingComponent::DATE_FORMAT) . "==",
-                (array)$e);
-            $result = new \CrefoShopwarePlugIn\Components\API\Exceptions\CrefoCommunicationException($snippets->get('crefo/messages/error_in_communication'),
-                $e->getCode());
-            $collectionOrderRequest->getCrefoParser()->setRawResponse($result);
-            $xmlText = '<?xml version="1.0" encoding="UTF-8"?><Error>' . $snippets->get('crefo/messages/error_in_communication') . '</Error>';
-            CrefoCrossCuttingComponent::saveUnsuccessfulRequestLog($collectionOrderRequest, $xmlText,
-                CrefoCrossCuttingComponent::ERROR);
-            $errors[$order->getId()] = $collectionOrderRequest->getCrefoParser()->getSoapErrors();
-            $successful = false;
-            $response = $xmlText;
-        } catch (\Exception $e) {
-            $this->getCrefoLogger()->log(CrefoLogger::ERROR, "==sendCrefoProposalFromOrder>>Error==", (array)$e);
-            if (is_null($collectionOrderRequest)) {
-                $tempCollectionOrderRequest = CrefoCrossCuttingComponent::getShopwareInstance()->Container()->get('creditreform.collection_order_request');
-            } else {
-                $tempCollectionOrderRequest = $collectionOrderRequest;
-            }
-            $tempCollectionOrderRequest->getCrefoParser()->setRawResponse($e);
-            $dateProcessEnd = new \DateTime('now');
-            CrefoCrossCuttingComponent::saveCrefoLogs(
-                [
-                    'log_status' => \CrefoShopwarePlugIn\Components\Core\Enums\LogStatusType::NOT_SAVED,
-                    'ts_response' => $dateProcessEnd->format(CrefoCrossCuttingComponent::DATE_FORMAT),
-                    'tsProcessEnd' => $dateProcessEnd->format(CrefoCrossCuttingComponent::DATE_FORMAT),
-                    'requestXML' => $generalErrorXML,
-                    'requestXMLDescription' => 'Error',
-                    'responseXML' => $generalErrorXML,
-                    'responseXMLDescription' => 'Error'
-                ]
-            );
-            $tempError = $tempCollectionOrderRequest->getCrefoParser()->getSoapErrors();
-            empty($tempError) ?: $errors[$order->getId()] = $tempError;
-            $successful = false;
-            $response = $generalErrorXML;
-        } finally {
-            if ($successful) {
-                /**
-                 * @var CrefoOrders $crefoOrders
-                 */
-                $crefoOrders = $this->saveCrefoOrder($collectionOrderRequest, $proposal);
-                $shopwareModels->persist($crefoOrders);
-                $shopwareModels->flush();
-
-                $orderListing->setCrefoOrderId($crefoOrders);
-                $shopwareModels->persist($orderListing);
-                $shopwareModels->remove($proposal);
-                $shopwareModels->flush();
-            } else {
-                $proposal->setProposalStatus(ProposalStatus::Error);
-                if(is_null($response)){
-                    $response = $generalErrorXML;
-                }
-                $proposal->setErrorXML($response);
-                $shopwareModels->persist($proposal);
-                $shopwareModels->flush();
-            }
-            return $orderListing;
-        }
-    }
-
-    /**
-     *
-     */
-    public function loadListAction()
-    {
-        $filters = [['property' => 'status.id', 'expression' => '!=', 'value' => '-1']];
-        $orderStatus = $this->getOrderRepository()->getOrderStatusQuery($filters)->getArrayResult();
-        $paymentStatus = $this->getOrderRepository()->getPaymentStatusQuery()->getArrayResult();
-        $positionStatus = $this->getOrderRepository()->getDetailStatusQuery()->getArrayResult();
-        $crefoOrderListing = $this->getCrefoOrdersRepository()->getCrefoOrderListingQuery()->getArrayResult();
-        $crefoReportResults = $this->getReportResultsRepository()->getCompanyReportResultsQuery()->getArrayResult();
-
-        $this->View()->assign([
-            'success' => true,
-            'data' => [
-                'orderStatus' => $orderStatus,
-                'paymentStatus' => $paymentStatus,
-                'positionStatus' => $positionStatus,
-                'crefoOrderListing' => $crefoOrderListing,
-                'crefoReportResults' => $crefoReportResults
-            ]
-        ]);
+        return strcmp(mb_strtolower($lang), 'de') == 0 ? 'Gesetzlich' : 'Legal';
     }
 
     /**
      * @param array $personReport
+     *
      * @return string
      */
     private function renderBonimaPrivatePersonText($personReport)
@@ -1359,17 +1453,7 @@ class Shopware_Controllers_Backend_CrefoOrders extends Shopware_Controllers_Back
         $text .= '<br/>';
         $text .= IdentificationResultType::getIdentificationAcronyms($personReport['identificationResult']);
         $text .= '<br/>' . $personReport['scoreValue'];
-        return $text;
-    }
 
-    /**
-     * @inheritdoc
-     */
-    public function getWhitelistedCSRFActions()
-    {
-        return [
-            'openSolvencyPdf',
-            'openXml'
-        ];
+        return $text;
     }
 }

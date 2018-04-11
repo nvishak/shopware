@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,11 +10,11 @@
  */
 //{block name="backend/crefo_configuration/store/account"}
 Ext.define('Shopware.apps.CrefoConfiguration.store.Account', {
-	extend: 'Ext.data.Store',
-	autoLoad: true,
-	autoSync : true,
-	groupField: 'useraccount',
-	pageSize: 20,
-	model : 'Shopware.apps.CrefoConfiguration.model.Account'
+    extend: 'Ext.data.Store',
+    autoLoad: false,
+    autoSync: true,
+    groupField: 'useraccount',
+    pageSize: 20,
+    model: 'Shopware.apps.CrefoConfiguration.model.Account'
 });
 //{/block}

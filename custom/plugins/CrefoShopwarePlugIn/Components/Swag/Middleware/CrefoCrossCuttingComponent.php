@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,16 +13,19 @@
 namespace CrefoShopwarePlugIn\Components\Swag\Middleware;
 
 use CrefoShopwarePlugIn\Components\Core\Enums\LogStatusType;
+use CrefoShopwarePlugIn\Components\Versions\QueryAdapter;
 use \CrefoShopwarePlugIn\CrefoShopwarePlugIn;
 use \CrefoShopwarePlugIn\Models\CrefoLogs\CrefoLogs;
 use \CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\PrivatePersonConfig;
 use \CrefoShopwarePlugIn\Components\Core\Enums\IdentificationResultType;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 
 /**
  * Class CrefoCrossCuttingComponent
  * @package CrefoShopwarePlugIn\Components\Swag\Middleware
+ * @codeCoverageIgnore
  */
-class CrefoCrossCuttingComponent
+class CrefoCrossCuttingComponent implements QueryAdapter
 {
 
     const DATE_FORMAT = 'Y-m-d\TH:i:s';
@@ -37,12 +40,20 @@ class CrefoCrossCuttingComponent
     }
 
     /**
-     * @param string $sqlQuery
+     * @param $sqlQuery
      * @param array $valuesArray
+     * @param boolean $noResult
+     * @return array|null
      */
-    public static function runQuery($sqlQuery, $valuesArray)
+    public function execQuery($sqlQuery, array $valuesArray = [], $hasResult = false)
     {
-        self::getShopwareInstance()->Db()->query($sqlQuery, $valuesArray);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==CrefoCrossCuttingComponent::execQuery==',
+            ['exec Query', 'query' => $sqlQuery, 'values' => $valuesArray]);
+        $resultQuery = self::getShopwareInstance()->Db()->query($sqlQuery, $valuesArray);
+        if($hasResult){
+            return $resultQuery->fetchAll();
+        }
+        return null;
     }
 
     /**
@@ -50,8 +61,10 @@ class CrefoCrossCuttingComponent
      */
     public static function getCreditreformPlugin()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==CrefoCrossCuttingComponent::getCreditreformPlugin==',
+            ['get plugin']);
         $kernel = self::getShopwareInstance()->Container()->get('kernel');
-        if (is_null($kernel)) {
+        if (null === $kernel) {
             return null;
         }
         return $kernel->getPlugins()['CrefoShopwarePlugIn'];
@@ -63,6 +76,8 @@ class CrefoCrossCuttingComponent
      */
     public static function saveCrefoLogs(array $logs)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==CrefoCrossCuttingComponent::saveCrefoLogs==',
+            ['save logs']);
         $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         $crefoLogs = new CrefoLogs();
         $crefoLogs->setStatusLogs($logs['log_status']);
@@ -85,10 +100,12 @@ class CrefoCrossCuttingComponent
      */
     public static function saveUnsuccessfulRequestLog($request, $xmlText, $titleError)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==CrefoCrossCuttingComponent::saveUnsuccessfulRequestLog==',
+            ['save unsuccessful logs']);
         $lastResponse = $xmlText;
         $respDesc = $titleError;
         $dateProcessEnd = new \DateTime('now');
-        if (is_null($request->getLastSoapCallRequest())) {
+        if (null === $request->getLastSoapCallRequest()) {
             $lastRequestWithoutPassword = $xmlText;
             $reqDesc = $titleError;
             $dateReport = new \DateTime($request->getHeader()->getTransmissionTimestamp());
@@ -111,34 +128,16 @@ class CrefoCrossCuttingComponent
     }
 
     /**
-     * @param \CrefoShopwarePlugIn\Models\CrefoReports\PrivatePersonReportResults $crefoResults
-     * @return bool
+     * @param \Enlight_Components_Session_Namespace $session
      */
-    public static function areScoreAndIdentificationResultSatisfied($crefoResults)
-    {
-        $satisfies = false;
-        $configId = self::getCreditreformPlugin()->getConfigurationId(PrivatePersonConfig::class);
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\PrivatePersonConfig $configPrivatePerson
-         */
-        $configPrivatePerson = self::getShopwareInstance()->Models()->find(PrivatePersonConfig::class, $configId);
-        $arrayBonimaProducts = $configPrivatePerson->getProducts();
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductsPrivatePerson $product
-         */
-        foreach ($arrayBonimaProducts as $product) {
-            $identificationKeys = array_flip(IdentificationResultType::getIdentificationKeys($product->getProductKeyWS()));
-            if (array_key_exists($crefoResults->getIdentificationResult(), $identificationKeys)
-                && $product->getIdentificationResult() === $identificationKeys[$crefoResults->getIdentificationResult()]
-                && boolval($product->isProductAvailable())
-                && !is_null($product->getProductScoreFrom())
-                && !is_null($product->getProductScoreTo())
-                && $product->getProductScoreFrom() <= $crefoResults->getScoreValue()
-                && $product->getProductScoreTo() >= $crefoResults->getScoreValue()
-            ) {
-                $satisfies = true;
-            }
-        }
-        return $satisfies;
+    public static function resetCrefoVariables($session){
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==resetCrefoVariables==', []);
+        $session->offsetUnset('sCrefoConfigs');
+        $session->offsetUnset('sCrefoCurrentConfig');
+        $session->offsetUnset('sCrefoBadResponse');
+        $session->offsetUnset('sCrefoReportResultId');
+        $session->offsetUnset('sCrefoReportType');
+        $session->offsetUnset('sCrefoCustomerBirthDate');
+        $session->offsetUnset('sCrefoCustomerConsentDeclaration');
     }
 }

@@ -13,7 +13,7 @@
 {block name='frontend_register_payment_fieldset_input_label'}
     {if $payment_mean.name == 'crefo_invoice'}
         <label for="payment_mean{$payment_mean.id}" class="is--strong">
-            {s name="frontend/shippingPayment/crefo_invoice_name" namespace="frontend/creditreform/translation"}Rechnung mit Creditreform-Bonitätsprüfung{/s}
+            {$payment_mean.description}
         </label>
     {else}
         {$smarty.block.parent}

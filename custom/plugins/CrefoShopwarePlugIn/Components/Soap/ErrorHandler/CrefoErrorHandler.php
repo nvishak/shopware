@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,20 +13,12 @@
 namespace CrefoShopwarePlugIn\Components\Soap\ErrorHandler;
 
 /**
+ * @codeCoverageIgnore
  * Class CrefoErrorHandler
  * @package CrefoShopwarePlugIn\Components\Soap\ErrorHandler
  */
 class CrefoErrorHandler
 {
-    /**
-     * Constructor
-     *
-     */
-    private function __construct()
-    {
-
-    }
-
     /**
      * @param $errno
      * @param $errstr

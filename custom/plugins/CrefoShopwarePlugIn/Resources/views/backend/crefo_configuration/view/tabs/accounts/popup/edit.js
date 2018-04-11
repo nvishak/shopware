@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/accounts/popup/edit"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
     extend: 'Enlight.app.Window',
     alias: 'widget.crefoconfig-tabs-accounts-popup-edit',
     layout: 'fit',
@@ -43,20 +43,20 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
      *
      * @return void
      */
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
 
         me.items = me.getAccountPanel();
 
-        if( me.edit === true ) {
+        if (me.edit === true) {
             me.title = me.snippets.titleEdit;
-            var acc = me.record.get( "useraccount" );
-            me.formPanel.down( "[name=useraccount]" ).setValue( acc );
+            var acc = me.record.get('useraccount');
+            me.formPanel.down('[name=useraccount]').setValue(acc);
         } else {
             me.title = me.snippets.titleNoEdit;
         }
 
-        me.addEvents( 'saveAccount', 'processChangeDefaultPasswordRequest' );
+        me.addEvents('saveAccount', 'processChangeDefaultPasswordRequest');
 
         me.dockedItems = [ {
             xtype: 'toolbar',
@@ -68,42 +68,42 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
                 cls: 'secondary',
                 scope: me,
                 handler: me.close
-            }
-                , {
-                    text: me.snippets.btnSave,
-                    action: 'save',
-                    cls: 'primary',
-                    handler: function( btn ){
-                        if( me.edit ) {
-                            me.formPanel.down( 'textfield' ).setDisabled( me.edit );
-                        }
-                        if( me.down( 'textfield[name=individualpassword]' ).getValue().toUpperCase() === 'CISSTART' && me.down( 'crefoconfig-tabs-accounts-popup-password-extension' ).isVisible() ) {
-                            me.fireEvent( 'processChangeDefaultPasswordRequest', me.record, me.formPanel, me.view, me.edit );
-                        } else {
-                            me.fireEvent( 'saveAccount', me.record, me.formPanel, me.view, me.edit );
-                        }
+            },
+            {
+                text: me.snippets.btnSave,
+                action: 'save',
+                cls: 'primary',
+                handler: function(btn) {
+                    if (me.edit) {
+                        me.formPanel.down('textfield').setDisabled(me.edit);
+                    }
+                    if (me.down('textfield[name=individualpassword]').getValue().toUpperCase() === 'CISSTART' && me.down('crefoconfig-tabs-accounts-popup-password-extension').isVisible()) {
+                        me.fireEvent('processChangeDefaultPasswordRequest', me.record, me.formPanel, me.view, me.edit);
+                    } else {
+                        me.fireEvent('saveAccount', me.record, me.formPanel, me.view, me.edit);
                     }
                 }
+            }
             ]
         } ];
 
-        // Add own vtypes to validate password fields
-        Ext.apply( Ext.form.field.VTypes, {
-            crefoPassword: function( val, field ){
+        //Add own vtypes to validate password fields
+        Ext.apply(Ext.form.field.VTypes, {
+            crefoPassword: function(val, field) {
                 var success = true;
                 var patt = /(\w)+/gi;
-                if( val.length < 6 || !patt.test( val ) ) {
+                if (val.length < 6 || !patt.test(val)) {
                     success = false;
                 }
                 return success;
             },
             crefoPasswordText: this.snippets.validation.invalidValue
-        } );
+        });
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    getAccountPanel: function(){
-        this.formPanel = Ext.create( 'Ext.form.Panel', {
+    getAccountPanel: function() {
+        this.formPanel = Ext.create('Ext.form.Panel', {
             border: false,
             layout: 'anchor',
             autoScroll: false,
@@ -115,25 +115,25 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
             items: [
                 this.getLoginFieldset()
             ]
-        } );
+        });
         return this.formPanel;
     },
-    getLoginFieldset: function(){
+    getLoginFieldset: function() {
         var me = this;
-        return Ext.create( 'Ext.form.FieldSet',
+        return Ext.create('Ext.form.FieldSet',
             {
                 defaults: {
                     labelWidth: '155px',
                     labelStyle: 'font-weight: 700; text-align: right;'
                 },
                 items: [ {
-                    // Implementiert das Column Layout
+                    //Implementiert das Column Layout
                     xtype: 'container',
                     unstyled: true,
                     layout: 'column',
                     items: [
                         {
-                            // Linke Spalte im Column Layout
+                            //Linke Spalte im Column Layout
                             xtype: 'container',
                             unstyled: true,
                             columnWidth: 0.5,
@@ -141,12 +141,12 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
                                 {
                                     xtype: 'textfield',
                                     labelWidth: '100%',
-                                    // fieldWidth: '40%',
+                                    //fieldWidth: '40%',
                                     fieldLabel: me.snippets.lblUserAcc,
                                     anchor: '100%',
                                     margin: '0 10 20 0',
                                     readOnly: me.edit,
-                                    fieldBodyCls: me.edit ? "x-item-disabled" : "",
+                                    fieldBodyCls: me.edit ? 'x-item-disabled' : '',
                                     submitValue: true,
                                     name: 'useraccount',
                                     itemId: 'useraccount',
@@ -162,7 +162,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
                             ]
                         },
                         {
-                            // Rechte Spalte im Column Layout
+                            //Rechte Spalte im Column Layout
                             xtype: 'container',
                             unstyled: true,
                             columnWidth: 0.5,
@@ -171,7 +171,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
                                     xtype: 'textfield',
                                     fieldLabel: me.snippets.lblGenPass,
                                     labelWidth: '100%',
-                                    // fieldWidth: '40%',
+                                    //fieldWidth: '40%',
                                     name: 'generalpassword',
                                     anchor: '100%',
                                     margin: '0 0 20 10',
@@ -185,7 +185,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
                                     xtype: 'textfield',
                                     fieldLabel: me.snippets.lblIndPass,
                                     labelWidth: '100%',
-                                    // fieldWidth: '40%',
+                                    //fieldWidth: '40%',
                                     name: 'individualpassword',
                                     anchor: '100%',
                                     margin: '0 0 20 10',
@@ -196,14 +196,14 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
                                     vtype: 'crefoPassword',
                                     enableKeyEvents: true,
                                     listeners: {
-                                        keyup: function( textfield, event ){
-                                            var extraFields = this.up( 'fieldset' ).down( 'crefoconfig-tabs-accounts-popup-password-extension' );
-                                            if( textfield.getValue().toUpperCase() === 'CISSTART' ) {
-                                                extraFields.setDisabled( false );
+                                        keyup: function(textfield, event) {
+                                            var extraFields = this.up('fieldset').down('crefoconfig-tabs-accounts-popup-password-extension');
+                                            if (textfield.getValue().toUpperCase() === 'CISSTART') {
+                                                extraFields.setDisabled(false);
                                                 extraFields.show();
                                             } else {
                                                 extraFields.hide();
-                                                extraFields.setDisabled( true );
+                                                extraFields.setDisabled(true);
                                             }
                                         }
                                     }
@@ -212,16 +212,15 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.Edit', {
                         }
                     ]
                 },
-                    {
-                        xtype: 'crefoconfig-tabs-accounts-popup-password-extension',
-                        addon: true,
-                        hidden: true,
-                        disabled: true
-                    }
+                {
+                    xtype: 'crefoconfig-tabs-accounts-popup-password-extension',
+                    addon: true,
+                    hidden: true,
+                    disabled: true
+                }
                 ]
             }
         );
-
     }
-} );
+});
 //{/block}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/accounts/popup/password_extension"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.PasswordExtension', {
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.PasswordExtension', {
     extend: 'Ext.container.Container',
     alias: 'widget.crefoconfig-tabs-accounts-popup-password-extension',
     unstyled: true,
@@ -30,14 +30,14 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.PasswordE
      *
      * @return void
      */
-    initComponent: function(){
+    initComponent: function() {
         var me = this, components = [];
-        if( me.addon ) {
-            components.push( me.createDescriptionContainer( "", 1 ) );
-            components.push( me.createDescriptionContainer( me.snippets.extraPassText, 1 ) );
+        if (me.addon) {
+            components.push(me.createDescriptionContainer('', 1));
+            components.push(me.createDescriptionContainer(me.snippets.extraPassText, 1));
         }
-        components.push( me.createDescriptionContainer( "", 0.5 ) );
-        components.push( {
+        components.push(me.createDescriptionContainer('', 0.5));
+        components.push({
             xtype: 'container',
             unstyled: true,
             columnWidth: 0.5,
@@ -69,42 +69,42 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.accounts.popup.PasswordE
                     vtype: 'passwordRepeat'
                 }
             ]
-        } );
+        });
 
         me.items = components;
 
-        // Add own vtypes to validate password fields
-        Ext.apply( Ext.form.field.VTypes, {
-            passwordChange: function( val, field ){
-                if( field.up( 'crefoconfig-tabs-accounts-popup-password-extension' ).isVisible() === false ) {
+        //Add own vtypes to validate password fields
+        Ext.apply(Ext.form.field.VTypes, {
+            passwordChange: function(val, field) {
+                if (field.up('crefoconfig-tabs-accounts-popup-password-extension').isVisible() === false) {
                     return true;
                 }
                 var success = true;
-                if( val === undefined || val === '' ) success = false;
-                if( val.length < 6 ) success = false;
+                if (val === undefined || val === '') success = false;
+                if (val.length < 6) success = false;
                 return success;
             },
             passwordChangeText: this.snippets.validation.invalidValue,
-            passwordRepeat: function( val, field ){
-                if( field.up( 'crefoconfig-tabs-accounts-popup-password-extension' ).isVisible() === false ) {
+            passwordRepeat: function(val, field) {
+                if (field.up('crefoconfig-tabs-accounts-popup-password-extension').isVisible() === false) {
                     return true;
                 }
-                var originalField = field.up( 'window' ).down( '[name=newindividualpassword]' );
+                var originalField = field.up('window').down('[name=newindividualpassword]');
                 var success = true;
-                if( val != originalField.getValue() ) success = false;
+                if (val != originalField.getValue()) success = false;
                 return success;
             },
             passwordRepeatText: this.snippets.validation.invalidValue
-        } );
-        me.callParent( arguments );
+        });
+        me.callParent(arguments);
     },
-    createDescriptionContainer: function( html, size ){
-        return Ext.create( 'Ext.container.Container', {
+    createDescriptionContainer: function(html, size) {
+        return Ext.create('Ext.container.Container', {
             unstyled: true,
             columnWidth: size,
             style: 'color: #999; font-style: italic; margin: 0 0 15px 0;',
             html: html
-        } );
+        });
     }
-} );
+});
 //{/block}

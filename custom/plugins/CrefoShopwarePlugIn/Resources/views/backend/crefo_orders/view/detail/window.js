@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/view/detail/window"}
-Ext.define( 'Shopware.apps.CrefoOrders.view.detail.Window', {
+Ext.define('Shopware.apps.CrefoOrders.view.detail.Window', {
     extend: 'Enlight.app.Window',
     alias: 'widget.crefo-orders-view-detail-window',
     cls: Ext.baseCSSPrefix + 'crefo-orders-view-detail-window',
@@ -45,46 +45,46 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.Window', {
      *
      * @return void
      */
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
         me.inkassoConfig = me.list.inkassoConfig;
-        me.inkassoConfig.reload();
-        if( me.editOrder ) {
-            var status = me.crefoProposalRecord.get( 'proposalStatus' );
-            if( parseInt( status ) === 0 ) {
+        if (me.editOrder) {
+            var status = me.crefoProposalRecord.get('proposalStatus');
+            if (parseInt(status) === 0) {
                 me.title = me.snippets.titleErrorProposal;
             } else {
                 me.title = me.snippets.titleProposal;
             }
-            me.inkassoValuesStore = Ext.create( 'Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues' ).load();
         } else {
             me.title = me.snippets.titleDoc;
         }
         me.items = [ me.createDetailPanel() ];
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    createDetailPanel: function(){
+    createDetailPanel: function() {
         var me = this,
             buttonsDetail,
             content;
-        if( me.editOrder ) {
+        if (me.editOrder) {
             buttonsDetail = me.createProposalButtons();
-            content = Ext.create( 'Shopware.apps.CrefoOrders.view.detail.ContainerProposal', {
-                inkassoValuesStore: me.inkassoValuesStore,
-                inkassoCreditorsStore: me.inkassoCreditorsStore,
+
+            content = Ext.create('Shopware.apps.CrefoOrders.view.detail.ContainerProposal', {
+                inkassoValuesStore: me.list.collectionValues,
+                inkassoCreditorsStore: me.list.collectionCreditors,
                 displayErrors: me.displayErrors,
                 inkassoConfig: me.inkassoConfig,
                 crefoProposalRecord: me.crefoProposalRecord,
                 listRecord: me.listRecord
-            } );
+            });
         } else {
             buttonsDetail = me.createDocumentOrderButtons();
-            content = Ext.create( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument', {
+            content = Ext.create('Shopware.apps.CrefoOrders.view.detail.ContainerDocument', {
                 record: me.crefoOrdersRecord
-            } );
+            });
         }
-        this.formPanel = Ext.create( 'Ext.form.Panel', {
+        me.formPanel = Ext.create('Ext.form.Panel', {
             alias: 'widget.crefo-orders-view-detail-panel',
+            itemId: 'orderDetailPane',
             border: false,
             layout: 'anchor',
             autoScroll: true,
@@ -98,86 +98,86 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.Window', {
                 content
             ],
             buttons: buttonsDetail
-        } );
-        this.formPanel.getForm().getFields().each( function( f ){
-            if( f.xtype === "displayfield" ) {
+        });
+        me.formPanel.getForm().getFields().each(function(f) {
+            if (f.xtype === 'displayfield') {
                 f.baseBodyCls = Ext.baseCSSPrefix + 'form-item-body crefo-remove-from-background';
             }
-        } );
-        return this.formPanel;
+        });
+        return me.formPanel;
     },
-    createProposalButtons: function(){
+    createProposalButtons: function() {
         var me = this,
             buttons = [];
 
-        var saveButton = Ext.create( 'Ext.button.Button', {
+        var saveButton = Ext.create('Ext.button.Button', {
             text: me.snippets.btn.save,
             action: 'save-proposal',
             cls: 'primary',
-            handler: function(){
-                me.fireEvent( 'saveProposal', me.down( 'panel' ), me.crefoProposalRecord, me.list );
+            handler: function() {
+                me.fireEvent('saveProposal', me.down('panel'), me.crefoProposalRecord, me.list);
             }
-        } );
-        buttons.push( saveButton );
+        });
+        buttons.push(saveButton);
 
-        var cancelButton = Ext.create( 'Ext.button.Button', {
+        var cancelButton = Ext.create('Ext.button.Button', {
             text: me.snippets.btn.cancel,
             action: 'cancel-proposal',
             cls: 'secondary',
-            handler: function(){
+            handler: function() {
                 me.close();
             }
-        } );
-        buttons.push( cancelButton );
+        });
+        buttons.push(cancelButton);
 
-        var sendButton = Ext.create( 'Ext.button.Button', {
+        var sendButton = Ext.create('Ext.button.Button', {
             text: me.snippets.btn.send,
             action: 'send-proposal',
-            disabled: me.inkassoConfig.first() === Ext.undefined,
+            disabled: Ext.isEmpty(me.inkassoConfig.first()),
             cls: 'primary',
-            handler: function(){
-                me.fireEvent( 'sendProposal', me.down( 'panel' ), me.crefoProposalRecord, me.list )
+            handler: function() {
+                me.fireEvent('sendProposal', me.down('panel'), me.crefoProposalRecord, me.list);
             }
-        } );
-        buttons.push( sendButton );
+        });
+        buttons.push(sendButton);
 
-        var deleteButton = Ext.create( 'Ext.button.Button', {
+        var deleteButton = Ext.create('Ext.button.Button', {
             text: me.snippets.btn.delete,
             action: 'delete-proposal',
             cls: 'secondary',
-            handler: function(){
-                me.fireEvent( 'deleteProposal', me.down( 'panel' ), me.crefoProposalRecord, me.list )
+            handler: function() {
+                me.fireEvent('deleteProposal', me.down('panel'), me.crefoProposalRecord, me.list);
             }
-        } );
-        buttons.push( deleteButton );
+        });
+        buttons.push(deleteButton);
 
         return buttons;
     },
-    createDocumentOrderButtons: function(){
+    createDocumentOrderButtons: function() {
         var me = this,
             buttons = [];
 
-        var cancelButton = Ext.create( 'Ext.button.Button', {
+        var cancelButton = Ext.create('Ext.button.Button', {
             text: me.snippets.btn.cancel,
             action: 'cancel-proposal',
             cls: 'secondary',
-            handler: function(){
+            handler: function() {
                 me.close();
             }
-        } );
-        buttons.push( cancelButton );
+        });
+        buttons.push(cancelButton);
 
-        var printButton = Ext.create( 'Ext.button.Button', {
+        var printButton = Ext.create('Ext.button.Button', {
             text: me.snippets.btn.print,
             action: 'print-order',
             cls: 'primary',
-            handler: function(){
-                me.fireEvent( 'printOrder', me.down( 'panel' ), me.crefoOrdersRecord )
+            handler: function() {
+                me.fireEvent('printOrder', me.down('panel'), me.crefoOrdersRecord);
             }
-        } );
-        buttons.push( printButton );
+        });
+        buttons.push(printButton);
 
         return buttons;
     }
-} );
+});
 //{/block}

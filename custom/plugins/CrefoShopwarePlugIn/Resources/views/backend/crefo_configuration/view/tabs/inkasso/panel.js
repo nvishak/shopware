@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,11 +10,12 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/inkasso/panel"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Panel', {
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Panel', {
     extend: 'Ext.form.Panel',
     alias: 'widget.crefoconfig-tabs-inkasso-panel',
     bodyPadding: 10,
     autoScroll: true,
+    id: 'collectionConfigPanel',
     snippets: {
         buttons: {
             save: '{s name=crefo/buttons/save}Save{/s}'
@@ -22,23 +23,29 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Panel', {
     },
     defaults: {
         dateFields: 0,
-        customerReferenceId: 1
+        customerReferenceId: 1,
+        filterValues: {
+            collectionOrderType: 'CCORTY-1',
+            turnoverType: 'CCTOTY-1',
+            receivableReason: 'CCRCRS-11'
+        }
     },
-    initComponent: function(){
+    config: {
+        noService: false
+    },
+    initComponent: function() {
         var me = this;
-        me.inkassoStore = Ext.create( 'Shopware.apps.CrefoConfiguration.store.Inkasso' );
-        me.inkassoValuesStore = Ext.create( 'Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues' );
-        me.inkassoCreditorsStore = Ext.create( 'Shopware.apps.CrefoConfiguration.store.inkasso.InkassoCreditors' );
+        me.inkassoStore = Ext.create('Shopware.apps.CrefoConfiguration.store.Inkasso');
+        me.collectionOrderTypeStore = Ext.create('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues');
+        me.collectionTurnoverTypeStore = Ext.create('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues');
+        me.collectionReceivableReasonsStore = Ext.create('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoValues');
+        me.inkassoCreditorsStore = Ext.create('Shopware.apps.CrefoConfiguration.store.inkasso.InkassoCreditors');
         me.inkassoStore.load();
-        me.inkassoValuesStore.load();
-        me.inkassoCreditorsStore.load();
+
         me.items = [
-            Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader', {
+            Ext.create('Shopware.apps.CrefoConfiguration.view.tabs.inkasso.ContainerHeader', {
                 parentPanel: me
-            } ),
-            Ext.create( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Container', {
-                parentPanel: me
-            } )
+            })
         ];
 
         me.dockedItems = [ {
@@ -49,9 +56,9 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Panel', {
             items: me.getButtons()
         } ];
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    getButtons: function(){
+    getButtons: function() {
         var me = this;
 
         return [ '->', {
@@ -60,12 +67,12 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.inkasso.Panel', {
             name: 'crefoConfig-inkasso-saveBtn',
             action: 'save-inkasso',
             cls: 'primary',
-            handler: function( event ){
-                me.fireEvent( 'saveInkasso', me );
+            handler: function() {
+                me.fireEvent('saveInkasso');
             }
         }
         ];
     }
 
-} );
-// {/block}
+});
+//{/block}

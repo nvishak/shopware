@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_configuration/view/tabs/general/popup/error_counter"}
-Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.general.popup.ErrorCounter', {
+Ext.define('Shopware.apps.CrefoConfiguration.view.tabs.general.popup.ErrorCounter', {
     extend: 'Enlight.app.Window',
     alias: 'widget.crefoconfig-tabs-general-popup-error-counter',
     layout: 'fit',
@@ -19,7 +19,7 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.general.popup.ErrorCount
     maximizable: false,
     minimizable: false,
     width: '450px',
-    height: '200px',
+    height: '185px',
     resizable: false,
     modal: true,
     snippets: {
@@ -37,21 +37,21 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.general.popup.ErrorCount
      *
      * @return void
      */
-    initComponent: function(){
+    initComponent: function() {
         var me = this;
 
         me.title = me.snippets.title;
 
         me.items = me.getStatusPanel();
 
-        me.callParent( arguments );
+        me.callParent(arguments);
     },
-    getStatusPanel: function(){
-        this.formPanel = Ext.create( 'Ext.form.Panel', {
+    getStatusPanel: function() {
+        this.formPanel = Ext.create('Ext.form.Panel', {
             border: false,
             layout: 'anchor',
             autoScroll: false,
-            bodyPadding: 10,
+            bodyPadding: 20,
             defaults: {
                 labelWidth: '155',
                 labelStyle: 'font-weight: 700; text-align: left;'
@@ -59,20 +59,19 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.general.popup.ErrorCount
             items: [
                 this.getStatusFieldset()
             ]
-        } );
+        });
         return this.formPanel;
     },
-    getStatusFieldset: function(){
+    getStatusFieldset: function() {
         var me = this;
-        return Ext.create( 'Ext.form.FieldSet',
+        return Ext.create('Ext.form.FieldSet',
             {
                 defaults: {
                     labelWidth: '155',
-                    labelStyle: 'font-weight: 700; text-align: left;',
+                    labelStyle: 'font-weight: 700; text-align: left; margin-top: 0px;',
                     height: '100%'
                 },
                 items: [
-                    me.createDescriptionContainer( me.snippets.infoText ),
                     {
                         xtype: 'displayfield',
                         fieldLabel: me.snippets.labels.numReq,
@@ -90,28 +89,16 @@ Ext.define( 'Shopware.apps.CrefoConfiguration.view.tabs.general.popup.ErrorCount
                         fieldLabel: me.snippets.labels.errTolerance,
                         name: 'errTolerance',
                         value: me.record.errTolerance,
-                        renderer: function( value, metaData, record ){
-                            if( value === Ext.undefined ) {
+                        renderer: function(value, metaData, record) {
+                            if (Ext.isEmpty(value)) {
                                 value = 0;
                             }
-                            return Ext.util.Format.currency( value, '%', 1, true );
+                            return Ext.util.Format.currency(value, '%', 1, true);
                         }
                     }
                 ]
             }
         );
-
-    },
-    createDescriptionContainer: function( html ){
-        return Ext
-            .create(
-                'Ext.container.Container',
-                {
-                    flex: 1,
-                    width: '100%',
-                    padding: '10 5 0 0',
-                    html: html
-                } );
     }
-} );
+});
 //{/block}

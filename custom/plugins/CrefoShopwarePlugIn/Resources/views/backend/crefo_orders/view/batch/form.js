@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,8 +12,8 @@
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/view/batch/form"}
 Ext.define('Shopware.apps.CrefoOrders.view.batch.Form', {
-    extend:'Ext.form.Panel',
-    alias:'widget.crefo-batch-settings-panel',
+    extend: 'Ext.form.Panel',
+    alias: 'widget.crefo-batch-settings-panel',
     cls: Ext.baseCSSPrefix + 'crefo-batch-settings-panel',
     autoScroll: true,
     layout: {
@@ -21,11 +21,11 @@ Ext.define('Shopware.apps.CrefoOrders.view.batch.Form', {
         type: 'vbox'
     },
     bodyPadding: 10,
-    snippets:{
-        settings:{
-            title:'{s name="crefoorders/view/batch/form/settings/title"}Einstellungen zur Generierung{/s}',
-            inkassoLabel:'{s name="crefoorders/view/batch/form/settings/label"}Inkasso{/s}',
-            inkassoValues:{
+    snippets: {
+        settings: {
+            title: '{s name="crefoorders/view/batch/form/settings/title"}Einstellungen zur Generierung{/s}',
+            inkassoLabel: '{s name="crefoorders/view/batch/form/settings/label"}Inkasso{/s}',
+            inkassoValues: {
                 create: '{s name="crefoorders/view/batch/form/settings/values/create"}Inkasso-Vorschlag erzeugen{/s}',
                 send: '{s name="crefoorders/view/batch/form/settings/values/send"}Inkasso-Auftrag senden{/s}',
                 delete: '{s name="crefoorders/view/batch/form/settings/values/delete"}Inkasso-Vorschlag löschen{/s}'
@@ -35,7 +35,7 @@ Ext.define('Shopware.apps.CrefoOrders.view.batch.Form', {
         gridTitle: '{s name="crefoorders/view/batch/form/grid/title"}Ausgewählte Bestellungen{/s}'
     },
 
-    initComponent:function () {
+    initComponent: function () {
         var me = this;
 
         me.registerEvents();
@@ -81,7 +81,7 @@ Ext.define('Shopware.apps.CrefoOrders.view.batch.Form', {
                     triggerAction: 'all',
                     fieldLabel: me.snippets.settings.inkassoLabel,
                     store: new Ext.data.SimpleStore({
-                        fields:['value', 'description'],
+                        fields: ['value', 'description'],
                         data: [
                             [1, me.snippets.settings.inkassoValues.create],
                             [2, me.snippets.settings.inkassoValues.send],
@@ -98,7 +98,7 @@ Ext.define('Shopware.apps.CrefoOrders.view.batch.Form', {
                     cls: 'primary',
                     text: me.snippets.settings.generate,
                     handler: function() {
-                        me.fireEvent('processChanges', me)
+                        me.fireEvent('processChanges', me);
                     }
                 }
             ]

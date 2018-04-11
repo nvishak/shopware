@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,11 +13,11 @@
 namespace CrefoShopwarePlugIn\Models\CrefoErrorRequests;
 
 use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping as ORM;
 use \Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass="Repository")
+ * @ORM\Entity
  * @ORM\Table(name="crefo_error_requests")
  */
 class ErrorRequests extends ModelEntity
@@ -105,5 +105,10 @@ class ErrorRequests extends ModelEntity
     public function addFailedRequest()
     {
         $this->setNumberOfFailedRequests($this->getNumberOfFailedRequests() + 1);
+    }
+
+    public function resetCounters(){
+        $this->setNumberOfFailedRequests(0);
+        $this->setNumberOfRequests(0);
     }
 }

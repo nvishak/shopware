@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -11,7 +11,7 @@
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/controller/filter"}
 Ext.define('Shopware.apps.CrefoOrders.controller.Filter', {
-    extend:'Shopware.apps.Order.controller.Filter',
+    extend: 'Shopware.apps.Order.controller.Filter',
 
     /**
      * A template method that is called when your application boots.
@@ -20,7 +20,7 @@ Ext.define('Shopware.apps.CrefoOrders.controller.Filter', {
      *
      * @return void
      */
-    init:function () {
+    init: function () {
         var me = this;
         me.callParent(arguments);
         me.control({

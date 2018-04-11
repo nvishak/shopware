@@ -32,7 +32,7 @@
                 </div>
             {/block}
         {/if}
-        {if !$sIsCompany}
+        {if $sCrefoBirthDateFieldVisibility}
             {*Birthdate Textfield*}
             {block name='frontend_crefo_invoice_birthdate_field'}
                 <div id="crefo--birthdate-div">
@@ -51,6 +51,7 @@
                            name="sCrefoBirthDate"
                            value="{$sCrefoBirthDate|escape}"
                            class="register-field is--required {if $sCrefoBirthdateError || $sNoCrefoBirthDate} has--error{/if}"
+                           {if $sCrefoHasSavedBirthDate}readonly{/if}
                     />
                     <div id="crefo_birth_date--message" class="register--error-msg is--hidden">
                         <p>{s namespace='backend/creditreform/translation' name='crefoorders/view/list/col/collection/answers/doc/edit'}Bearbeitung erforderlich{/s}</p>

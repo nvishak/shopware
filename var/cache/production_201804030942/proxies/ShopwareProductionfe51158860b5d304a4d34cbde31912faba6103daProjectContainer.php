@@ -40,6 +40,38 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
             'config_factory' => 'getConfigFactoryService',
             'config_writer' => 'getConfigWriterService',
             'corelogger' => 'getCoreloggerService',
+            'creditreform.bonima_report_body' => 'getCreditreform_BonimaReportBodyService',
+            'creditreform.bonima_report_mapper' => 'getCreditreform_BonimaReportMapperService',
+            'creditreform.bonima_report_parser' => 'getCreditreform_BonimaReportParserService',
+            'creditreform.bonima_report_request' => 'getCreditreform_BonimaReportRequestService',
+            'creditreform.bonima_report_results' => 'getCreditreform_BonimaReportResultsService',
+            'creditreform.change_password_request' => 'getCreditreform_ChangePasswordRequestService',
+            'creditreform.collection_config_parser' => 'getCreditreform_CollectionConfigParserService',
+            'creditreform.collection_order_body' => 'getCreditreform_CollectionOrderBodyService',
+            'creditreform.collection_order_mapper' => 'getCreditreform_CollectionOrderMapperService',
+            'creditreform.collection_order_parser' => 'getCreditreform_CollectionOrderParserService',
+            'creditreform.collection_order_request' => 'getCreditreform_CollectionOrderRequestService',
+            'creditreform.config_header_request' => 'getCreditreform_ConfigHeaderRequestService',
+            'creditreform.crefo_invoice_service' => 'getCreditreform_CrefoInvoiceServiceService',
+            'creditreform.identification_report_body' => 'getCreditreform_IdentificationReportBodyService',
+            'creditreform.identification_report_mapper' => 'getCreditreform_IdentificationReportMapperService',
+            'creditreform.identification_report_parser' => 'getCreditreform_IdentificationReportParserService',
+            'creditreform.identification_report_request' => 'getCreditreform_IdentificationReportRequestService',
+            'creditreform.identification_report_results' => 'getCreditreform_IdentificationReportResultsService',
+            'creditreform.logger' => 'getCreditreform_LoggerService',
+            'creditreform.logon_request' => 'getCreditreform_LogonRequestService',
+            'creditreform.mapper' => 'getCreditreform_MapperService',
+            'creditreform.password_encoder' => 'getCreditreform_PasswordEncoderService',
+            'creditreform.report_companies_config_parser' => 'getCreditreform_ReportCompaniesConfigParserService',
+            'creditreform.report_private_person_parser' => 'getCreditreform_ReportPrivatePersonParserService',
+            'creditreform.soap_client' => 'getCreditreform_SoapClientService',
+            'creditreform.soap_parser' => 'getCreditreform_SoapParserService',
+            'creditreform.subscriber.assets' => 'getCreditreform_Subscriber_AssetsService',
+            'creditreform.subscriber.frontend_account' => 'getCreditreform_Subscriber_FrontendAccountService',
+            'creditreform.subscriber.frontend_checkout' => 'getCreditreform_Subscriber_FrontendCheckoutService',
+            'creditreform.validator' => 'getCreditreform_ValidatorService',
+            'creditreform.xml_manager' => 'getCreditreform_XmlManagerService',
+            'creditreform.zip_manager' => 'getCreditreform_ZipManagerService',
             'cron' => 'getCronService',
             'cron_adapter' => 'getCronAdapterService',
             'currency' => 'getCurrencyService',
@@ -123,6 +155,7 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
             'modelconfig' => 'getModelconfigService',
             'models' => 'getModelsService',
             'models_metadata_cache' => 'getModelsMetadataCacheService',
+            'modules' => 'getModulesService',
             'monolog.formatter.wildfire' => 'getMonolog_Formatter_WildfireService',
             'monolog.handler.chromephp' => 'getMonolog_Handler_ChromephpService',
             'monolog.handler.firephp' => 'getMonolog_Handler_FirephpService',
@@ -596,6 +629,33 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
             'sitemapxml.repository' => 'getSitemapxml_RepositoryService',
             'snippet_resource' => 'getSnippetResourceService',
             'snippets' => 'getSnippetsService',
+            'swag_backend_order.customer_repository' => 'getSwagBackendOrder_CustomerRepositoryService',
+            'swag_backend_order.order.detail_factory' => 'getSwagBackendOrder_Order_DetailFactoryService',
+            'swag_backend_order.order.order_factory' => 'getSwagBackendOrder_Order_OrderFactoryService',
+            'swag_backend_order.order.order_hydrator' => 'getSwagBackendOrder_Order_OrderHydratorService',
+            'swag_backend_order.order.order_validator' => 'getSwagBackendOrder_Order_OrderValidatorService',
+            'swag_backend_order.order.position_hydrator' => 'getSwagBackendOrder_Order_PositionHydratorService',
+            'swag_backend_order.order.product_validator' => 'getSwagBackendOrder_Order_ProductValidatorService',
+            'swag_backend_order.order.service' => 'getSwagBackendOrder_Order_ServiceService',
+            'swag_backend_order.payment_translator' => 'getSwagBackendOrder_PaymentTranslatorService',
+            'swag_backend_order.price_calculation.currency_converter' => 'getSwagBackendOrder_PriceCalculation_CurrencyConverterService',
+            'swag_backend_order.price_calculation.discount_calculator' => 'getSwagBackendOrder_PriceCalculation_DiscountCalculatorService',
+            'swag_backend_order.price_calculation.position_hydrator' => 'getSwagBackendOrder_PriceCalculation_PositionHydratorService',
+            'swag_backend_order.price_calculation.price_context_factory' => 'getSwagBackendOrder_PriceCalculation_PriceContextFactoryService',
+            'swag_backend_order.price_calculation.product_calculator' => 'getSwagBackendOrder_PriceCalculation_ProductCalculatorService',
+            'swag_backend_order.price_calculation.request_hydrator' => 'getSwagBackendOrder_PriceCalculation_RequestHydratorService',
+            'swag_backend_order.price_calculation.shipping_calculator' => 'getSwagBackendOrder_PriceCalculation_ShippingCalculatorService',
+            'swag_backend_order.price_calculation.tax_calculation' => 'getSwagBackendOrder_PriceCalculation_TaxCalculationService',
+            'swag_backend_order.price_calculation.total_price_calculator' => 'getSwagBackendOrder_PriceCalculation_TotalPriceCalculatorService',
+            'swag_backend_order.product_search' => 'getSwagBackendOrder_ProductSearchService',
+            'swag_backend_order.shipping_translator' => 'getSwagBackendOrder_ShippingTranslatorService',
+            'swag_backend_order.subscriber.backend_controller' => 'getSwagBackendOrder_Subscriber_BackendControllerService',
+            'swag_backend_order.subscriber.customer' => 'getSwagBackendOrder_Subscriber_CustomerService',
+            'swag_backend_order.subscriber.order' => 'getSwagBackendOrder_Subscriber_OrderService',
+            'swag_backend_order.validator.constraint.custom_product' => 'getSwagBackendOrder_Validator_Constraint_CustomProductService',
+            'swag_backend_order.validator.constraint.esd_product' => 'getSwagBackendOrder_Validator_Constraint_EsdProductService',
+            'swag_backend_order.validator.constraint.last_stock' => 'getSwagBackendOrder_Validator_Constraint_LastStockService',
+            'swag_backend_order.validator.constraint.product_exists' => 'getSwagBackendOrder_Validator_Constraint_ProductExistsService',
             'template' => 'getTemplateService',
             'template_factory' => 'getTemplateFactoryService',
             'templatemail' => 'getTemplatemailService',
@@ -732,6 +792,134 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
         $this->services['corelogger'] = $instance = new \Shopware\Components\Logger('core');
         $instance->pushHandler($this->get('monolog.handler.main'));
         return $instance;
+    }
+    protected function getCreditreform_BonimaReportBodyService()
+    {
+        return $this->services['creditreform.bonima_report_body'] = new \CrefoShopwarePlugIn\Components\API\Body\BonimaReportBody();
+    }
+    protected function getCreditreform_BonimaReportMapperService()
+    {
+        return $this->services['creditreform.bonima_report_mapper'] = new \CrefoShopwarePlugIn\Components\Soap\Mappers\BonimaReportMapper();
+    }
+    protected function getCreditreform_BonimaReportParserService()
+    {
+        return $this->services['creditreform.bonima_report_parser'] = new \CrefoShopwarePlugIn\Components\Soap\Parsers\BonimaReportParser($this->get('creditreform.bonima_report_mapper'));
+    }
+    protected function getCreditreform_BonimaReportRequestService()
+    {
+        return $this->services['creditreform.bonima_report_request'] = new \CrefoShopwarePlugIn\Components\API\Request\BonimaReportRequest($this->get('creditreform.config_header_request'));
+    }
+    protected function getCreditreform_BonimaReportResultsService()
+    {
+        return $this->services['creditreform.bonima_report_results'] = new \CrefoShopwarePlugIn\Models\CrefoReports\PrivatePersonReportResults();
+    }
+    protected function getCreditreform_ChangePasswordRequestService()
+    {
+        return $this->services['creditreform.change_password_request'] = new \CrefoShopwarePlugIn\Components\API\Request\ChangePasswordRequest($this->get('creditreform.config_header_request'));
+    }
+    protected function getCreditreform_CollectionConfigParserService()
+    {
+        return $this->services['creditreform.collection_config_parser'] = new \CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionParser($this->get('creditreform.mapper'));
+    }
+    protected function getCreditreform_CollectionOrderBodyService()
+    {
+        return $this->services['creditreform.collection_order_body'] = new \CrefoShopwarePlugIn\Components\API\Body\CollectionOrderBody();
+    }
+    protected function getCreditreform_CollectionOrderMapperService()
+    {
+        return $this->services['creditreform.collection_order_mapper'] = new \CrefoShopwarePlugIn\Components\Soap\Mappers\CollectionOrderMapper();
+    }
+    protected function getCreditreform_CollectionOrderParserService()
+    {
+        return $this->services['creditreform.collection_order_parser'] = new \CrefoShopwarePlugIn\Components\Soap\Parsers\CollectionOrderParser($this->get('creditreform.collection_order_mapper'));
+    }
+    protected function getCreditreform_CollectionOrderRequestService()
+    {
+        return $this->services['creditreform.collection_order_request'] = new \CrefoShopwarePlugIn\Components\API\Request\CollectionOrderRequest($this->get('creditreform.config_header_request'));
+    }
+    protected function getCreditreform_ConfigHeaderRequestService()
+    {
+        return $this->services['creditreform.config_header_request'] = new \CrefoShopwarePlugIn\Components\Swag\Middleware\ConfigHeaderRequest();
+    }
+    protected function getCreditreform_CrefoInvoiceServiceService()
+    {
+        return $this->services['creditreform.crefo_invoice_service'] = new \CrefoShopwarePlugIn\Components\Payment\CrefoInvoiceService();
+    }
+    protected function getCreditreform_IdentificationReportBodyService()
+    {
+        return $this->services['creditreform.identification_report_body'] = new \CrefoShopwarePlugIn\Components\API\Body\IdentificationReportBody();
+    }
+    protected function getCreditreform_IdentificationReportMapperService()
+    {
+        return $this->services['creditreform.identification_report_mapper'] = new \CrefoShopwarePlugIn\Components\Soap\Mappers\IdentificationReportMapper();
+    }
+    protected function getCreditreform_IdentificationReportParserService()
+    {
+        return $this->services['creditreform.identification_report_parser'] = new \CrefoShopwarePlugIn\Components\Soap\Parsers\IdentificationReportParser($this->get('creditreform.identification_report_mapper'));
+    }
+    protected function getCreditreform_IdentificationReportRequestService()
+    {
+        return $this->services['creditreform.identification_report_request'] = new \CrefoShopwarePlugIn\Components\API\Request\IdentificationReportRequest($this->get('creditreform.config_header_request'));
+    }
+    protected function getCreditreform_IdentificationReportResultsService()
+    {
+        return $this->services['creditreform.identification_report_results'] = new \CrefoShopwarePlugIn\Models\CrefoReports\CompanyReportResults();
+    }
+    protected function getCreditreform_LoggerService()
+    {
+        return $this->services['creditreform.logger'] = new \CrefoShopwarePlugIn\Components\Logger\CrefoLogger();
+    }
+    protected function getCreditreform_LogonRequestService()
+    {
+        return $this->services['creditreform.logon_request'] = new \CrefoShopwarePlugIn\Components\API\Request\LogonRequest($this->get('creditreform.config_header_request'));
+    }
+    protected function getCreditreform_MapperService()
+    {
+        return $this->services['creditreform.mapper'] = new \CrefoShopwarePlugIn\Components\Soap\CrefoMapper();
+    }
+    protected function getCreditreform_PasswordEncoderService()
+    {
+        return $this->services['creditreform.password_encoder'] = new \CrefoShopwarePlugIn\Components\Core\PasswordEncoder();
+    }
+    protected function getCreditreform_ReportCompaniesConfigParserService()
+    {
+        return $this->services['creditreform.report_companies_config_parser'] = new \CrefoShopwarePlugIn\Components\Soap\Parsers\ReportCompaniesParser($this->get('creditreform.mapper'));
+    }
+    protected function getCreditreform_ReportPrivatePersonParserService()
+    {
+        return $this->services['creditreform.report_private_person_parser'] = new \CrefoShopwarePlugIn\Components\Soap\Parsers\ReportPrivatePersonParser($this->get('creditreform.mapper'));
+    }
+    protected function getCreditreform_SoapClientService()
+    {
+        return $this->services['creditreform.soap_client'] = new \CrefoShopwarePlugIn\Components\Soap\CrefoSoapClient();
+    }
+    protected function getCreditreform_SoapParserService()
+    {
+        return $this->services['creditreform.soap_parser'] = new \CrefoShopwarePlugIn\Components\Soap\CrefoSoapParser($this->get('creditreform.mapper'));
+    }
+    protected function getCreditreform_Subscriber_AssetsService()
+    {
+        return $this->services['creditreform.subscriber.assets'] = new \CrefoShopwarePlugIn\Subscriber\Assets($this);
+    }
+    protected function getCreditreform_Subscriber_FrontendAccountService()
+    {
+        return $this->services['creditreform.subscriber.frontend_account'] = new \CrefoShopwarePlugIn\Subscriber\FrontendAccount($this);
+    }
+    protected function getCreditreform_Subscriber_FrontendCheckoutService()
+    {
+        return $this->services['creditreform.subscriber.frontend_checkout'] = new \CrefoShopwarePlugIn\Subscriber\FrontendCheckout($this);
+    }
+    protected function getCreditreform_ValidatorService()
+    {
+        return $this->services['creditreform.validator'] = new \CrefoShopwarePlugIn\Components\Core\CrefoValidator();
+    }
+    protected function getCreditreform_XmlManagerService()
+    {
+        return $this->services['creditreform.xml_manager'] = new \CrefoShopwarePlugIn\Components\Core\XmlManager();
+    }
+    protected function getCreditreform_ZipManagerService()
+    {
+        return $this->services['creditreform.zip_manager'] = new \CrefoShopwarePlugIn\Components\Core\ZipManager();
     }
     protected function getCronService()
     {
@@ -974,6 +1162,12 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
         $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Frontend_AvenOfferManagement', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
         $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenNotes', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
         $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenSupplier', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoConfiguration', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoLogs', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoManagement', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoOrders', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Frontend_CrefoInvoice', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
+        $instance->addListenerService('Enlight_Controller_Dispatcher_ControllerPath_Backend_SwagBackendOrder', array(0 => 'shopware.generic_controller_listener', 1 => 'getControllerPath'), 500);
         $instance->addSubscriberService('attributesubscriber', 'Shopware\\Components\\AttributeSubscriber');
         $instance->addSubscriberService('errorsubscriber', 'Shopware\\Components\\ErrorSubscriber');
         $instance->addSubscriberService('shopware.upload_max_size_validator', 'Shopware\\Components\\UploadMaxSizeValidator');
@@ -993,6 +1187,12 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
         $instance->addSubscriberService('aven_faxorder.subscriber.templates', 'AvenFaxorder\\Subscriber\\TemplateRegistration');
         $instance->addSubscriberService('aven_notes.subscriber.templates', 'AvenNotes\\Subscriber\\TemplateRegistration');
         $instance->addSubscriberService('aven_supplier.subscriber.templates', 'AvenSupplier\\Subscriber\\TemplateRegistration');
+        $instance->addSubscriberService('creditreform.subscriber.assets', 'CrefoShopwarePlugIn\\Subscriber\\Assets');
+        $instance->addSubscriberService('creditreform.subscriber.frontend_checkout', 'CrefoShopwarePlugIn\\Subscriber\\FrontendCheckout');
+        $instance->addSubscriberService('creditreform.subscriber.frontend_account', 'CrefoShopwarePlugIn\\Subscriber\\FrontendAccount');
+        $instance->addSubscriberService('swag_backend_order.subscriber.backend_controller', 'SwagBackendOrder\\Subscriber\\BackendController');
+        $instance->addSubscriberService('swag_backend_order.subscriber.customer', 'SwagBackendOrder\\Subscriber\\Customer');
+        $instance->addSubscriberService('swag_backend_order.subscriber.order', 'SwagBackendOrder\\Subscriber\\Order');
         return $instance;
     }
     protected function getFileSystemService()
@@ -1090,6 +1290,10 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
     protected function getModelsMetadataCacheService()
     {
         return $this->services['models_metadata_cache'] = $this->get('modelconfig')->getMetadataCacheImpl();
+    }
+    protected function getModulesService()
+    {
+        throw new RuntimeException('You have requested a synthetic service ("modules"). The DIC does not know how to construct this service.');
     }
     protected function getMonolog_Formatter_WildfireService()
     {
@@ -1425,6 +1629,12 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
         $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Frontend_AvenOfferManagement', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder/Controllers\\Frontend\\AvenOfferManagement.php');
         $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenNotes', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenNotes/Controllers\\Backend\\AvenNotes.php');
         $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_AvenSupplier', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenSupplier/Controllers\\Backend\\AvenSupplier.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoConfiguration', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\CrefoShopwarePlugIn/Controllers\\Backend\\CrefoConfiguration.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoLogs', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\CrefoShopwarePlugIn/Controllers\\Backend\\CrefoLogs.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoManagement', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\CrefoShopwarePlugIn/Controllers\\Backend\\CrefoManagement.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_CrefoOrders', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\CrefoShopwarePlugIn/Controllers\\Backend\\CrefoOrders.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Frontend_CrefoInvoice', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\CrefoShopwarePlugIn/Controllers\\Frontend\\CrefoInvoice.php');
+        $instance->addController('Enlight_Controller_Dispatcher_ControllerPath_Backend_SwagBackendOrder', 'E:\\wamp\\www\\shopware4\\custom\\plugins\\SwagBackendOrder/Controllers\\Backend\\SwagBackendOrder.php');
         return $instance;
     }
     protected function getShopware_HolidayTableUpdaterService()
@@ -2996,6 +3206,114 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
     {
         return $this->services['snippets'] = new \Shopware_Components_Snippet_Manager($this->get('models'), array('Default' => 'E:\\wamp\\www\\shopware4\\engine/Shopware/Plugins\\Default\\', 'Local' => 'E:\\wamp\\www\\shopware4\\engine/Shopware/Plugins\\Local\\', 'Community' => 'E:\\wamp\\www\\shopware4\\engine/Shopware/Plugins\\Community\\', 'ShopwarePlugins' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\', 'ProjectPlugins' => 'E:\\wamp\\www\\shopware4\\custom\\project\\'), array('readFromDb' => true, 'writeToDb' => true, 'readFromIni' => false, 'writeToIni' => false, 'showSnippetPlaceholder' => false));
     }
+    protected function getSwagBackendOrder_CustomerRepositoryService()
+    {
+        return $this->services['swag_backend_order.customer_repository'] = new \SwagBackendOrder\Components\CustomerRepository($this->get('models'));
+    }
+    protected function getSwagBackendOrder_Order_DetailFactoryService()
+    {
+        return $this->services['swag_backend_order.order.detail_factory'] = new \SwagBackendOrder\Components\Order\Factory\DetailFactory($this->get('models'), $this->get('modules'));
+    }
+    protected function getSwagBackendOrder_Order_OrderFactoryService()
+    {
+        return $this->services['swag_backend_order.order.order_factory'] = new \SwagBackendOrder\Components\Order\Factory\OrderFactory($this->get('models'), $this->get('shopware_account.address_service'), $this->get('swag_backend_order.order.detail_factory'));
+    }
+    protected function getSwagBackendOrder_Order_OrderHydratorService()
+    {
+        return $this->services['swag_backend_order.order.order_hydrator'] = new \SwagBackendOrder\Components\Order\Hydrator\OrderHydrator($this->get('swag_backend_order.order.position_hydrator'));
+    }
+    protected function getSwagBackendOrder_Order_OrderValidatorService()
+    {
+        return $this->services['swag_backend_order.order.order_validator'] = new \SwagBackendOrder\Components\Order\Validator\OrderValidator($this->get('swag_backend_order.order.product_validator'), $this->get('models'), $this->get('snippets'));
+    }
+    protected function getSwagBackendOrder_Order_PositionHydratorService()
+    {
+        return $this->services['swag_backend_order.order.position_hydrator'] = new \SwagBackendOrder\Components\Order\Hydrator\PositionHydrator();
+    }
+    protected function getSwagBackendOrder_Order_ProductValidatorService()
+    {
+        return $this->services['swag_backend_order.order.product_validator'] = new \SwagBackendOrder\Components\Order\Validator\Validators\ProductValidator($this->get('validator'));
+    }
+    protected function getSwagBackendOrder_Order_ServiceService()
+    {
+        return $this->services['swag_backend_order.order.service'] = new \SwagBackendOrder\Components\Order\OrderService($this->get('swag_backend_order.order.order_factory'), $this->get('models'), $this->get('shopware.number_range_incrementer'), $this->get('swag_backend_order.order.order_validator'));
+    }
+    protected function getSwagBackendOrder_PaymentTranslatorService()
+    {
+        return $this->services['swag_backend_order.payment_translator'] = \SwagBackendOrder\Components\Translation\PaymentTranslator::create();
+    }
+    protected function getSwagBackendOrder_PriceCalculation_CurrencyConverterService()
+    {
+        return $this->services['swag_backend_order.price_calculation.currency_converter'] = new \SwagBackendOrder\Components\PriceCalculation\CurrencyConverter();
+    }
+    protected function getSwagBackendOrder_PriceCalculation_DiscountCalculatorService()
+    {
+        return $this->services['swag_backend_order.price_calculation.discount_calculator'] = new \SwagBackendOrder\Components\PriceCalculation\Calculator\DiscountCalculator();
+    }
+    protected function getSwagBackendOrder_PriceCalculation_PositionHydratorService()
+    {
+        return $this->services['swag_backend_order.price_calculation.position_hydrator'] = new \SwagBackendOrder\Components\PriceCalculation\Hydrator\PositionHydrator();
+    }
+    protected function getSwagBackendOrder_PriceCalculation_PriceContextFactoryService()
+    {
+        return $this->services['swag_backend_order.price_calculation.price_context_factory'] = new \SwagBackendOrder\Components\PriceCalculation\Context\PriceContextFactory($this->get('models'));
+    }
+    protected function getSwagBackendOrder_PriceCalculation_ProductCalculatorService()
+    {
+        return $this->services['swag_backend_order.price_calculation.product_calculator'] = new \SwagBackendOrder\Components\PriceCalculation\Calculator\ProductPriceCalculator($this->get('swag_backend_order.price_calculation.tax_calculation'), $this->get('swag_backend_order.price_calculation.currency_converter'));
+    }
+    protected function getSwagBackendOrder_PriceCalculation_RequestHydratorService()
+    {
+        return $this->services['swag_backend_order.price_calculation.request_hydrator'] = new \SwagBackendOrder\Components\PriceCalculation\Hydrator\RequestHydrator($this->get('swag_backend_order.price_calculation.position_hydrator'));
+    }
+    protected function getSwagBackendOrder_PriceCalculation_ShippingCalculatorService()
+    {
+        return $this->services['swag_backend_order.price_calculation.shipping_calculator'] = new \SwagBackendOrder\Components\PriceCalculation\Calculator\ShippingPriceCalculator($this->get('swag_backend_order.price_calculation.tax_calculation'), $this->get('swag_backend_order.price_calculation.currency_converter'));
+    }
+    protected function getSwagBackendOrder_PriceCalculation_TaxCalculationService()
+    {
+        return $this->services['swag_backend_order.price_calculation.tax_calculation'] = new \SwagBackendOrder\Components\PriceCalculation\TaxCalculation();
+    }
+    protected function getSwagBackendOrder_PriceCalculation_TotalPriceCalculatorService()
+    {
+        return $this->services['swag_backend_order.price_calculation.total_price_calculator'] = new \SwagBackendOrder\Components\PriceCalculation\Calculator\TotalPriceCalculator();
+    }
+    protected function getSwagBackendOrder_ProductSearchService()
+    {
+        return $this->services['swag_backend_order.product_search'] = new \SwagBackendOrder\Components\ProductSearch\ProductSearch($this->get('dbal_connection'), $this->get('swag_backend_order.price_calculation.product_calculator'), $this->get('shopware_storefront.context_service'), $this->get('swag_backend_order.price_calculation.request_hydrator'), $this->get('shopware_storefront.additional_text_service'));
+    }
+    protected function getSwagBackendOrder_ShippingTranslatorService()
+    {
+        return $this->services['swag_backend_order.shipping_translator'] = \SwagBackendOrder\Components\Translation\ShippingTranslator::create();
+    }
+    protected function getSwagBackendOrder_Subscriber_BackendControllerService()
+    {
+        return $this->services['swag_backend_order.subscriber.backend_controller'] = new \SwagBackendOrder\Subscriber\BackendController($this);
+    }
+    protected function getSwagBackendOrder_Subscriber_CustomerService()
+    {
+        return $this->services['swag_backend_order.subscriber.customer'] = new \SwagBackendOrder\Subscriber\Customer($this);
+    }
+    protected function getSwagBackendOrder_Subscriber_OrderService()
+    {
+        return $this->services['swag_backend_order.subscriber.order'] = new \SwagBackendOrder\Subscriber\Order($this);
+    }
+    protected function getSwagBackendOrder_Validator_Constraint_CustomProductService()
+    {
+        return $this->services['swag_backend_order.validator.constraint.custom_product'] = new \SwagBackendOrder\Components\Order\Validator\Constraints\CustomProductsValidation($this->get('snippets'), $this->get('dbal_connection'));
+    }
+    protected function getSwagBackendOrder_Validator_Constraint_EsdProductService()
+    {
+        return $this->services['swag_backend_order.validator.constraint.esd_product'] = new \SwagBackendOrder\Components\Order\Validator\Constraints\EsdProductValidator($this->get('snippets'), $this->get('dbal_connection'));
+    }
+    protected function getSwagBackendOrder_Validator_Constraint_LastStockService()
+    {
+        return $this->services['swag_backend_order.validator.constraint.last_stock'] = new \SwagBackendOrder\Components\Order\Validator\Constraints\LastStockValidator($this->get('snippets'), $this->get('dbal_connection'));
+    }
+    protected function getSwagBackendOrder_Validator_Constraint_ProductExistsService()
+    {
+        return $this->services['swag_backend_order.validator.constraint.product_exists'] = new \SwagBackendOrder\Components\Order\Validator\Constraints\ProductExistsValidator($this->get('snippets'), $this->get('dbal_connection'));
+    }
     protected function getTemplateService()
     {
         return $this->services['template'] = $this->get('template_factory')->factory($this->get('events'), $this->get('snippet_resource'), $this->get('shopware.escaper'), array('compileCheck' => true, 'compileLocking' => true, 'useSubDirs' => true, 'forceCompile' => false, 'useIncludePath' => true, 'charset' => 'utf-8', 'forceCache' => false, 'cacheDir' => 'E:\\wamp\\www\\shopware4/var/cache/production_201804030942/templates', 'compileDir' => 'E:\\wamp\\www\\shopware4/var/cache/production_201804030942/templates', 'templateDir' => 'E:\\wamp\\www\\shopware4\\themes\\'), array('php_modifiers' => array(0 => 'abs', 1 => 'acos', 2 => 'acosh', 3 => 'addcslashes', 4 => 'addslashes', 5 => 'array', 6 => 'array_change_key_case', 7 => 'array_chunk', 8 => 'array_column', 9 => 'array_combine', 10 => 'array_count_values', 11 => 'array_diff', 12 => 'array_diff_assoc', 13 => 'array_diff_key', 14 => 'array_diff_uassoc', 15 => 'array_diff_ukey', 16 => 'array_fill', 17 => 'array_fill_keys', 18 => 'array_filter', 19 => 'array_flip', 20 => 'array_intersect', 21 => 'array_intersect_assoc', 22 => 'array_intersect_key', 23 => 'array_intersect_uassoc', 24 => 'array_intersect_ukey', 25 => 'array_key_exists', 26 => 'array_keys', 27 => 'array_map', 28 => 'array_merge', 29 => 'array_merge_recursive', 30 => 'array_multisort', 31 => 'array_pad', 32 => 'array_pop', 33 => 'array_product', 34 => 'array_push', 35 => 'array_rand', 36 => 'array_reduce', 37 => 'array_replace', 38 => 'array_replace_recursive', 39 => 'array_reverse', 40 => 'array_search', 41 => 'array_shift', 42 => 'array_slice', 43 => 'array_splice', 44 => 'array_sum', 45 => 'array_udiff', 46 => 'array_udiff_assoc', 47 => 'array_udiff_uassoc', 48 => 'array_uintersect', 49 => 'array_uintersect_assoc', 50 => 'array_uintersect_uassoc', 51 => 'array_unique', 52 => 'array_unshift', 53 => 'array_values', 54 => 'array_walk', 55 => 'array_walk_recursive', 56 => 'arsort', 57 => 'asin', 58 => 'asinh', 59 => 'asort', 60 => 'atan', 61 => 'atan2', 62 => 'atanh', 63 => 'base64_decode', 64 => 'base64_encode', 65 => 'base_convert', 66 => 'bin2hex', 67 => 'bindec', 68 => 'boolval', 69 => 'cal_days_in_month', 70 => 'cal_from_jd', 71 => 'cal_info', 72 => 'cal_to_jd', 73 => 'ceil', 74 => 'checkdate', 75 => 'chop', 76 => 'chr', 77 => 'chunk_split', 78 => 'compact', 79 => 'constant', 80 => 'convert_cyr_string', 81 => 'convert_uudecode', 82 => 'convert_uuencode', 83 => 'cos', 84 => 'cosh', 85 => 'count', 86 => 'count_chars', 87 => 'crypt', 88 => 'ctype_alnum', 89 => 'ctype_alpha', 90 => 'ctype_cntrl', 91 => 'ctype_digit', 92 => 'ctype_graph', 93 => 'ctype_lower', 94 => 'ctype_print', 95 => 'ctype_punct', 96 => 'ctype_space', 97 => 'ctype_upper', 98 => 'ctype_xdigit', 99 => 'current', 100 => 'date', 101 => 'date_add', 102 => 'date_create', 103 => 'date_create_from_format', 104 => 'date_create_immutable', 105 => 'date_create_immutable_from_format', 106 => 'date_date_set', 107 => 'date_default_timezone_get', 108 => 'date_diff', 109 => 'date_format', 110 => 'date_get_last_errors', 111 => 'date_interval_create_from_date_string', 112 => 'date_interval_format', 113 => 'date_modify', 114 => 'date_offset_get', 115 => 'date_parse', 116 => 'date_parse_from_format', 117 => 'date_sub', 118 => 'date_sun_info', 119 => 'date_sunrise', 120 => 'date_sunset', 121 => 'date_timestamp_get', 122 => 'date_timezone_get', 123 => 'decbin', 124 => 'dechex', 125 => 'decoct', 126 => 'deg2rad', 127 => 'doubleval', 128 => 'each', 129 => 'easter_date', 130 => 'easter_days', 131 => 'end', 132 => 'exp', 133 => 'explode', 134 => 'expm1', 135 => 'empty', 136 => 'filter_has_var', 137 => 'filter_id', 138 => 'filter_input', 139 => 'filter_input_array', 140 => 'filter_list', 141 => 'filter_var', 142 => 'filter_var_array', 143 => 'floatval', 144 => 'floor', 145 => 'fmod', 146 => 'frenchtojd', 147 => 'get_browser', 148 => 'getdate', 149 => 'getrandmax', 150 => 'gettimeofday', 151 => 'gettype', 152 => 'gmdate', 153 => 'gmmktime', 154 => 'gmstrftime', 155 => 'gregoriantojd', 156 => 'hex2bin', 157 => 'hexdec', 158 => 'html_entity_decode', 159 => 'htmlentities', 160 => 'htmlspecialchars', 161 => 'htmlspecialchars_decode', 162 => 'hypot', 163 => 'iconv', 164 => 'iconv_get_encoding', 165 => 'iconv_mime_decode', 166 => 'iconv_mime_decode_headers', 167 => 'iconv_mime_encode', 168 => 'iconv_set_encoding', 169 => 'iconv_strlen', 170 => 'iconv_strpos', 171 => 'iconv_strrpos', 172 => 'iconv_substr', 173 => 'idate', 174 => 'implode', 175 => 'in_array', 176 => 'intdiv', 177 => 'intval', 178 => 'ip2long', 179 => 'is_array', 180 => 'is_a', 181 => 'isset', 182 => 'is_bool', 183 => 'is_double', 184 => 'is_finite', 185 => 'is_float', 186 => 'is_infinite', 187 => 'is_int', 188 => 'is_integer', 189 => 'is_iterable', 190 => 'is_long', 191 => 'is_nan', 192 => 'is_null', 193 => 'is_numeric', 194 => 'is_object', 195 => 'is_string', 196 => 'iterator_apply', 197 => 'iterator_count', 198 => 'iterator_to_array', 199 => 'jddayofweek', 200 => 'jdmonthname', 201 => 'jdtofrench', 202 => 'jdtogregorian', 203 => 'jdtojewish', 204 => 'jdtojulian', 205 => 'jdtounix', 206 => 'jewishtojd', 207 => 'join', 208 => 'json_decode', 209 => 'json_encode', 210 => 'json_last_error', 211 => 'json_last_error_msg', 212 => 'juliantojd', 213 => 'key', 214 => 'key_exists', 215 => 'ksort', 216 => 'lcfirst', 217 => 'levenshtein', 218 => 'localtime', 219 => 'log', 220 => 'log10', 221 => 'log1p', 222 => 'long2ip', 223 => 'ltrim', 224 => 'max', 225 => 'md5', 226 => 'mhash', 227 => 'mhash_count', 228 => 'mhash_get_block_size', 229 => 'mhash_get_hash_name', 230 => 'mhash_keygen_s2k', 231 => 'microtime', 232 => 'min', 233 => 'mktime', 234 => 'money_format', 235 => 'mt_getrandmax', 236 => 'mt_rand', 237 => 'mt_srand', 238 => 'natcasesort', 239 => 'natsort', 240 => 'next', 241 => 'nl2br', 242 => 'number_format', 243 => 'octdec', 244 => 'ord', 245 => 'parse_str', 246 => 'parse_url', 247 => 'php_strip_whitespace', 248 => 'pi', 249 => 'pos', 250 => 'pow', 251 => 'prev', 252 => 'printf', 253 => 'print_r', 254 => 'rad2deg', 255 => 'rand', 256 => 'random_bytes', 257 => 'random_int', 258 => 'range', 259 => 'rawurldecode', 260 => 'rawurlencode', 261 => 'reset', 262 => 'round', 263 => 'rsort', 264 => 'rtrim', 265 => 'serialize', 266 => 'sha1', 267 => 'shuffle', 268 => 'similar_text', 269 => 'sin', 270 => 'sinh', 271 => 'sizeof', 272 => 'sort', 273 => 'soundex', 274 => 'sprintf', 275 => 'sqrt', 276 => 'srand', 277 => 'str_ireplace', 278 => 'str_pad', 279 => 'str_repeat', 280 => 'str_replace', 281 => 'str_rot13', 282 => 'str_shuffle', 283 => 'str_split', 284 => 'str_word_count', 285 => 'strcasecmp', 286 => 'strchr', 287 => 'strcmp', 288 => 'strcoll', 289 => 'strcspn', 290 => 'strftime', 291 => 'strip_tags', 292 => 'stripcslashes', 293 => 'stripos', 294 => 'stripslashes', 295 => 'stristr', 296 => 'strlen', 297 => 'strnatcasecmp', 298 => 'strnatcmp', 299 => 'strncasecmp', 300 => 'strncmp', 301 => 'strpbrk', 302 => 'strpos', 303 => 'strptime', 304 => 'strrchr', 305 => 'strrev', 306 => 'strripos', 307 => 'strrpos', 308 => 'strspn', 309 => 'strstr', 310 => 'strtok', 311 => 'strtolower', 312 => 'strtotime', 313 => 'strtoupper', 314 => 'strtr', 315 => 'strval', 316 => 'substr', 317 => 'substr_compare', 318 => 'substr_count', 319 => 'substr_replace', 320 => 'tan', 321 => 'tanh', 322 => 'time', 323 => 'trim', 324 => 'uasort', 325 => 'ucfirst', 326 => 'ucwords', 327 => 'uksort', 328 => 'uniqid', 329 => 'unixtojd', 330 => 'unserialize', 331 => 'urldecode', 332 => 'urlencode', 333 => 'usort', 334 => 'utf8_decode', 335 => 'utf8_encode', 336 => 'var_dump', 337 => 'version_compare', 338 => 'wordwrap'), 'php_functions' => array(0 => 'abs', 1 => 'acos', 2 => 'acosh', 3 => 'addcslashes', 4 => 'addslashes', 5 => 'array', 6 => 'array_change_key_case', 7 => 'array_chunk', 8 => 'array_column', 9 => 'array_combine', 10 => 'array_count_values', 11 => 'array_diff', 12 => 'array_diff_assoc', 13 => 'array_diff_key', 14 => 'array_diff_uassoc', 15 => 'array_diff_ukey', 16 => 'array_fill', 17 => 'array_fill_keys', 18 => 'array_filter', 19 => 'array_flip', 20 => 'array_intersect', 21 => 'array_intersect_assoc', 22 => 'array_intersect_key', 23 => 'array_intersect_uassoc', 24 => 'array_intersect_ukey', 25 => 'array_key_exists', 26 => 'array_keys', 27 => 'array_map', 28 => 'array_merge', 29 => 'array_merge_recursive', 30 => 'array_multisort', 31 => 'array_pad', 32 => 'array_pop', 33 => 'array_product', 34 => 'array_push', 35 => 'array_rand', 36 => 'array_reduce', 37 => 'array_replace', 38 => 'array_replace_recursive', 39 => 'array_reverse', 40 => 'array_search', 41 => 'array_shift', 42 => 'array_slice', 43 => 'array_splice', 44 => 'array_sum', 45 => 'array_udiff', 46 => 'array_udiff_assoc', 47 => 'array_udiff_uassoc', 48 => 'array_uintersect', 49 => 'array_uintersect_assoc', 50 => 'array_uintersect_uassoc', 51 => 'array_unique', 52 => 'array_unshift', 53 => 'array_values', 54 => 'array_walk', 55 => 'array_walk_recursive', 56 => 'arsort', 57 => 'asin', 58 => 'asinh', 59 => 'asort', 60 => 'atan', 61 => 'atan2', 62 => 'atanh', 63 => 'base64_decode', 64 => 'base64_encode', 65 => 'base_convert', 66 => 'bin2hex', 67 => 'bindec', 68 => 'boolval', 69 => 'cal_days_in_month', 70 => 'cal_from_jd', 71 => 'cal_info', 72 => 'cal_to_jd', 73 => 'ceil', 74 => 'checkdate', 75 => 'chop', 76 => 'chr', 77 => 'chunk_split', 78 => 'compact', 79 => 'constant', 80 => 'convert_cyr_string', 81 => 'convert_uudecode', 82 => 'convert_uuencode', 83 => 'cos', 84 => 'cosh', 85 => 'count', 86 => 'count_chars', 87 => 'crypt', 88 => 'ctype_alnum', 89 => 'ctype_alpha', 90 => 'ctype_cntrl', 91 => 'ctype_digit', 92 => 'ctype_graph', 93 => 'ctype_lower', 94 => 'ctype_print', 95 => 'ctype_punct', 96 => 'ctype_space', 97 => 'ctype_upper', 98 => 'ctype_xdigit', 99 => 'current', 100 => 'date', 101 => 'date_add', 102 => 'date_create', 103 => 'date_create_from_format', 104 => 'date_create_immutable', 105 => 'date_create_immutable_from_format', 106 => 'date_date_set', 107 => 'date_default_timezone_get', 108 => 'date_diff', 109 => 'date_format', 110 => 'date_get_last_errors', 111 => 'date_interval_create_from_date_string', 112 => 'date_interval_format', 113 => 'date_modify', 114 => 'date_offset_get', 115 => 'date_parse', 116 => 'date_parse_from_format', 117 => 'date_sub', 118 => 'date_sun_info', 119 => 'date_sunrise', 120 => 'date_sunset', 121 => 'date_timestamp_get', 122 => 'date_timezone_get', 123 => 'decbin', 124 => 'dechex', 125 => 'decoct', 126 => 'deg2rad', 127 => 'doubleval', 128 => 'each', 129 => 'easter_date', 130 => 'easter_days', 131 => 'end', 132 => 'exp', 133 => 'explode', 134 => 'expm1', 135 => 'empty', 136 => 'filter_has_var', 137 => 'filter_id', 138 => 'filter_input', 139 => 'filter_input_array', 140 => 'filter_list', 141 => 'filter_var', 142 => 'filter_var_array', 143 => 'floatval', 144 => 'floor', 145 => 'fmod', 146 => 'frenchtojd', 147 => 'get_browser', 148 => 'getdate', 149 => 'getrandmax', 150 => 'gettimeofday', 151 => 'gettype', 152 => 'gmdate', 153 => 'gmmktime', 154 => 'gmstrftime', 155 => 'gregoriantojd', 156 => 'hex2bin', 157 => 'hexdec', 158 => 'html_entity_decode', 159 => 'htmlentities', 160 => 'htmlspecialchars', 161 => 'htmlspecialchars_decode', 162 => 'hypot', 163 => 'iconv', 164 => 'iconv_get_encoding', 165 => 'iconv_mime_decode', 166 => 'iconv_mime_decode_headers', 167 => 'iconv_mime_encode', 168 => 'iconv_set_encoding', 169 => 'iconv_strlen', 170 => 'iconv_strpos', 171 => 'iconv_strrpos', 172 => 'iconv_substr', 173 => 'idate', 174 => 'implode', 175 => 'in_array', 176 => 'intdiv', 177 => 'intval', 178 => 'ip2long', 179 => 'is_array', 180 => 'is_a', 181 => 'isset', 182 => 'is_bool', 183 => 'is_double', 184 => 'is_finite', 185 => 'is_float', 186 => 'is_infinite', 187 => 'is_int', 188 => 'is_integer', 189 => 'is_iterable', 190 => 'is_long', 191 => 'is_nan', 192 => 'is_null', 193 => 'is_numeric', 194 => 'is_object', 195 => 'is_string', 196 => 'iterator_apply', 197 => 'iterator_count', 198 => 'iterator_to_array', 199 => 'jddayofweek', 200 => 'jdmonthname', 201 => 'jdtofrench', 202 => 'jdtogregorian', 203 => 'jdtojewish', 204 => 'jdtojulian', 205 => 'jdtounix', 206 => 'jewishtojd', 207 => 'join', 208 => 'json_decode', 209 => 'json_encode', 210 => 'json_last_error', 211 => 'json_last_error_msg', 212 => 'juliantojd', 213 => 'key', 214 => 'key_exists', 215 => 'ksort', 216 => 'lcfirst', 217 => 'levenshtein', 218 => 'localtime', 219 => 'log', 220 => 'log10', 221 => 'log1p', 222 => 'long2ip', 223 => 'ltrim', 224 => 'max', 225 => 'md5', 226 => 'mhash', 227 => 'mhash_count', 228 => 'mhash_get_block_size', 229 => 'mhash_get_hash_name', 230 => 'mhash_keygen_s2k', 231 => 'microtime', 232 => 'min', 233 => 'mktime', 234 => 'money_format', 235 => 'mt_getrandmax', 236 => 'mt_rand', 237 => 'mt_srand', 238 => 'natcasesort', 239 => 'natsort', 240 => 'next', 241 => 'nl2br', 242 => 'number_format', 243 => 'octdec', 244 => 'ord', 245 => 'parse_str', 246 => 'parse_url', 247 => 'php_strip_whitespace', 248 => 'pi', 249 => 'pos', 250 => 'pow', 251 => 'prev', 252 => 'printf', 253 => 'print_r', 254 => 'rad2deg', 255 => 'rand', 256 => 'random_bytes', 257 => 'random_int', 258 => 'range', 259 => 'rawurldecode', 260 => 'rawurlencode', 261 => 'reset', 262 => 'round', 263 => 'rsort', 264 => 'rtrim', 265 => 'serialize', 266 => 'sha1', 267 => 'shuffle', 268 => 'similar_text', 269 => 'sin', 270 => 'sinh', 271 => 'sizeof', 272 => 'sort', 273 => 'soundex', 274 => 'sprintf', 275 => 'sqrt', 276 => 'srand', 277 => 'str_ireplace', 278 => 'str_pad', 279 => 'str_repeat', 280 => 'str_replace', 281 => 'str_rot13', 282 => 'str_shuffle', 283 => 'str_split', 284 => 'str_word_count', 285 => 'strcasecmp', 286 => 'strchr', 287 => 'strcmp', 288 => 'strcoll', 289 => 'strcspn', 290 => 'strftime', 291 => 'strip_tags', 292 => 'stripcslashes', 293 => 'stripos', 294 => 'stripslashes', 295 => 'stristr', 296 => 'strlen', 297 => 'strnatcasecmp', 298 => 'strnatcmp', 299 => 'strncasecmp', 300 => 'strncmp', 301 => 'strpbrk', 302 => 'strpos', 303 => 'strptime', 304 => 'strrchr', 305 => 'strrev', 306 => 'strripos', 307 => 'strrpos', 308 => 'strspn', 309 => 'strstr', 310 => 'strtok', 311 => 'strtolower', 312 => 'strtotime', 313 => 'strtoupper', 314 => 'strtr', 315 => 'strval', 316 => 'substr', 317 => 'substr_compare', 318 => 'substr_count', 319 => 'substr_replace', 320 => 'tan', 321 => 'tanh', 322 => 'time', 323 => 'trim', 324 => 'uasort', 325 => 'ucfirst', 326 => 'ucwords', 327 => 'uksort', 328 => 'uniqid', 329 => 'unixtojd', 330 => 'unserialize', 331 => 'urldecode', 332 => 'urlencode', 333 => 'usort', 334 => 'utf8_decode', 335 => 'utf8_encode', 336 => 'var_dump', 337 => 'version_compare', 338 => 'wordwrap')));
@@ -3074,7 +3392,7 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
     }
     protected function getValidatorService()
     {
-        return $this->services['validator'] = \Shopware\Components\DependencyInjection\Bridge\Validator::create($this->get('modelconfig'), new \Shopware\Bundle\FormBundle\DependencyInjection\Factory\ConstraintValidatorFactory($this, array('UserEmailValidator' => 'shopware.auth.constraint.user_email_validator', 'UserNameValidator' => 'shopware.auth.constraint.user_name_validator', 'shopware.form.constraint.exists' => 'shopware.form.constraint.exists', 'shopware.form.constraint.unique' => 'shopware.form.constraint.unique', 'CurrentPasswordValidator' => 'shopware_account.constraint.current_password_validator', 'PasswordValidator' => 'shopware_account.constraint.password_validator', 'FormEmailValidator' => 'shopware_account.constraint.form_email_validator', 'CustomerEmailValidator' => 'shopware_account.constraint.customer_email_validator')));
+        return $this->services['validator'] = \Shopware\Components\DependencyInjection\Bridge\Validator::create($this->get('modelconfig'), new \Shopware\Bundle\FormBundle\DependencyInjection\Factory\ConstraintValidatorFactory($this, array('UserEmailValidator' => 'shopware.auth.constraint.user_email_validator', 'UserNameValidator' => 'shopware.auth.constraint.user_name_validator', 'shopware.form.constraint.exists' => 'shopware.form.constraint.exists', 'shopware.form.constraint.unique' => 'shopware.form.constraint.unique', 'CurrentPasswordValidator' => 'shopware_account.constraint.current_password_validator', 'PasswordValidator' => 'shopware_account.constraint.password_validator', 'FormEmailValidator' => 'shopware_account.constraint.form_email_validator', 'CustomerEmailValidator' => 'shopware_account.constraint.customer_email_validator', 'swag_backend_order.validator.constraint.last_stock' => 'swag_backend_order.validator.constraint.last_stock', 'swag_backend_order.validator.constraint.product_exists' => 'swag_backend_order.validator.constraint.product_exists', 'swag_backend_order.validator.constraint.custom_product' => 'swag_backend_order.validator.constraint.custom_product', 'swag_backend_order.validator.constraint.esd_product' => 'swag_backend_order.validator.constraint.esd_product')));
     }
     protected function getValidator_EmailService()
     {
@@ -5706,6 +6024,8 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
                 'AvenSupplier' => '1.0.0',
                 'SwagDemoDataEN' => '5.4.0',
                 'AvenNotes' => '1.0.0',
+                'CrefoShopwarePlugIn' => '2.1.2',
+                'SwagBackendOrder' => '2.3.0',
             ),
             'aven_faxorder.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenFaxorder',
             'aven_faxorder.plugin_name' => 'AvenFaxorder',
@@ -5713,6 +6033,12 @@ class ShopwareProductionfe51158860b5d304a4d34cbde31912faba6103daProjectContainer
             'aven_notes.plugin_name' => 'AvenNotes',
             'aven_supplier.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\AvenSupplier',
             'aven_supplier.plugin_name' => 'AvenSupplier',
+            'creditreform.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\CrefoShopwarePlugIn',
+            'crefo_shopware_plug_in.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\CrefoShopwarePlugIn',
+            'crefo_shopware_plug_in.plugin_name' => 'CrefoShopwarePlugIn',
+            'swag_backend_orders.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\SwagBackendOrder',
+            'swag_backend_order.plugin_dir' => 'E:\\wamp\\www\\shopware4\\custom\\plugins\\SwagBackendOrder',
+            'swag_backend_order.plugin_name' => 'SwagBackendOrder',
             'shopware_attribute.table_entity_mapping' => array(
                 's_articles_translations' => array(
                     'readOnly' => true,

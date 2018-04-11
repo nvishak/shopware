@@ -7,3 +7,7 @@
     <link rel="stylesheet" href="{link file="backend/_resources/css/crefo_orders.min.css"}">
     <link rel="stylesheet" href="{link file="backend/_resources/css/crefo_private_person.min.css"}">
 {/block}
+
+{block name="backend/base/header/javascript" append}
+    <script type="text/javascript" src="{link file="backend/lib/crefo_util.js"}" charset="utf-8"></script>
+{/block}

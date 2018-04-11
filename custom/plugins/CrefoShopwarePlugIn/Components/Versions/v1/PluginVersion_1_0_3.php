@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -28,24 +28,6 @@ class PluginVersion_1_0_3 extends AbstractPluginVersion
      */
     public function __construct()
     {
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function createFilesArray()
-    {
-        $files = [];
-        return $files;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function createDirArray()
-    {
-        $dir = [];
-        return $dir;
     }
 
     /**

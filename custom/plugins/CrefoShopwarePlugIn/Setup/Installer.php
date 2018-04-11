@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,6 +12,7 @@
 
 namespace CrefoShopwarePlugIn\Setup;
 
+use CrefoShopwarePlugIn\Components\Core\Enums\CountryType;
 use \CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 use \CrefoShopwarePlugIn\Components\Swag\Middleware\CrefoCrossCuttingComponent;
 use \CrefoShopwarePlugIn\CrefoShopwarePlugIn;
@@ -23,10 +24,13 @@ use \Shopware\Components\Plugin\Context\InstallContext;
 
 /**
  * Class Installer
+ * @codeCoverageIgnore
  * @package CrefoShopwarePlugIn\Setup
  */
 class Installer
 {
+    const GERMAN_LOCALE = 'de_DE';
+    const ENGLISH_LOCALE = 'en_GB';
     /** @var ContainerInterface */
     private $container;
 
@@ -53,6 +57,7 @@ class Installer
      */
     public function install(InstallContext $context)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, "Start installing transaction.", ["Install plugin."]);
         /**
          * @var \Doctrine\DBAL\Connection $connection
          */
@@ -65,7 +70,7 @@ class Installer
             $this->addCron($context->getPlugin()->getId(), $connection);
             $connection->commit();
         } catch (\Exception $e) {
-            CrefoShopwarePlugIn::getCrefoLogger()->log(CrefoLogger::ERROR, "==Plugin is not successful installed.==",
+            CrefoLogger::getCrefoLogger()->log(CrefoLogger::ERROR, "==Plugin is not successful installed.==",
                 (array)$e);
             $this->creditreformPlugin->rollbackInstallation($connection, $context);
             throw new \Exception($e->getMessage());
@@ -79,7 +84,7 @@ class Installer
      */
     private function createCrefoPayment(InstallContext $context)
     {
-        CrefoShopwarePlugIn::getCrefoLogger()->log(CrefoLogger::DEBUG, "==create CrefoPayment==", ["Create payment."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==create CrefoPayment==", ["Create payment."]);
         /**
          * @var \Shopware\Models\Payment\Repository $paymentRepo
          */
@@ -97,7 +102,7 @@ class Installer
         $countriesWanted = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($countries as $country) {
             if (in_array(strtoupper($country['iso']),
-                $this->creditreformPlugin->getAllowedCountriesISOForCompanies())) {
+                CountryType::getAllowedCountriesISOForCompanies())) {
                 $countriesWanted->add($countryRepo->find($country['id']));
             }
         }
@@ -159,25 +164,26 @@ class Installer
          * @var \Shopware_Components_Auth $auth
          */
         $auth = $this->container->get('Auth');
-        $localeId = $auth->getIdentity()->localeID;
-        $arrayLocales = $this->getLocalesArray();
-        $otherLocale = $localeId == 1 ? 2 : 1;
-        $locales[$otherLocale] = ['id' => $otherLocale, 'locale' => ($otherLocale == 1 ? 'de_DE' : 'en_GB')];
-        foreach ($arrayLocales as $locale) {
-            $locales[$locale['id']] = $locale;
-            $locale['id'] != $localeId ? $otherLocale = $locale['id'] : null;
-        }
         /**
          * @var \Shopware_Components_Translation $translator
          */
         $translator = new \Shopware_Components_Translation();
-        $arrayConfigPayment = $translator->read($otherLocale, 'config_payment', 1, false);
-        if (!is_array($arrayConfigPayment)) {
-            $arrayConfigPayment = [];
-        }
-        if (!array_key_exists($paymentId, $arrayConfigPayment)) {
-            $arrayConfigPayment[$paymentId] = ['description' => $this->getCrefoPaymentDescription($otherLocale)];
-            $translator->write($otherLocale, 'config_payment', 1, $arrayConfigPayment, false);
+        $localeId = $auth->getIdentity()->localeID;
+        $arrayLocales = $this->getLocalesArray();
+        $baseShops = $this->getBaseShops();
+        foreach($baseShops as $shop){
+            foreach ($arrayLocales as $locale) {
+                if($locale['id'] == $shop['localeId'] && $shop['default'] == false) {
+                    $arrayConfigPayment = $translator->read($locale['id'], 'config_payment', 1, false);
+                    if (!is_array($arrayConfigPayment)) {
+                        $arrayConfigPayment = [];
+                    }
+                    if (!array_key_exists($paymentId, $arrayConfigPayment)) {
+                        $arrayConfigPayment[$paymentId] = ['description' => $this->getCrefoPaymentDescription($locale['id'])];
+                        $translator->write($shop['id'], 'config_payment', 1, $arrayConfigPayment, false);
+                    }
+                }
+            }
         }
     }
 
@@ -193,7 +199,9 @@ class Installer
         $arrayLocales = $queryDe = $repoShop->getLocalesListQuery()->getArrayResult();
         $locales = [];
         foreach ($arrayLocales as $locale) {
-            if (($locale['locale'] == 'de_DE' || $locale['locale'] == 'en_GB') && !in_array($locale, $locales)) {
+            if (($locale['locale'] == self::GERMAN_LOCALE || $locale['locale'] == self::ENGLISH_LOCALE) && !in_array($locale,
+                    $locales)
+            ) {
                 $locales[] = $locale;
             }
             if (count($locales) == 2) {
@@ -201,6 +209,18 @@ class Installer
             }
         }
         return $locales;
+    }
+
+    /**
+     * @return array
+     */
+    private function getBaseShops()
+    {
+        /**
+         * @var \Shopware\Models\Shop\Repository $repoShop
+         */
+        $repoShop = $this->getEntityManager()->getRepository(Shop::class);
+        return $repoShop->getBaseListQuery()->getArrayResult();
     }
 
     /**
@@ -237,7 +257,7 @@ class Installer
      */
     private function createSchema()
     {
-        CrefoShopwarePlugIn::getCrefoLogger()->log(CrefoLogger::DEBUG, "==create schema==", ["Create DB schema."]);
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, "==create schema==", ["Create DB schema."]);
         $this->creditreformPlugin->registerCustomModels();
         $tool = new SchemaTool($this->getEntityManager());
         $classes = $this->creditreformPlugin->getCrefoClassArray();
@@ -253,7 +273,7 @@ class Installer
      */
     private function addInitData($connection)
     {
-        CrefoShopwarePlugIn::getCrefoLogger()->log(CrefoLogger::DEBUG, "==addInitData==",
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::INFO, "==addInitData==",
             ["Start to initiate data in DB."]);
         $connection->insert('crefo_plugin_settings',
             [
@@ -262,8 +282,8 @@ class Installer
                 'logsMaxStorageTime' => 2,
                 'errorNotificationStatus' => false,
                 'emailAddress' => null,
-                'requestCheckAtValue' => 2,
-                'errorTolerance' => 1,
+                'requestCheckAtValue' => null,
+                'errorTolerance' => null,
                 'consentDeclaration' => 1
             ]);
         $connection->insert('crefo_report_company_config',
@@ -275,10 +295,7 @@ class Installer
         $connection->insert('crefo_report_private_person_config',
             [
                 'userAccountId' => null,
-                'legitimateKey' => null,
-                'selectedProductKey' => null,
-                'thresholdMin' => null,
-                'thresholdMax' => null
+                'legitimateKey' => null
             ]);
         $connection->insert('crefo_error_requests',
             [

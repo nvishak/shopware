@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -10,7 +10,7 @@
  */
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_orders/view/detail/container/document"}
-Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
+Ext.define('Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
     {
         extend: 'Ext.form.FieldContainer',
         autoShow: true,
@@ -29,7 +29,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
         },
         hidden: false,
         minWidth: 155,
-        // overflowX: 'hidden',
+        //overflowX: 'hidden',
         snippets: {
             labels: {
                 account: '{s name="crefo/orders/view/detail/container/proposal/labels/useraccount"}Mitgliedskennung{/s}',
@@ -62,15 +62,15 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
          * This function is called, when the component is initiated
          * It creates the columns of the grid
          */
-        initComponent: function(){
+        initComponent: function() {
             var me = this;
             me.data = me.record.data;
-            Ext.applyIf( me, {
+            Ext.applyIf(me, {
                 items: me.getItems()
-            } );
-            me.callParent( arguments );
+            });
+            me.callParent(arguments);
         },
-        getItems: function(){
+        getItems: function() {
             var me = this;
 
             return [
@@ -107,11 +107,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                             id: 'sendDate',
                             fieldLabel: me.snippets.labels.sentDate,
                             value: me.data.sentDate,
-                            renderer: function( value, metaData, record ){
-                                if( value === Ext.undefined ) {
+                            renderer: function(value, metaData, record) {
+                                if (value === Ext.undefined) {
                                     return value;
                                 }
-                                return Ext.util.Format.date( value, 'Y-m-d' );
+                                return Ext.util.Format.date(value, 'Y-m-d');
                             },
                             flex: 1,
                             width: '100%',
@@ -268,9 +268,9 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                             labelWidth: '30%',
                             padding: '5 5 0 5',
                             listeners: {
-                                'beforerender': function( cmp, eOpts ){
+                                'beforerender': function(cmp, eOpts) {
                                     //15 - letter height; 76 - width of text in cmp
-                                    var len = Math.ceil( me.data.remarks.length / 76 );
+                                    var len = Math.ceil(me.data.remarks.length / 76);
                                     cmp.height = 15 * (len === 0 ? 1.2 : len);
                                 }
                             }
@@ -294,11 +294,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                             width: '100%',
                             labelWidth: '30%',
                             padding: '5 5 0 5',
-                            renderer: function( value, metaData, record ){
-                                if( value === Ext.undefined ) {
+                            renderer: function(value, metaData, record) {
+                                if (value === Ext.undefined) {
                                     return value;
                                 }
-                                return Ext.util.Format.date( value, 'Y-m-d' );
+                                return Ext.util.Format.date(value, 'Y-m-d');
                             },
                             fieldLabel: me.snippets.labels.contractDate,
                             value: me.data.dateContract
@@ -311,11 +311,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                             width: '100%',
                             labelWidth: '30%',
                             padding: '5 5 0 5',
-                            renderer: function( value, metaData, record ){
-                                if( value === Ext.undefined ) {
+                            renderer: function(value, metaData, record) {
+                                if (value === Ext.undefined) {
                                     return value;
                                 }
-                                return Ext.util.Format.date( value, 'Y-m-d' );
+                                return Ext.util.Format.date(value, 'Y-m-d');
                             },
                             fieldLabel: me.snippets.labels.invoiceDate,
                             value: me.data.dateInvoice
@@ -350,11 +350,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                             width: '100%',
                             labelWidth: '30%',
                             padding: '5 5 0 5',
-                            renderer: function( value, metaData, record ){
-                                if( value === Ext.undefined ) {
+                            renderer: function(value, metaData, record) {
+                                if (value === Ext.undefined) {
                                     return value;
                                 }
-                                return Ext.util.Format.date( value, 'Y-m-d' );
+                                return Ext.util.Format.date(value, 'Y-m-d');
                             },
                             fieldLabel: me.snippets.labels.valutaDate,
                             value: me.data.valutaDate
@@ -367,11 +367,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                             width: '100%',
                             labelWidth: '30%',
                             padding: '5 5 0 5',
-                            renderer: function( value, metaData, record ){
-                                if( value === Ext.undefined ) {
+                            renderer: function(value, metaData, record) {
+                                if (value === Ext.undefined) {
                                     return value;
                                 }
-                                return Ext.util.Format.date( value, 'Y-m-d' );
+                                return Ext.util.Format.date(value, 'Y-m-d');
                             },
                             fieldLabel: me.snippets.labels.dueDate,
                             value: me.data.dueDate
@@ -386,7 +386,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                                 {
                                     xtype: 'label',
                                     forId: 'amount',
-                                    text: me.snippets.labels.amount + ":",
+                                    text: me.snippets.labels.amount + ':',
                                     cls: 'x-form-item-label x-form-item-label-left',
                                     width: '30%'
                                 },
@@ -395,11 +395,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                                     name: 'amount',
                                     id: 'amount',
                                     value: me.data.amount,
-                                    renderer: function( value, metaData, record ){
-                                        if( value === Ext.undefined ) {
+                                    renderer: function(value, metaData, record) {
+                                        if (value === Ext.undefined) {
                                             return value;
                                         }
-                                        return Ext.util.Format.currency( value );
+                                        return Ext.util.Format.currency(value);
                                     }
                                 }, {
                                     xtype: 'displayfield',
@@ -418,11 +418,11 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                     ]
                 } ];
         },
-        getDebtorType: function(){
+        getDebtorType: function() {
             var me = this,
                 debtorHead = null,
                 testVar = null;
-            if( me.data.companyName !== null && Ext.isDefined( me.data.companyName ) ) {
+            if (me.data.companyName !== null && Ext.isDefined(me.data.companyName)) {
                 debtorHead = {
                     xtype: 'displayfield',
                     name: 'debtorCompany',
@@ -435,9 +435,9 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                     value: me.data.companyName,
                     fieldBodyCls: 'crefo-wrap-text',
                     listeners: {
-                        'beforerender': function( cmp, eOpts ){
+                        'beforerender': function(cmp, eOpts) {
                             //15 - letter height; 76 - width of text in cmp
-                            cmp.height = 15 * Math.ceil( me.data.companyName.length / 76 );
+                            cmp.height = 15 * Math.ceil(me.data.companyName.length / 76);
                         }
                     }
                 };
@@ -452,7 +452,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                         {
                             xtype: 'label',
                             forId: 'debtorSalutation',
-                            text: me.snippets.labels.debtor + ":",
+                            text: me.snippets.labels.debtor + ':',
                             cls: 'x-form-item-label x-form-item-label-left',
                             width: '30%'
                         },
@@ -477,8 +477,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
             }
             return debtorHead;
         },
-        displayInterestRate: function(){
-
+        displayInterestRate: function() {
             var me = this,
                 interestRateDisplay = {
                     xtype: 'container',
@@ -490,7 +489,7 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                         {
                             xtype: 'label',
                             forId: 'amount',
-                            text: me.snippets.labels.interestRate + ":",
+                            text: me.snippets.labels.interestRate + ':',
                             cls: 'x-form-item-label x-form-item-label-left',
                             width: '30%'
                         },
@@ -502,23 +501,22 @@ Ext.define( 'Shopware.apps.CrefoOrders.view.detail.ContainerDocument',
                         }
                     ]
                 };
-            if( me.data.interestRateValue !== null && me.data.interestRateValue !== Ext.undefined ) {
+            if (me.data.interestRateValue !== null && me.data.interestRateValue !== Ext.undefined) {
                 var interestRateValueDisplay = {
                     xtype: 'displayfield',
                     name: 'interestRateValue',
                     id: 'interestRateValue',
                     value: me.data.interestRateValue,
-                    renderer: function( value, metaData, record ){
-                        if( value === Ext.undefined ) {
+                    renderer: function(value, metaData, record) {
+                        if (value === Ext.undefined) {
                             return value;
                         }
-                        return Ext.util.Format.currency( value ) + " %";
+                        return Ext.util.Format.currency(value) + ' %';
                     }
                 };
-                interestRateDisplay.items.push( interestRateValueDisplay );
+                interestRateDisplay.items.push(interestRateValueDisplay);
             }
             return interestRateDisplay;
         }
-    } );
-// {/block}
-
+    });
+//{/block}

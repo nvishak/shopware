@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,17 +12,17 @@
 
 namespace CrefoShopwarePlugIn\Components\API\Body;
 
-use \CrefoShopwarePlugIn\Components\Core\CrefoSanitization;
-use \CrefoShopwarePlugIn\Components\Core\CrefoSanitizer;
-use \CrefoShopwarePlugIn\Components\Core\CrefoValidator;
-use \CrefoShopwarePlugIn\Components\API\Parts\BonimaBodyTrait;
-use \CrefoShopwarePlugIn\Components\API\Parts\AddressOne;
+use CrefoShopwarePlugIn\Components\API\Parts\AddressOne;
+use CrefoShopwarePlugIn\Components\API\Parts\BonimaBodyTrait;
+use CrefoShopwarePlugIn\Components\Core\CrefoSanitization;
+use CrefoShopwarePlugIn\Components\Core\CrefoSanitizer;
+use CrefoShopwarePlugIn\Components\Core\CrefoValidator;
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 
 /**
  * Class BonimaReportBody
- * @package CrefoShopwarePlugIn\Components\API\Body
  */
-class BonimaReportBody implements CrefoSanitization
+class BonimaReportBody implements RequestBody, CrefoSanitization
 {
     use BonimaBodyTrait;
 
@@ -30,9 +30,12 @@ class BonimaReportBody implements CrefoSanitization
 
     /**
      * IdentificationReportBody constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==BonimaReportRequestBody::construct==',
+            ['create bonima report body']);
         date_default_timezone_set('Europe/Berlin');
         $this->crefoValidator = new CrefoValidator();
         $this->addressone = new AddressOne();
@@ -40,38 +43,51 @@ class BonimaReportBody implements CrefoSanitization
 
     /**
      * should be checked only for DE
+     *
      * @param $value
      */
     public function setPostcode($value)
     {
-        if (isset($this->addressone) && !is_null($this->addressone)) {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==BonimaReportRequestBody::setPostcode==',
+            ['set postcode', 'value' => $value]);
+        if (isset($this->addressone) && null !== $this->addressone) {
             $this->addressone->setPostcode($this->crefoValidator->checkPostalCode($value));
         }
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * @param string $address
      * @return array
      */
     public function validateAddress($address)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==BonimaReportRequestBody::validateAddress==',
+            ['validate address', 'address' => $address]);
+
         return $this->crefoValidator->computeRawAddress($address);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function performSanitization()
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, '==BonimaReportRequestBody::performSanitization==',
+            ['perform sanitization']);
         $sanitizeObj = new CrefoSanitizer();
         $sourceArray = [
-            "legitimate_interest" => $this->getLegitimateInterest(),
-            "product_type" => $this->getProductType(),
-            "street" => $this->getAddressOne()->getStreet(),
-            "houseWithAffix" => $this->getAddressOne()->getHouseNumberWithAffix(),
-            "postcode" => $this->getAddressOne()->getPostcode(),
-            "city" => $this->getAddressOne()->getCity(),
-            "country" => $this->getAddressOne()->getCountry(),
-            "date_of_birth" => $this->getDateOfBirth(),
-            "first_name" => $this->getFirstName(),
-            "surname" => $this->getSurname()
+            'legitimate_interest' => $this->getLegitimateInterest(),
+            'product_type' => $this->getProductType(),
+            'street' => $this->getAddressOne()->getStreet(),
+            'houseWithAffix' => $this->getAddressOne()->getHouseNumberWithAffix(),
+            'postcode' => $this->getAddressOne()->getPostcode(),
+            'city' => $this->getAddressOne()->getCity(),
+            'country' => $this->getAddressOne()->getCountry(),
+            'date_of_birth' => $this->getDateOfBirth(),
+            'first_name' => $this->getFirstName(),
+            'surname' => $this->getSurname(),
         ];
 
         $sanitizeObj->addSource($sourceArray);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -13,13 +13,12 @@
 namespace CrefoShopwarePlugIn\Components\API\Parts;
 
 /**
+ * @codeCoverageIgnore
  * Class IdentificationReportBodyTrait
  * @package CrefoShopwarePlugIn\Components\API\Parts
  */
 trait IdentificationReportBodyTrait
 {
-    use PhoneTrait;
-
     private $legitimateinterest;
     private $reportlanguage;
     private $producttype;
@@ -35,6 +34,7 @@ trait IdentificationReportBodyTrait
     private $website;
     private $registertype;
     private $registerid;
+    private $phone;
     private $vatid;
     private $solvencyindexthreshold;
 
@@ -84,6 +84,25 @@ trait IdentificationReportBodyTrait
     public function setProductType($producttype)
     {
         $this->producttype = $producttype;
+    }
+
+    /**
+     * @return Phone
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param Phone $phone
+     */
+    public function setPhone(Phone $phone){
+        $this->phone = $phone;
+    }
+
+    public function initPhone(){
+        $this->phone = new Phone();
     }
 
     /**

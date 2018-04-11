@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -12,9 +12,10 @@
 
 namespace CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Types\Type;
 use \Shopware\Components\Model\ModelEntity;
-use \Doctrine\ORM\Mapping as ORM;
-use \Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="ProductsRepository")
@@ -41,11 +42,25 @@ class ProductsPrivatePerson extends ModelEntity
     private $configId;
 
     /**
+     * @var ArrayCollection $scoreProducts
+     *
+     * @ORM\OneToMany(targetEntity="CrefoShopwarePlugIn\Models\CrefoReportPrivatePersonConfig\ProductScoreConfig", mappedBy="productId")
+     */
+    private $scoreProducts;
+
+    /**
      * @var integer $productKeyWS
      *
      * @ORM\Column(type="integer", nullable=true)
      */
     private $productKeyWS;
+
+    /**
+     * @var string $productNameWS
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $productNameWS;
 
     /**
      * @var boolean $isProductAvailable
@@ -62,32 +77,33 @@ class ProductsPrivatePerson extends ModelEntity
     private $visualSequence;
 
     /**
-     * @var integer $productScoreFrom
+     * @var boolean $isLastThresholdMax
      *
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="boolean", nullable=false)
      */
-    private $productScoreFrom;
+    private $isLastThresholdMax = false;
 
     /**
-     * @var integer $productScoreTo
+     * @var Type::DECIMAL $thresholdMin
      *
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="decimal", precision=7, scale=2, nullable=false)
      */
-    private $productScoreTo;
+    private $thresholdMin;
 
     /**
-     * @var integer $identificationResult
+     * @var Type::DECIMAL $thresholdMax
      *
-     * @ORM\Column(type="integer", nullable=false)
+     * @ORM\Column(type="decimal", precision=7, scale=2, nullable=true)
      */
-    private $identificationResult;
+    private $thresholdMax;
 
     /**
-     * @var integer $addressValidationResult
-     *
-     * @ORM\Column(type="integer", nullable=false)
+     * ProductsPrivatePerson constructor.
      */
-    private $addressValidationResult;
+    public function __construct()
+    {
+        $this->scoreProducts = new ArrayCollection();
+    }
 
     /**
      * @return int
@@ -106,11 +122,35 @@ class ProductsPrivatePerson extends ModelEntity
     }
 
     /**
+     * @return ArrayCollection
+     */
+    public function getScoreProducts()
+    {
+        return $this->scoreProducts;
+    }
+
+    /**
      * @return integer
      */
     public function getProductKeyWS()
     {
         return $this->productKeyWS;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProductNameWS()
+    {
+        return $this->productNameWS;
+    }
+
+    /**
+     * @param string $productNameWS
+     */
+    public function setProductNameWS($productNameWS)
+    {
+        $this->productNameWS = $productNameWS;
     }
 
     /**
@@ -130,35 +170,51 @@ class ProductsPrivatePerson extends ModelEntity
     }
 
     /**
-     * @return int
+     * @return bool
      */
-    public function getProductScoreFrom()
+    public function isLastThresholdMax()
     {
-        return $this->productScoreFrom;
+        return $this->isLastThresholdMax;
     }
 
     /**
-     * @return int
+     * @param bool $isLastThresholdMax
      */
-    public function getProductScoreTo()
+    public function setLastThresholdMax($isLastThresholdMax)
     {
-        return $this->productScoreTo;
+        $this->isLastThresholdMax = $isLastThresholdMax;
     }
 
     /**
-     * @return int
+     * @return Type::DECIMAL
      */
-    public function getIdentificationResult()
+    public function getThresholdMin()
     {
-        return $this->identificationResult;
+        return $this->thresholdMin;
     }
 
     /**
-     * @return int
+     * @param Type::DECIMAL $thresholdMin
      */
-    public function getAddressValidationResult()
+    public function setThresholdMin($thresholdMin)
     {
-        return $this->addressValidationResult;
+        $this->thresholdMin = $thresholdMin;
+    }
+
+    /**
+     * @return Type::DECIMAL
+     */
+    public function getThresholdMax()
+    {
+        return $this->thresholdMax;
+    }
+
+    /**
+     * @param Type::DECIMAL $thresholdMax
+     */
+    public function setThresholdMax($thresholdMax)
+    {
+        $this->thresholdMax = $thresholdMax;
     }
 
     /**
@@ -167,6 +223,14 @@ class ProductsPrivatePerson extends ModelEntity
     public function setConfigId($configId)
     {
         $this->configId = $configId;
+    }
+
+    /**
+     * @param ArrayCollection $products
+     */
+    public function setScoreProducts($products)
+    {
+        $this->scoreProducts = $products;
     }
 
     /**
@@ -192,38 +256,4 @@ class ProductsPrivatePerson extends ModelEntity
     {
         $this->visualSequence = $visualSequence;
     }
-
-    /**
-     * @param int $productScoreFrom
-     */
-    public function setProductScoreFrom($productScoreFrom)
-    {
-        $this->productScoreFrom = $productScoreFrom;
-    }
-
-    /**
-     * @param int $productScoreTo
-     */
-    public function setProductScoreTo($productScoreTo)
-    {
-        $this->productScoreTo = $productScoreTo;
-    }
-
-    /**
-     * @param int $identificationResult
-     */
-    public function setIdentificationResult($identificationResult)
-    {
-        $this->identificationResult = $identificationResult;
-    }
-
-    /**
-     * @param int $addressValidationResult
-     */
-    public function setAddressValidationResult($addressValidationResult)
-    {
-        $this->addressValidationResult = $addressValidationResult;
-    }
-
-
 }

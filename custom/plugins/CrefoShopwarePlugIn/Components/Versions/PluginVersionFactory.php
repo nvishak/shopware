@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -11,6 +11,8 @@
  */
 
 namespace CrefoShopwarePlugIn\Components\Versions;
+
+use CrefoShopwarePlugIn\Components\Logger\CrefoLogger;
 
 /**
  * Class PluginVersionFactory
@@ -28,6 +30,7 @@ class PluginVersionFactory
      */
     public static function createFromFile($pathToFile, $olderVersion, $newerVersion)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Create class from file.', [$pathToFile, $olderVersion, $newerVersion]);
         if (!file_exists($pathToFile)) {
             return null;
         }
@@ -48,6 +51,7 @@ class PluginVersionFactory
      */
     private static function getClassNameFromPath($pathToFile)
     {
+        CrefoLogger::getCrefoLogger()->log(CrefoLogger::DEBUG, 'Get class name from path.', [$pathToFile]);
         $pathSplit = explode(DIRECTORY_SEPARATOR, $pathToFile);
         $lenPath = count($pathSplit);
         $className = explode(".", $pathSplit[$lenPath - 1])[0];

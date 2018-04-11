@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -68,12 +68,17 @@ class Receivable
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     * @return mixed
+     */
     public function getInterestArray()
     {
         return $this->interest;
     }
 
     /**
+     * @codeCoverageIgnore
      * @return mixed
      */
     public function getCurrency()
@@ -82,6 +87,7 @@ class Receivable
     }
 
     /**
+     * @codeCoverageIgnore
      * @param mixed $currency
      */
     public function setCurrency($currency)
@@ -90,6 +96,7 @@ class Receivable
     }
 
     /**
+     * @codeCoverageIgnore
      * @return mixed
      */
     public function getCustomerreference()
@@ -98,6 +105,7 @@ class Receivable
     }
 
     /**
+     * @codeCoverageIgnore
      * @param mixed $customerreference
      */
     public function setCustomerreference($customerreference)
@@ -106,6 +114,7 @@ class Receivable
     }
 
     /**
+     * @codeCoverageIgnore
      * @return mixed
      */
     public function getRemarks()
@@ -114,6 +123,7 @@ class Receivable
     }
 
     /**
+     * @codeCoverageIgnore
      * @param mixed $remarks
      */
     public function setRemarks($remarks)

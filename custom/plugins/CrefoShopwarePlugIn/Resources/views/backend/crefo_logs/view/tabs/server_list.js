@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -11,19 +11,19 @@
 //{namespace name=backend/creditreform/translation}
 //{block name="backend/crefo_logs/view/tabs/server_list"}
 Ext.define('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
-    extend:'Ext.grid.Panel',
-    alias:'widget.crefo-logs-server-list',
-    cls:Ext.baseCSSPrefix + 'crefo-logs-server-list',
-    region:'center',
-    autoScroll:false,
-    snippets:{
-        columns:{
-            fileName : '{s name="crefologs/view/main/tabs/columns/server/filename"}Log Name{/s}',
-            dataindex:{
-                fileName : 'filename'
+    extend: 'Ext.grid.Panel',
+    alias: 'widget.crefo-logs-server-list',
+    cls: Ext.baseCSSPrefix + 'crefo-logs-server-list',
+    region: 'center',
+    autoScroll: false,
+    snippets: {
+        columns: {
+            fileName: '{s name="crefologs/view/main/tabs/columns/server/filename"}Log Name{/s}',
+            dataindex: {
+                fileName: 'filename'
             }
         },
-        toolbar:{
+        toolbar: {
             zipDownload: '{s name="crefologs/view/main/tabs/server/toolbar/zipDownload"}Log-Eintrag herunterladen{/s}'
         },
         paging: {
@@ -34,7 +34,7 @@ Ext.define('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
         enableTextSelection: true
     },
 
-    initComponent:function () {
+    initComponent: function () {
         var me = this;
         me.registerEvents();
         me.store = me.listServerStore;
@@ -67,7 +67,7 @@ Ext.define('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
      *
      * @return Ext.toolbar.Paging The paging toolbar for the customer grid
      */
-    getPagingBar:function () {
+    getPagingBar: function () {
         var me = this;
 
         var pageSize = Ext.create('Ext.form.field.ComboBox', {
@@ -97,14 +97,13 @@ Ext.define('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
 
         var pagingBar = Ext.create('Ext.toolbar.Paging', {
             store: me.listServerStore,
-            dock:'bottom',
-            displayInfo:true
+            dock: 'bottom',
+            displayInfo: true
         });
 
         pagingBar.insert(pagingBar.items.length - 2, [ { xtype: 'tbspacer', width: 6 }, pageSize ]);
 
         return pagingBar;
-
     },
 
     /**
@@ -129,14 +128,14 @@ Ext.define('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
      *
      * @return [array] grid columns
      */
-    getColumns:function () {
+    getColumns: function () {
         var me = this;
 
         return [
             {
                 header: me.snippets.columns.fileName,
                 dataIndex: me.snippets.columns.dataindex.fileName,
-                flex:1
+                flex: 1
             }
         ];
     },
@@ -145,15 +144,15 @@ Ext.define('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
      *
      * @return [Ext.selection.CheckboxModel] grid selection model
      */
-    getGridSelModel:function () {
+    getGridSelModel: function () {
         var me = this;
 
         return Ext.create('Ext.selection.CheckboxModel', {
             checkOnly: true,
-            listeners:{
-                // Unlocks the save button if the user has checked at least one checkbox
-                selectionchange:function (sm, selections) {
-                    if (me.downloadZipButton !== null ) {
+            listeners: {
+                //Unlocks the save button if the user has checked at least one checkbox
+                selectionchange: function (sm, selections) {
+                    if (me.downloadZipButton !== null) {
                         me.downloadZipButton.setDisabled(selections.length === 0);
                     }
                 }
@@ -166,30 +165,27 @@ Ext.define('Shopware.apps.CrefoLogs.view.tabs.ServerList', {
      *
      * @return [Ext.toolbar.Toolbar] grid toolbar
      */
-    getToolbar:function () {
+    getToolbar: function () {
         var me = this;
 
         me.downloadZipButton = Ext.create('Ext.button.Button', {
-            iconCls:'sprite-inbox-download',
-            text:me.snippets.toolbar.zipDownload,
-            action:'serverLogsZipDownloading',
-            disabled:true,
+            iconCls: 'sprite-inbox-download',
+            text: me.snippets.toolbar.zipDownload,
+            action: 'serverLogsZipDownloading',
+            disabled: true,
             handler: function() {
                 me.fireEvent('downloadServerLogs', me);
             }
         });
 
-
         return Ext.create('Ext.toolbar.Toolbar', {
-            dock:'top',
+            dock: 'top',
             ui: 'shopware-ui',
-            items:[
+            items: [
                 me.downloadZipButton
             ]
         });
     }
 
-
 });
 //{/block}
-

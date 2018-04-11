@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -11,6 +11,8 @@
  */
 
 namespace CrefoShopwarePlugIn\Components\Swag\Middleware;
+
+use CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings;
 
 /**
  * Class ConfigHeaderRequest
@@ -37,6 +39,7 @@ class ConfigHeaderRequest
 
     /**
      * ConfigHeaderRequest constructor.
+     * @codeCoverageIgnore
      */
     public function __construct()
     {
@@ -68,24 +71,23 @@ class ConfigHeaderRequest
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      */
     public function getEncryptionKey()
     {
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\SettingsRepository $repositorySettings
-         */
-        $repositorySettings = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings');
         $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings::class);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings $settings
          */
-        $settings = $repositorySettings->find($configId);
-        return is_null($settings->getEncryptionKey()) ? '' : $settings->getEncryptionKey();
+        $settings = $shopwareModels->find(PluginSettings::class, $configId);
+        return null === $settings->getEncryptionKey() ? '' : $settings->getEncryptionKey();
     }
 
     /**
      * extracts lazy the needed information from the server
+     * @codeCoverageIgnore
      */
     private function buildConfig()
     {
@@ -95,6 +97,7 @@ class ConfigHeaderRequest
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      */
     private function computePluginVersion()
@@ -103,7 +106,7 @@ class ConfigHeaderRequest
          * @var \CrefoShopwarePlugIn\CrefoShopwarePlugIn $creditreform
          */
         $creditreform = CrefoCrossCuttingComponent::getCreditreformPlugin();
-        if (is_null($creditreform)) {
+        if (null === $creditreform) {
             return $this->pluginVersion;
         }
         $pluginXml = $creditreform->getPath() . '/plugin.xml';
@@ -112,23 +115,22 @@ class ConfigHeaderRequest
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      */
     private function computeCommunicationLanguage()
     {
-        /**
-         * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\SettingsRepository $repositorySettings
-         */
-        $repositorySettings = CrefoCrossCuttingComponent::getShopwareInstance()->Models()->getRepository('CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings');
         $configId = CrefoCrossCuttingComponent::getCreditreformPlugin()->getConfigurationId(\CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings::class);
+        $shopwareModels = CrefoCrossCuttingComponent::getShopwareInstance()->Models();
         /**
          * @var \CrefoShopwarePlugIn\Models\CrefoPluginSettings\PluginSettings $settings
          */
-        $settings = $repositorySettings->find($configId);
-        return is_null($settings->getCommunicationLanguage()) ? self::DEFAULT_COMMUNICATION_LANGUAGE : $settings->getCommunicationLanguage();
+        $settings = $shopwareModels->find(PluginSettings::class, $configId);
+        return null === $settings->getCommunicationLanguage() ? self::DEFAULT_COMMUNICATION_LANGUAGE : $settings->getCommunicationLanguage();
     }
 
     /**
+     * @codeCoverageIgnore
      * @return string
      */
     private function computeShopwareVersion()

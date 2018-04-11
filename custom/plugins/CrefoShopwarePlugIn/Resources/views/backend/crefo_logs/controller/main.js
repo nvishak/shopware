@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Verband der Vereine Creditreform.
+ * Copyright (c) 2016-2017 Verband der Vereine Creditreform.
  * Hellersbergstrasse 12, 41460 Neuss, Germany.
  *
  * This file is part of the CrefoShopwarePlugIn.
@@ -23,7 +23,7 @@ Ext.define('Shopware.apps.CrefoLogs.controller.Main', {
                 callback: function (records) {
                     me.mainWindow = me.getView('main.Window').create({
                         crefoListStore: me.subApplication.crefoListStore,
-                        listServerStore : me.subApplication.listServerStore
+                        listServerStore: me.subApplication.listServerStore
                     });
                 }
             });
@@ -50,12 +50,11 @@ Ext.define('Shopware.apps.CrefoLogs.controller.Main', {
     onChangeTab: function (tabPanel, newTab, oldTab, formPanel) {
         var grid = newTab.items.items[0],
             store = grid.getStore();
-        if(Ext.isDefined(store)){
+        if (Ext.isDefined(store)) {
             store.load();
         }
     },
     onDownloadServerLogs: function (list) {
-        var me = this;
         var records = list.getSelectionModel().getSelection();
         var files = [];
         Ext.each(records, function (record) {
@@ -64,44 +63,32 @@ Ext.define('Shopware.apps.CrefoLogs.controller.Main', {
         Ext.Ajax.request({
             url: '{url controller=CrefoLogs action=createServerLogsZip}',
             method: 'GET',
-            params: { records : Ext.JSON.encode(files) },
+            params: { records: Ext.JSON.encode(files) },
             success: function(response) {
-                try{
-                    if(!me.isJson(response.responseText)){
-                        throw new Error("no response");
+                try {
+                    if (!CrefoUtil.isJson(response.responseText)) {
+                        throw new Error('no response');
                     }
                     var result = Ext.JSON.decode(response.responseText);
-                    if(!result.success){
-                        throw new Error("not successful");
+                    if (!result.success) {
+                        throw new Error('not successful');
                     }
 
                     Ext.create('Ext.Component', {
                         frameborder: 0,
                         style: {
-                            display : 'none'
+                            display: 'none'
                         },
-                        autoEl : {
-                            tag : "iframe",
-                            src : 'CrefoLogs/downloadZip?zipName=' + result.zipName
+                        autoEl: {
+                            tag: 'iframe',
+                            src: 'CrefoLogs/downloadZip?zipName=' + result.zipName
                         },
                         renderTo: Ext.getBody()
                     });
-                }catch(e){
-                    // console.log(e);
+                } catch (e) {
                 }
             }
         });
-    },
-    isJson: function (str) {
-        try {
-            Ext.JSON.decode(str, false);
-            return true;
-        } catch (e) {
-            // console.log(e);
-            return false;
-        }
     }
 });
 //{/block}
-
-
