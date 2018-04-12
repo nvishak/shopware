@@ -87,7 +87,8 @@ class TemplateRegistration implements SubscriberInterface
 
            $ordernumber = $controller->sOrderNumber;
            $paymentId = $controller->sUserData['additional']['payment']['id'];
-           if ($paymentId !== 7) {
+
+           if ($paymentId != 7) {
 //               $sql_order = "SELECT id from s_order WHERE ordernumber = ?";
 //               $orderId = (int) Shopware()->Db()->fetchOne($sql_order, array($ordernumber));
                $orderId = $args->get('orderId');

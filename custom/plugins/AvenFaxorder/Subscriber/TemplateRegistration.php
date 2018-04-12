@@ -79,6 +79,9 @@ class TemplateRegistration implements SubscriberInterface
         $UserId = $session->sUserId;
         $paymentId = $controller->sUserData['additional']['payment']['id'];
 
+        $logger = Shopware()->Container()->get('pluginlogger');
+        $logger->info('paymentID',[$paymentId]);
+
         if ($paymentId == 7) {
             $ordernumber = $controller->sOrderNumber;
             $sql_setStatus = "UPDATE s_order SET status=? WHERE ordernumber=?";

@@ -4,14 +4,13 @@
     <list default="true" id="9ca67f5c-435c-4a9f-8e39-4e3b2cac6a83" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/custom/plugins/AvenFaxorder/Controllers/Frontend/AvenOfferManagement.php" afterPath="$PROJECT_DIR$/custom/plugins/AvenFaxorder/Controllers/Frontend/AvenOfferManagement.php" />
-      <change beforePath="$PROJECT_DIR$/engine/Library/Zend/Mail/Protocol/Abstract.php" afterPath="$PROJECT_DIR$/engine/Library/Zend/Mail/Protocol/Abstract.php" />
-      <change beforePath="$PROJECT_DIR$/engine/Library/Zend/Mail/Transport/Sendmail.php" afterPath="$PROJECT_DIR$/engine/Library/Zend/Mail/Transport/Sendmail.php" />
+      <change beforePath="$PROJECT_DIR$/custom/plugins/AvenFaxorder/Subscriber/TemplateRegistration.php" afterPath="$PROJECT_DIR$/custom/plugins/AvenFaxorder/Subscriber/TemplateRegistration.php" />
+      <change beforePath="$PROJECT_DIR$/custom/plugins/AvenSupplier/Subscriber/TemplateRegistration.php" afterPath="$PROJECT_DIR$/custom/plugins/AvenSupplier/Subscriber/TemplateRegistration.php" />
+      <change beforePath="$PROJECT_DIR$/engine/Shopware/Core/sOrder.php" afterPath="$PROJECT_DIR$/engine/Shopware/Core/sOrder.php" />
       <change beforePath="$PROJECT_DIR$/var/cache/production_201804030942/general/shopware--e3235bec116f10e0aec6e231c995b9fbShopware/shopware--Config/shopware--4be/shopware---e3235bec116f10e0aec6e231c995b9fbShopware_Config" afterPath="$PROJECT_DIR$/var/cache/production_201804030942/general/shopware--e3235bec116f10e0aec6e231c995b9fbShopware/shopware--Config/shopware--4be/shopware---e3235bec116f10e0aec6e231c995b9fbShopware_Config" />
       <change beforePath="$PROJECT_DIR$/var/cache/production_201804030942/general/shopware--e3235bec116f10e0aec6e231c995b9fbShopware/shopware--Config/shopware--4be/shopware---internal-metadatas---e3235bec116f10e0aec6e231c995b9fbShopware_Config" afterPath="$PROJECT_DIR$/var/cache/production_201804030942/general/shopware--e3235bec116f10e0aec6e231c995b9fbShopware/shopware--Config/shopware--4be/shopware---internal-metadatas---e3235bec116f10e0aec6e231c995b9fbShopware_Config" />
-      <change beforePath="$PROJECT_DIR$/var/cache/production_201804030942/proxies/ShopwareControllersBackendBaseProxy.php" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/var/cache/production_201804030942/proxies/ShopwareControllersBackendIndexProxy.php" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/var/cache/production_201804030942/proxies/ShopwareModelsMenuRepositoryProxy.php" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/var/cache/production_201804030942/templates/backend_en_GB_682f4/2c/ba/98/2cba9847ab9a84a0219b0b94f0fe3c5ad74a246a.snippet.menu.tpl.php" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/web/cache/1523433901_40d10df21fd6432f9fddfb49bd9e3472.css" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/web/cache/1523433901_40d10df21fd6432f9fddfb49bd9e3472.js" afterPath="" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,17 +19,75 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ComposerSettings" synchronizationState="SYNCHRONIZE">
+  <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="Checkout.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/engine/Shopware/Controllers/Frontend/Checkout.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="604">
+              <caret line="707" column="73" lean-forward="true" selection-start-line="707" selection-start-column="73" selection-end-line="707" selection-end-column="73" />
+              <folding>
+                <marker date="1522728756000" expanded="true" signature="10837:10985" ph="SELECT trans... s_order" />
+                <marker date="1522728756000" expanded="true" signature="24342:24390" ph="SELECT areaI... s_core_countries" />
+                <marker date="1522728756000" expanded="true" signature="31924:31994" ph="SELECT * FRO... s_core_customergroups" />
+                <marker date="1522728756000" expanded="true" signature="37494:37986" ph="SELECT a.id s_articles" />
+                <marker date="1522728756000" expanded="true" signature="41855:41916" ph="SELECT taxco... s_emarketing_vouchers" />
+                <marker date="1522728756000" expanded="true" signature="42620:42659" ph="SELECT tax F... s_core_tax" />
+                <marker date="1522728756000" expanded="true" signature="45811:45878" ph="SELECT `id` s_order_basket" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TemplateRegistration.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/custom/plugins/AvenSupplier/Subscriber/TemplateRegistration.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="391">
+              <caret line="89" column="0" lean-forward="true" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+              <folding>
+                <marker date="1523505461227" expanded="true" signature="2428:2476" ph="SELECT * fro... s_order_documents" />
+                <marker date="1523505461227" expanded="true" signature="2584:2654" ph="SELECT liefe... s_articles_attributes" />
+                <marker date="1523505461227" expanded="true" signature="3224:3295" ph="UPDATE s_articles_attributes... " />
+                <marker date="1523505461227" expanded="true" signature="3383:3447" ph="UPDATE s_articles_attributes... " />
+                <marker date="1523505461227" expanded="true" signature="3692:3729" ph="SELECT * fro... s_supplier" />
+                <marker date="1523505461227" expanded="true" signature="4304:4341" ph="SELECT * fro... s_supplier" />
+                <marker date="1523505461227" expanded="true" signature="5663:5709" ph="SELECT name s_core_documents" />
+                <marker date="1523505461227" expanded="true" signature="7538:7736" ph="Select a.ord... s_order_documents" />
+                <marker date="1523505461227" expanded="true" signature="7914:8059" ph="INSERT INTO s_deliverynotes... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="plugin.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/custom/plugins/AvenSupplier/plugin.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AvenFaxorder.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/custom/plugins/AvenFaxorder/AvenFaxorder.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="40" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>europe</find>
       <find>notify</find>
-      <find>mail</find>
       <find>sendOrder</find>
       <find>prepareOrderDetailsConfirmationMailData</find>
       <find>'sORDER'</find>
@@ -39,6 +96,14 @@
       <find>set_error_handler</find>
       <find>sORDER</find>
       <find>ConfirmationMailCreator</find>
+      <find>saveORder</find>
+      <find>setPayment</find>
+      <find>payment</find>
+      <find>shippingPayment</find>
+      <find>saveShippingPayment</find>
+      <find>order</find>
+      <find>$order</find>
+      <find>mail</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -50,11 +115,14 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/config.php" />
         <option value="$PROJECT_DIR$/engine/Shopware/Configs/Default.php" />
-        <option value="$PROJECT_DIR$/engine/Shopware/Core/sOrder.php" />
         <option value="$PROJECT_DIR$/engine/Shopware/Models/Document/Order.php" />
-        <option value="$PROJECT_DIR$/custom/plugins/AvenFaxorder/Controllers/Frontend/AvenOfferManagement.php" />
         <option value="$PROJECT_DIR$/engine/Library/Zend/Mail/Transport/Sendmail.php" />
         <option value="$PROJECT_DIR$/engine/Library/Zend/Mail/Protocol/Abstract.php" />
+        <option value="$PROJECT_DIR$/custom/plugins/CrefoShopwarePlugIn/Controllers/Frontend/CrefoInvoice.php" />
+        <option value="$PROJECT_DIR$/custom/plugins/AvenFaxorder/Subscriber/TemplateRegistration.php" />
+        <option value="$PROJECT_DIR$/custom/plugins/AvenFaxorder/Controllers/Frontend/AvenOfferManagement.php" />
+        <option value="$PROJECT_DIR$/engine/Shopware/Core/sOrder.php" />
+        <option value="$PROJECT_DIR$/custom/plugins/AvenSupplier/Subscriber/TemplateRegistration.php" />
       </list>
     </option>
   </component>
@@ -166,24 +234,15 @@
               <item name="shopware4" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="custom" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="plugins" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="AvenFaxorder" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="AvenSupplier" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
             <path>
               <item name="shopware4" type="b2602c69:ProjectViewProjectNode" />
               <item name="shopware4" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="custom" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="plugins" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="AvenFaxorder" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Controllers" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="shopware4" type="b2602c69:ProjectViewProjectNode" />
-              <item name="shopware4" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="custom" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="plugins" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="AvenFaxorder" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Controllers" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Frontend" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="AvenSupplier" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Subscriber" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
             <path>
               <item name="shopware4" type="b2602c69:ProjectViewProjectNode" />
@@ -194,7 +253,14 @@
               <item name="shopware4" type="b2602c69:ProjectViewProjectNode" />
               <item name="shopware4" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="engine" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="Library" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Shopware" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="shopware4" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shopware4" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="engine" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Shopware" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="Core" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
           </expand>
           <select />
@@ -234,33 +300,35 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1523423222407</updated>
-      <workItem from="1523423223736" duration="6768000" />
+      <workItem from="1523423223736" duration="11350000" />
+      <workItem from="1523505410847" duration="119000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6768000" />
+    <option name="totallyTimeSpent" value="11469000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25266525" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -275,44 +343,10 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/engine/Shopware/Configs/Default.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="196" column="56" lean-forward="true" selection-start-line="196" selection-start-column="56" selection-end-line="196" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="30" lean-forward="false" selection-start-line="20" selection-start-column="30" selection-end-line="20" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="833">
-          <caret line="50" column="9" lean-forward="false" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/engine/Shopware/Controllers/Backend/Order.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-5584">
-          <caret line="789" column="34" lean-forward="false" selection-start-line="789" selection-start-column="20" selection-end-line="789" selection-end-column="34" />
-          <folding>
-            <marker date="1522728756000" expanded="true" signature="57932:58166" ph="SELECT s_cor... s_core_shops" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/engine/Shopware/Controllers/Frontend/Checkout.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="409" column="48" lean-forward="false" selection-start-line="409" selection-start-column="42" selection-end-line="409" selection-end-column="48" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <marker date="1522728756000" expanded="true" signature="10837:10985" ph="SELECT trans... s_order" />
             <marker date="1522728756000" expanded="true" signature="24342:24390" ph="SELECT areaI... s_core_countries" />
@@ -325,11 +359,54 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenSupplier/plugin.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenFaxorder/AvenFaxorder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Configs/Default.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="196" column="56" lean-forward="true" selection-start-line="196" selection-start-column="56" selection-end-line="196" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="30" lean-forward="false" selection-start-line="20" selection-start-column="30" selection-end-line="20" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="833">
+          <caret line="50" column="9" lean-forward="false" selection-start-line="50" selection-start-column="9" selection-end-line="50" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Controllers/Backend/Order.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-5584">
+          <caret line="789" column="34" lean-forward="false" selection-start-line="789" selection-start-column="20" selection-end-line="789" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/engine/Shopware/Bundle/AccountBundle/Constraint/CustomerEmail.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="29" column="15" lean-forward="false" selection-start-line="29" selection-start-column="15" selection-end-line="29" selection-end-column="15" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -337,40 +414,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
           <caret line="519" column="48" lean-forward="false" selection-start-line="519" selection-start-column="48" selection-end-line="519" selection-end-column="67" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/engine/Shopware/Models/Document/Order.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="384" column="28" lean-forward="false" selection-start-line="384" selection-start-column="28" selection-end-line="384" selection-end-column="28" />
-          <folding>
-            <marker date="1523439485767" expanded="true" signature="6303:6598" ph="SELECT s_ord... s_order" />
-            <marker date="1523439485767" expanded="true" signature="6909:6959" ph="SELECT * FRO... s_order_attributes" />
-            <marker date="1523439485767" expanded="true" signature="9900:10561" ph="SELECT od.*,... s_order_details" />
-            <marker date="1523439485767" expanded="true" signature="10815:10874" ph="SELECT * FRO... s_order_details_attributes" />
-            <marker date="1523439485767" expanded="true" signature="11189:11884" ph="SELECT od.*,... s_order_details" />
-            <marker date="1523439485767" expanded="true" signature="12150:12209" ph="SELECT * FRO... s_order_details_attributes" />
-            <marker date="1523439485767" expanded="true" signature="16694:16747" ph="SELECT * FRO... s_emarketing_vouchers" />
-            <marker date="1523439485767" expanded="true" signature="17560:17598" ph="SELECT tax F... s_core_tax" />
-            <marker date="1523439485767" expanded="true" signature="19440:19594" ph="SELECT u.*, s_user" />
-            <marker date="1523439485767" expanded="true" signature="19950:20186" ph="SELECT sob.*... s_order_billingaddress" />
-            <marker date="1523439485767" expanded="true" signature="20394:20443" ph="SELECT * FRO... s_core_countries" />
-            <marker date="1523439485767" expanded="true" signature="20665:20725" ph="SELECT * FRO... s_core_countries_states" />
-            <marker date="1523439485767" expanded="true" signature="20950:21017" ph="SELECT * FRO... s_order_billingaddress_attributes" />
-            <marker date="1523439485767" expanded="true" signature="21404:21486" ph="SELECT * FRO... s_order_shippingaddress" />
-            <marker date="1523439485767" expanded="true" signature="21732:21801" ph="SELECT * FRO... s_order_shippingaddress_attributes" />
-            <marker date="1523439485767" expanded="true" signature="22192:22245" ph="SELECT * FRO... s_core_countries" />
-            <marker date="1523439485767" expanded="true" signature="22486:22550" ph="SELECT * FRO... s_core_countries_states" />
-            <marker date="1523439485767" expanded="true" signature="22937:23007" ph="SELECT name,... ${$dispatch_table}" />
-            <marker date="1523439485767" expanded="true" signature="23384:23430" ph="SELECT * FRO... s_core_paymentmeans" />
-            <marker date="1523439485767" expanded="true" signature="23740:23801" ph="SELECT * FRO... ${$this-&gt;_payment['table']}" />
-            <marker date="1523439485767" expanded="true" signature="24234:24304" ph="SELECT * FRO... s_core_payment_instance" />
-            <marker date="1523439485767" expanded="true" signature="27428:27540" ph="SELECT tax, s_core_tax" />
-            <marker date="1523439485767" expanded="true" signature="27428:28104" ph="SELECT tax, " />
-            <marker date="1523439485767" expanded="true" signature="27575:28044" ph="SELECT tax, s_core_tax_rules" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -386,7 +429,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="298">
           <caret line="646" column="9" lean-forward="false" selection-start-line="646" selection-start-column="9" selection-end-line="646" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -394,7 +436,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
           <caret line="261" column="6" lean-forward="true" selection-start-line="261" selection-start-column="6" selection-end-line="261" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -402,7 +443,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -410,56 +450,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="843">
           <caret line="133" column="94" lean-forward="false" selection-start-line="133" selection-start-column="94" selection-end-line="133" selection-end-column="94" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenFaxorder/Controllers/Frontend/AvenOfferManagement.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="135" column="39" lean-forward="true" selection-start-line="135" selection-start-column="0" selection-end-line="136" selection-end-column="0" />
-          <folding>
-            <element signature="n#getCountries#0;n#Shopware_Controllers_Frontend_AvenOfferManagement#0;n#!!top" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/engine/Shopware/Core/sOrder.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="39">
-          <caret line="1171" column="7" lean-forward="false" selection-start-line="1171" selection-start-column="5" selection-end-line="1171" selection-end-column="7" />
-          <folding>
-            <marker date="1523434259537" expanded="true" signature="8940:8991" ph="SELECT * FRO... s_order" />
-            <marker date="1523434259537" expanded="true" signature="9157:9189" ph="DELETE FROM s_order... " />
-            <marker date="1523434259537" expanded="true" signature="9280:9335" ph="DELETE FROM s_order_details... " />
-            <marker date="1523434259537" expanded="true" signature="21804:22348" ph="INSERT INTO s_order_details... " />
-            <marker date="1523434259537" expanded="true" signature="28424:28468" ph="DELETE FROM s_order_basket... " />
-            <marker date="1523434259537" expanded="true" signature="31021:31114" ph="SELECT * FRO... $" />
-            <marker date="1523434259537" expanded="true" signature="33801:34740" ph="INSERT INTO s_order_billingaddress... " />
-            <marker date="1523434259537" expanded="true" signature="37072:37916" ph="INSERT INTO s_order_shippingaddress... " />
-            <marker date="1523434259537" expanded="true" signature="40247:40319" ph="SELECT * FRO... s_emarketing_tellafriend" />
-            <marker date="1523434259537" expanded="true" signature="40487:40552" ph="UPDATE s_emarketing_tellafriend... " />
-            <marker date="1523434259537" expanded="true" signature="40644:40719" ph="SELECT email... s_user" />
-            <marker date="1523434259537" expanded="true" signature="42799:42874" ph="SELECT name,... s_premium_dispatch" />
-            <marker date="1523434259537" expanded="true" signature="46265:46328" ph="UPDATE s_order... " />
-            <marker date="1523434259537" expanded="true" signature="46492:46806" ph="INSERT INTO s_order_history... " />
-            <marker date="1523434259537" expanded="true" signature="46692:46806" ph="SELECT id, N... s_order" />
-            <marker date="1523434259537" expanded="true" signature="47767:47822" ph="UPDATE s_order... " />
-            <marker date="1523434259537" expanded="true" signature="47932:48248" ph="INSERT INTO s_order_history... " />
-            <marker date="1523434259537" expanded="true" signature="48132:48248" ph="SELECT id, N... s_order" />
-            <marker date="1523434259537" expanded="true" signature="49292:50845" ph="SELECT `o`.`... s_order" />
-            <marker date="1523434259537" expanded="true" signature="51243:51884" ph="SELECT `d`.`... s_order_details" />
-            <marker date="1523434259537" expanded="true" signature="52237:55246" ph="SELECT `b`.`... s_order_billingaddress" />
-            <marker date="1523434259537" expanded="true" signature="56275:56563" ph="SELECT s_art... s_articles_esd" />
-            <marker date="1523434259537" expanded="true" signature="56896:57229" ph="SELECT s_art... s_articles_esd_serials" />
-            <marker date="1523434259537" expanded="true" signature="57665:57728" ph="SELECT id FR... s_order" />
-            <marker date="1523434259537" expanded="true" signature="58771:58823" ph="SELECT idcod... s_emarketing_partner" />
-            <marker date="1523434259537" expanded="true" signature="59206:59268" ph="SELECT modus... s_emarketing_vouchers" />
-            <marker date="1523434259537" expanded="true" signature="59404:59476" ph="UPDATE s_emarketing_voucher_codes... " />
-            <marker date="1523434259537" expanded="true" signature="59969:60123" ph="UPDATE s_articles_details... " />
-            <marker date="1523434259537" expanded="true" signature="65401:65447" ph="SELECT clear... s_order" />
-            <marker date="1523434259537" expanded="true" signature="65775:65820" ph="SELECT statu... s_order" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -467,9 +457,220 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2269">
           <caret line="21" column="23" lean-forward="false" selection-start-line="21" selection-start-column="19" selection-end-line="21" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenFaxorder/AvenFaxorder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="22" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/themes/Frontend/Bare/frontend/checkout/actions.tpl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="107" lean-forward="false" selection-start-line="15" selection-start-column="92" selection-end-line="15" selection-end-column="107" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/CrefoShopwarePlugIn/Controllers/Frontend/CrefoInvoice.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="134" column="100" lean-forward="false" selection-start-line="134" selection-start-column="16" selection-end-line="134" selection-end-column="100" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Core/sAdmin.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="43">
+          <caret line="618" column="20" lean-forward="false" selection-start-line="618" selection-start-column="20" selection-end-line="618" selection-end-column="20" />
           <folding>
-            <marker date="1523258753944" expanded="true" signature="35491:35632" ph="INSERT INTO s_order_documents... " />
-            <marker date="1523258753944" expanded="true" signature="37638:37703" ph="UPDATE `s_order_documents`... " />
+            <marker date="1522728756000" expanded="true" signature="8291:8337" ph="SELECT * FRO... s_core_paymentmeans" />
+            <marker date="1522728756000" expanded="true" signature="9713:10417" ph="SELECT 1 FRO... s_core_paymentmeans" />
+            <marker date="1522728756000" expanded="true" signature="11393:11439" ph="SELECT * FRO... s_core_paymentmeans" />
+            <marker date="1522728756000" expanded="true" signature="12400:12461" ph="SELECT id FR... s_core_countries" />
+            <marker date="1522728756000" expanded="true" signature="12517:13398" ph="SELECT p.* F... s_core_paymentmeans" />
+            <marker date="1522728756000" expanded="true" signature="13684:13741" ph="SELECT * FRO... s_core_paymentmeans" />
+            <marker date="1522728756000" expanded="true" signature="15198:15244" ph="SELECT * FRO... s_core_paymentmeans" />
+            <marker date="1522728756000" expanded="true" signature="19047:19103" ph="SELECT id FR... s_campaigns_mailaddresses" />
+            <marker date="1522728756000" expanded="true" signature="21260:21304" ph="UPDATE s_user... " />
+            <marker date="1522728756000" expanded="true" signature="25346:25512" ph="SELECT id, c... s_user" />
+            <marker date="1522728756000" expanded="true" signature="25632:25835" ph="SELECT id, c... s_user" />
+            <marker date="1522728756000" expanded="true" signature="28122:28269" ph="SELECT * FRO... s_user" />
+            <marker date="1522728756000" expanded="true" signature="28977:29031" ph="SELECT * FRO... s_core_customergroups" />
+            <marker date="1522728756000" expanded="true" signature="29464:29527" ph="UPDATE s_user... " />
+            <marker date="1522728756000" expanded="true" signature="35720:35785" ph="SELECT * FRO... s_core_countries" />
+            <marker date="1522728756000" expanded="true" signature="36727:36867" ph="SELECT * FRO... s_core_countries_states" />
+            <marker date="1522728756000" expanded="true" signature="40846:41197" ph="SELECT id, o... s_order" />
+            <marker date="1522728756000" expanded="true" signature="42265:42312" ph="SELECT * FRO... s_order_details" />
+            <marker date="1522728756000" expanded="true" signature="43265:43546" ph="SELECT seria... s_articles_esd_serials" />
+            <marker date="1522728756000" expanded="true" signature="46095:46508" ph="SELECT SQL_C... s_order" />
+            <marker date="1522728756000" expanded="true" signature="50324:50361" ph="SELECT email... s_user" />
+            <marker date="1522728756000" expanded="true" signature="50897:50956" ph="SELECT id FR... s_user" />
+            <marker date="1522728756000" expanded="true" signature="51247:51298" ph="SELECT first... s_user" />
+            <marker date="1522728756000" expanded="true" signature="51905:52089" ph="SELECT c.*, s_core_countries" />
+            <marker date="1522728756000" expanded="true" signature="52420:52476" ph="SELECT id FR... s_campaigns_mailaddresses" />
+            <marker date="1522728756000" expanded="true" signature="54708:54836" ph="SELECT rule1... s_core_rulesets" />
+            <marker date="1522728756000" expanded="true" signature="64855:65501" ph="SELECT s_art... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="66378:66988" ph="SELECT s_art... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="69575:69720" ph="SELECT id FR... s_order" />
+            <marker date="1522728756000" expanded="true" signature="70310:70630" ph="SELECT s_art... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="71174:71264" ph="SELECT id FR... s_order" />
+            <marker date="1522728756000" expanded="true" signature="81953:82203" ph="SELECT c.id,... s_core_countries" />
+            <marker date="1522728756000" expanded="true" signature="82027:82084" ph="SELECT name s_core_countries_areas" />
+            <marker date="1522728756000" expanded="true" signature="83090:83142" ph="SELECT * FRO... s_core_paymentmeans" />
+            <marker date="1522728756000" expanded="true" signature="84541:84652" ph="SELECT id, c... s_premium_dispatch" />
+            <marker date="1522728756000" expanded="true" signature="85509:87175" ph="SELECT MIN(d... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="89088:89133" ph="SELECT main_... s_core_shops" />
+            <marker date="1522728756000" expanded="true" signature="90076:90436" ph="SELECT d.id,... s_premium_dispatch" />
+            <marker date="1522728756000" expanded="true" signature="91160:91316" ph="SELECT id, b... s_premium_dispatch" />
+            <marker date="1522728756000" expanded="true" signature="91796:95163" ph="SELECT d.id s_premium_dispatch" />
+            <marker date="1522728756000" expanded="true" signature="92035:92042" ph="SELECT ${$sq... " />
+            <marker date="1522728756000" expanded="true" signature="92552:92950" ph="SELECT dc.di... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="95488:95871" ph="SELECT d.id s_premium_dispatch" />
+            <marker date="1522728756000" expanded="true" signature="98008:98154" ph="SELECT id, b... s_premium_dispatch" />
+            <marker date="1522728756000" expanded="true" signature="98625:101894" ph="SELECT d.id,... s_premium_dispatch" />
+            <marker date="1522728756000" expanded="true" signature="98710:98717" ph="SELECT ${$sq... " />
+            <marker date="1522728756000" expanded="true" signature="99227:99625" ph="SELECT dc.di... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="104379:104562" ph="SELECT SUM((... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="107055:107239" ph="SELECT `valu... s_premium_shippingcosts" />
+            <marker date="1522728756000" expanded="true" signature="117555:117698" ph="SELECT c.*, s_core_countries" />
+            <marker date="1522728756000" expanded="true" signature="118258:118327" ph="SELECT *, na... s_core_countries_states" />
+            <marker date="1522728756000" expanded="true" signature="119505:119554" ph="SELECT id FR... s_user" />
+            <marker date="1522728756000" expanded="true" signature="119997:120057" ph="SELECT 1 FRO... s_user" />
+            <marker date="1522728756000" expanded="true" signature="120780:121096" ph="UPDATE s_user... " />
+            <marker date="1522728756000" expanded="true" signature="121896:121959" ph="SELECT * FRO... s_order_details" />
+            <marker date="1522728756000" expanded="true" signature="125078:125347" ph="SELECT seria... s_articles_esd_serials" />
+            <marker date="1522728756000" expanded="true" signature="126525:126709" ph="SELECT c.*, s_core_countries" />
+            <marker date="1522728756000" expanded="true" signature="126970:127039" ph="SELECT *, na... s_core_countries_states" />
+            <marker date="1522728756000" expanded="true" signature="127472:127505" ph="SELECT * FRO... s_user" />
+            <marker date="1522728756000" expanded="true" signature="129560:129629" ph="SELECT *, na... s_core_countries_states" />
+            <marker date="1522728756000" expanded="true" signature="131233:131288" ph="SELECT * FRO... s_campaigns_mailaddresses" />
+            <marker date="1522728756000" expanded="true" signature="131721:131766" ph="SELECT id FR... s_user" />
+            <marker date="1522728756000" expanded="true" signature="134403:134601" ph="SELECT `valu... s_premium_shippingcosts" />
+            <marker date="1522728756000" expanded="true" signature="135614:135817" ph="SELECT baske... s_core_customergroups_discounts" />
+            <marker date="1522728756000" expanded="true" signature="141474:141601" ph="SELECT SUM(q... s_order_basket" />
+            <marker date="1522728756000" expanded="true" signature="143575:143642" ph="SELECT id FR... s_order" />
+            <marker date="1522728756000" expanded="true" signature="144565:144638" ph="SELECT defau... s_user" />
+            <marker date="1522728756000" expanded="true" signature="145182:145256" ph="SELECT defau... s_user" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenSupplier/plugin.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Models/Document/Order.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="283">
+          <caret line="576" column="7" lean-forward="true" selection-start-line="576" selection-start-column="7" selection-end-line="576" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/var/cache/production_201804030942/proxies/ShopwareControllersFrontendCheckoutProxy.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="674">
+          <caret line="45" column="21" lean-forward="true" selection-start-line="45" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenFaxorder/Controllers/Frontend/AvenOfferManagement.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="134" column="16" lean-forward="true" selection-start-line="134" selection-start-column="16" selection-end-line="134" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Models/Order/Order.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="33" column="32" lean-forward="false" selection-start-line="33" selection-start-column="32" selection-end-line="33" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Core/sOrder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="948" column="35" lean-forward="true" selection-start-line="948" selection-start-column="35" selection-end-line="948" selection-end-column="35" />
+          <folding>
+            <marker date="1523447296313" expanded="true" signature="8940:8991" ph="SELECT * FRO... s_order" />
+            <marker date="1523447296313" expanded="true" signature="9157:9189" ph="DELETE FROM s_order... " />
+            <marker date="1523447296313" expanded="true" signature="9280:9335" ph="DELETE FROM s_order_details... " />
+            <marker date="1523447296313" expanded="true" signature="21804:22348" ph="INSERT INTO s_order_details... " />
+            <marker date="1523447296313" expanded="true" signature="28424:28468" ph="DELETE FROM s_order_basket... " />
+            <marker date="1523447296313" expanded="true" signature="31021:31114" ph="SELECT * FRO... $" />
+            <marker date="1523447296313" expanded="true" signature="33890:34829" ph="INSERT INTO s_order_billingaddress... " />
+            <marker date="1523447296313" expanded="true" signature="37161:38005" ph="INSERT INTO s_order_shippingaddress... " />
+            <marker date="1523447296313" expanded="true" signature="40336:40408" ph="SELECT * FRO... s_emarketing_tellafriend" />
+            <marker date="1523447296313" expanded="true" signature="40576:40641" ph="UPDATE s_emarketing_tellafriend... " />
+            <marker date="1523447296313" expanded="true" signature="40733:40808" ph="SELECT email... s_user" />
+            <marker date="1523447296313" expanded="true" signature="42888:42963" ph="SELECT name,... s_premium_dispatch" />
+            <marker date="1523447296313" expanded="true" signature="46354:46417" ph="UPDATE s_order... " />
+            <marker date="1523447296313" expanded="true" signature="46581:46895" ph="INSERT INTO s_order_history... " />
+            <marker date="1523447296313" expanded="true" signature="46781:46895" ph="SELECT id, N... s_order" />
+            <marker date="1523447296313" expanded="true" signature="47856:47911" ph="UPDATE s_order... " />
+            <marker date="1523447296313" expanded="true" signature="48021:48337" ph="INSERT INTO s_order_history... " />
+            <marker date="1523447296313" expanded="true" signature="48221:48337" ph="SELECT id, N... s_order" />
+            <marker date="1523447296313" expanded="true" signature="49381:50934" ph="SELECT `o`.`... s_order" />
+            <marker date="1523447296313" expanded="true" signature="51332:51973" ph="SELECT `d`.`... s_order_details" />
+            <marker date="1523447296313" expanded="true" signature="52326:55335" ph="SELECT `b`.`... s_order_billingaddress" />
+            <marker date="1523447296313" expanded="true" signature="56364:56652" ph="SELECT s_art... s_articles_esd" />
+            <marker date="1523447296313" expanded="true" signature="56985:57318" ph="SELECT s_art... s_articles_esd_serials" />
+            <marker date="1523447296313" expanded="true" signature="57754:57817" ph="SELECT id FR... s_order" />
+            <marker date="1523447296313" expanded="true" signature="58860:58912" ph="SELECT idcod... s_emarketing_partner" />
+            <marker date="1523447296313" expanded="true" signature="59295:59357" ph="SELECT modus... s_emarketing_vouchers" />
+            <marker date="1523447296313" expanded="true" signature="59493:59565" ph="UPDATE s_emarketing_voucher_codes... " />
+            <marker date="1523447296313" expanded="true" signature="60058:60212" ph="UPDATE s_articles_details... " />
+            <marker date="1523447296313" expanded="true" signature="65490:65536" ph="SELECT clear... s_order" />
+            <marker date="1523447296313" expanded="true" signature="65864:65909" ph="SELECT statu... s_order" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenFaxorder/Subscriber/TemplateRegistration.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="549">
+          <caret line="80" column="0" lean-forward="true" selection-start-line="80" selection-start-column="0" selection-end-line="80" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/engine/Shopware/Controllers/Frontend/Checkout.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="604">
+          <caret line="707" column="73" lean-forward="true" selection-start-line="707" selection-start-column="73" selection-end-line="707" selection-end-column="73" />
+          <folding>
+            <marker date="1522728756000" expanded="true" signature="10837:10985" ph="SELECT trans... s_order" />
+            <marker date="1522728756000" expanded="true" signature="24342:24390" ph="SELECT areaI... s_core_countries" />
+            <marker date="1522728756000" expanded="true" signature="31924:31994" ph="SELECT * FRO... s_core_customergroups" />
+            <marker date="1522728756000" expanded="true" signature="37494:37986" ph="SELECT a.id s_articles" />
+            <marker date="1522728756000" expanded="true" signature="41855:41916" ph="SELECT taxco... s_emarketing_vouchers" />
+            <marker date="1522728756000" expanded="true" signature="42620:42659" ph="SELECT tax F... s_core_tax" />
+            <marker date="1522728756000" expanded="true" signature="45811:45878" ph="SELECT `id` s_order_basket" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/custom/plugins/AvenSupplier/Subscriber/TemplateRegistration.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="89" column="0" lean-forward="true" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+          <folding>
+            <marker date="1523505461227" expanded="true" signature="2428:2476" ph="SELECT * fro... s_order_documents" />
+            <marker date="1523505461227" expanded="true" signature="2584:2654" ph="SELECT liefe... s_articles_attributes" />
+            <marker date="1523505461227" expanded="true" signature="3224:3295" ph="UPDATE s_articles_attributes... " />
+            <marker date="1523505461227" expanded="true" signature="3383:3447" ph="UPDATE s_articles_attributes... " />
+            <marker date="1523505461227" expanded="true" signature="3692:3729" ph="SELECT * fro... s_supplier" />
+            <marker date="1523505461227" expanded="true" signature="4304:4341" ph="SELECT * fro... s_supplier" />
+            <marker date="1523505461227" expanded="true" signature="5663:5709" ph="SELECT name s_core_documents" />
+            <marker date="1523505461227" expanded="true" signature="7538:7736" ph="Select a.ord... s_order_documents" />
+            <marker date="1523505461227" expanded="true" signature="7914:8059" ph="INSERT INTO s_deliverynotes... " />
           </folding>
         </state>
       </provider>

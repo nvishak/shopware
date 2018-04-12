@@ -131,11 +131,11 @@ class Shopware_Controllers_Frontend_AvenOfferManagement extends Enlight_Controll
             $basket = Shopware()->Modules()->Basket()->sGetBasket();
             $this->saveToDatabase($postdata, $basket);
             $order = Shopware()->Modules()->Order();
-            var_dump($order);
+
             try{
-                $this->forward("confirm", "Checkout", null, ["sABG"=>true,"esdAgreementChecked"=>true,"serviceAgreementChecked"=>true]);
-                $uniqueId = $this->front->Request()->getCookie('sUniqueID');
-                $this->forward("finish", "Checkout", null, ['sUniqueID'=>$uniqueId]);
+                $this->forward("ShippingPayment", "Checkout", null, null);
+//                $uniqueId = $this->front->Request()->getCookie('sUniqueID');
+//                $this->forward("finish", "Checkout", null, ['sUniqueID'=>$uniqueId]);
 //                Shopware()->Modules()->Basket()->clearBasket();
 //                Shopware()->Session()->unsetAll();
 //                Shopware()->Modules()->Basket()->sRefreshBasket();

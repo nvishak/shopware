@@ -963,7 +963,8 @@ class sOrder
             ]
         );
 
-        if ($shouldSendMail && $this->config->get('sendOrderMail')) {
+        $paymentId = $this->sUserData['additional']['payment']['id'];
+        if ($shouldSendMail && $this->config->get('sendOrderMail') && $paymentId != 7) {
             $mail->send();
         }
     }
